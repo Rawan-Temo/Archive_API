@@ -1,0 +1,127 @@
+const Street = require("../../models/Address/street");
+const City = require("../../models/Address/city");
+const APIFeatures = require("../../utils/apiFeatures");
+
+// Create a new street
+const createStreet = async (req, res) => {
+  try {
+    const newStreet = await Street.create(req.body);
+    res.status(201).json({
+      status: "success",
+      message: "Street created successfully",
+      data: newStreet,
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Get all streets with pagination and filtering
+const getAllStreets = async (req, res) => {
+  try {
+    // Convert the filtered query into a plain object for counting
+    const queryObj = { ...req.query };
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    // Parse the query string to convert query parameters like gte/gt/lte/lt into MongoDB operators
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const parsedQuery = JSON.parse(queryStr);
+
+    // Apply the parsed filter to count active documents
+    const features = new APIFeatures(Street.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    const [streets, numberOfActiveStreets] = await Promise.all([
+      features.query, // Get paginated streets
+      Street.countDocuments(parsedQuery), // Count all filtered documents
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      results: streets.length, // Number of streets returned in the current query
+      numberOfActiveStreets, // Total number of active streets matching filters
+      data: streets, // The actual street data
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Get a street by ID
+const getStreetById = async (req, res) => {
+  try {
+    const street = await Street.findById(req.params.id);
+    if (!street) {
+      return res.status(404).json({ message: "No street found with that ID" });
+    }
+    res.status(200).json({
+      status: "success",
+      data: street,
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Update a street by ID
+const updateStreet = async (req, res) => {
+  try {
+    const updatedStreet = await Street.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true, // Return the updated document
+        runValidators: true, // Validate the update
+      }
+    );
+
+    if (!updatedStreet) {
+      return res.status(404).json({ message: "No street found with that ID" });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Street updated successfully",
+      data: updatedStreet,
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Deactivate a street and remove it from the associated city's street array
+const deactivateStreet = async (req, res) => {
+  try {
+    // Deactivate the street
+    const street = await Street.findByIdAndUpdate(
+      req.params.id,
+      { active: false }, // Set active to false
+      { new: true } // Return the updated document
+    );
+
+    if (!street) {
+      return res.status(404).json({ message: "No street found with that ID" });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Street deactivated",
+      data: street,
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+module.exports = {
+  getAllStreets,
+  createStreet,
+  getStreetById,
+  updateStreet,
+  deactivateStreet,
+};
