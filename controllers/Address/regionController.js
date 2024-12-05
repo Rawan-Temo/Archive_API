@@ -3,33 +3,31 @@ const APIFeatures = require("../../utils/apiFeatures");
 // Get all regions
 const getAllRegions = async (req, res) => {
   try {
-    // Convert the filtered query into a plain object for counting
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    // Parse the query string to convert query parameters like gte/gt/lte/lt into MongoDB operators
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
     const features = new APIFeatures(Region.find(), req.query)
-      .filter() // Apply filter based on query params
-      .sort() // Apply sorting based on query params
-      .limitFields() // Limit the fields based on query params
-      .paginate(); // Apply pagination based on query params
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
     const [regions, numberOfActiveRegions] = await Promise.all([
-      features.query, // Get the regions with applied query features
+      features.query,
       Region.countDocuments(parsedQuery), // Count all filtered regions
     ]);
 
     res.status(200).json({
       status: "success",
-      results: regions.length, // Number of regions returned in the current query
-      numberOfActiveRegions, // Total number of active regions matching filters
-      data: regions, // The actual region data
+      results: regions.length,
+      numberOfActiveRegions,
+      data: regions,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -84,7 +82,7 @@ const updateRegion = async (req, res) => {
   }
 };
 
-// Deactivate a region (set active to false and remove from associated city)
+// Deactivate a region
 const deactivateRegion = async (req, res) => {
   try {
     const region = await Region.findByIdAndUpdate(

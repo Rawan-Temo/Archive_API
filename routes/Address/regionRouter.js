@@ -15,8 +15,6 @@ router
   .patch(regionController.updateRegion); // PATCH /api/v1/regions/:id
 
 // Route for deactivating a region (also removes it from the city's regions array)
-router
-  .route("/deactivate/:id")
-  .patch(regionController.deactivateRegion); // PATCH /api/v1/regions/deactivate/:id
+router.route("/deActivate/:id").patch(regionController.deactivateRegion); // PATCH /api/v1/regions/deactivate/:id
 
 module.exports = router;

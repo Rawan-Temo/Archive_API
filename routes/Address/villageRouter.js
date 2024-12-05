@@ -15,6 +15,6 @@ router
   .patch(villageController.updateVillage); // PATCH /api/v1/villages/:id
 
 // Route for deactivating a village (also removes it from the region's villages array)
-router.route("/deactivate/:id").patch(villageController.deactivateVillage); // PATCH /api/v1/villages/deactivate/:id
+router.route("/deActivate/:id").patch(villageController.deactivateVillage); // PATCH /api/v1/villages/deactivate/:id
 
 module.exports = router;

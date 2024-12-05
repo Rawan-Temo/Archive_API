@@ -9,20 +9,19 @@ const citySchema = new mongoose.Schema(
     },
     government: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Government", // Reference to the Country schema
+      ref: "Government",
       required: [true, "A city must belong to a Government"],
     },
     active: {
       type: Boolean,
-      default: true, // Default is active
+      default: true,
     },
   },
   {
-    timestamps: true, // Automatically adds `createdAt` and `updatedAt` fields
+    timestamps: true,
   }
 );
 
-// Partial Index: Unique name for active cities only
 citySchema.index(
   { name: 1 },
   { unique: true, partialFilterExpression: { active: true } }

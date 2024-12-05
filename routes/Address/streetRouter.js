@@ -15,6 +15,6 @@ router
   .patch(streetController.updateStreet); // PATCH /api/v1/streets/:id
 
 // Route for deactivating a specific street and removing it from the city's street array
-router.route("/deactivate/:id").patch(streetController.deactivateStreet); // PATCH /api/v1/streets/deactivate/:id
+router.route("/deActivate/:id").patch(streetController.deactivateStreet); // PATCH /api/v1/streets/deactivate/:id
 
 module.exports = router;

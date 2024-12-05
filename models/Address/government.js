@@ -9,7 +9,7 @@ const governmentSchema = new mongoose.Schema(
     },
     country: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Country", // Assuming you have a 'Country' schema
+      ref: "Country",
       required: [true, "A government must belong to a country"],
     },
     active: {
@@ -18,11 +18,10 @@ const governmentSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Automatically adds `createdAt` and `updatedAt` fields
+    timestamps: true, 
   }
 );
 
-// Middleware to update `updatedAt` before saving
 governmentSchema.index(
   { name: 1 },
   { unique: true, partialFilterExpression: { active: true } }

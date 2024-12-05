@@ -7,14 +7,21 @@ const app = express();
 const port = process.env.PORT || 8000;
 
 // Import routers
-//ADDRESS
+//ADDRESS ROUTES
 const countryRouter = require("./routes/Address/contryRouter.js");
 const governmentRouter = require("./routes/Address/governmentRouter.js");
 const cityRouter = require("./routes/Address/cityRouter.js");
 const streetRouter = require("./routes/Address/streetRouter.js");
 const regionRouter = require("./routes/Address/regionRouter.js");
 const villageRouter = require("./routes/Address/villageRouter.js");
-//ADDRESS
+//ADDRESS ROUTES
+//DETAILS ROUTES
+
+const sourceRouter = require("./routes/details/sourceRouter.js");
+const eventRouter = require("./routes/details/eventRouter.js");
+const partyRouter = require("./routes/details/partyRouter.js");
+
+//DETAILS ROUTES
 
 // Import and initialize database connection
 const connection = require("./db.js");
@@ -28,15 +35,26 @@ app.use(morgan("tiny"));
 app.use(helmet()); // Security middleware
 
 // API Routes
+
 //ADDRESS
+
 app.use("/api/Countries", countryRouter);
 app.use("/api/Governments", governmentRouter);
 app.use("/api/Cities", cityRouter);
 app.use("/api/Streets", streetRouter);
 app.use("/api/Regions", regionRouter);
 app.use("/api/Villages", villageRouter);
+
 //ADDRESS
 
+//DETAILS
+
+app.use("/api/Sources", sourceRouter);
+app.use("/api/Events", eventRouter);
+app.use("/api/Parties", partyRouter);
+
+//DETAILS
+// API Routes Ends
 // 404 Handler
 app.use((req, res, next) => {
   res.status(404).json({ status: "fail", message: "Route not found" });

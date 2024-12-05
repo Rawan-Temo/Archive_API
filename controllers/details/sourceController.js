@@ -1,7 +1,8 @@
-const Village = require("../../models/Address/village");
+const Source = require("../../models/details/source");
 const APIFeatures = require("../../utils/apiFeatures");
-// Get all villages
-const getAllVillages = async (req, res) => {
+
+// Get all sources
+const getAllSources = async (req, res) => {
   try {
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];
@@ -12,92 +13,93 @@ const getAllVillages = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Village.find(), req.query)
+    const features = new APIFeatures(Source.find(), req.query)
       .filter()
       .sort()
       .limitFields()
       .paginate();
 
-    const [villages, numberOfActiveVillages] = await Promise.all([
+    const [sources, numberOfActiveSources] = await Promise.all([
       features.query,
-      Village.countDocuments(parsedQuery),
+      Source.countDocuments(parsedQuery), // Count all filtered sources
     ]);
 
     res.status(200).json({
       status: "success",
-      results: villages.length,
-      numberOfActiveVillages,
-      data: villages,
+      results: sources.length,
+      numberOfActiveSources,
+      data: sources,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-// Create a new village
-const createVillage = async (req, res) => {
+// Create a new source
+const createSource = async (req, res) => {
   try {
-    const newVillage = await Village.create(req.body);
+    const newSource = await Source.create(req.body);
     res.status(201).json({
       status: "success",
-      data: newVillage,
+      data: newSource,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-// Get a village by ID
-const getVillageById = async (req, res) => {
+// Get a source by ID
+const getSourceById = async (req, res) => {
   try {
-    const village = await Village.findById(req.params.id);
-    if (!village) {
-      return res.status(404).json({ message: "Village not found" });
+    const source = await Source.findById(req.params.id);
+    if (!source) {
+      return res.status(404).json({ message: "Source not found" });
     }
     res.status(200).json({
       status: "success",
-      data: village,
+      data: source,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-// Update a village by ID
-const updateVillage = async (req, res) => {
+// Update a source by ID
+const updateSource = async (req, res) => {
   try {
-    const village = await Village.findByIdAndUpdate(req.params.id, req.body, {
+    const source = await Source.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-    if (!village) {
-      return res.status(404).json({ message: "Village not found" });
+    if (!source) {
+      return res.status(404).json({ message: "Source not found" });
     }
     res.status(200).json({
       status: "success",
-      data: village,
+      data: source,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-const deactivateVillage = async (req, res) => {
+// Deactivate a source (set active to false)
+const deactivateSource = async (req, res) => {
   try {
-    const village = await Village.findByIdAndUpdate(
+    const source = await Source.findByIdAndUpdate(
       req.params.id,
       { active: false },
       { new: true }
     );
 
-    if (!village) {
-      return res.status(404).json({ message: "Village not found" });
+    if (!source) {
+      return res.status(404).json({ message: "Source not found" });
     }
 
     res.status(200).json({
       status: "success",
-      message: "Village deactivated and removed from the region",
-      data: village,
+      message: "Source deactivated",
+      data: source,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -105,9 +107,9 @@ const deactivateVillage = async (req, res) => {
 };
 
 module.exports = {
-  getAllVillages,
-  createVillage,
-  getVillageById,
-  updateVillage,
-  deactivateVillage,
+  getAllSources,
+  createSource,
+  getSourceById,
+  updateSource,
+  deactivateSource,
 };

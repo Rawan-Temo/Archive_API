@@ -19,12 +19,10 @@ const createStreet = async (req, res) => {
 // Get all streets with pagination and filtering
 const getAllStreets = async (req, res) => {
   try {
-    // Convert the filtered query into a plain object for counting
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    // Parse the query string to convert query parameters like gte/gt/lte/lt into MongoDB operators
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const parsedQuery = JSON.parse(queryStr);
@@ -37,15 +35,15 @@ const getAllStreets = async (req, res) => {
       .paginate();
 
     const [streets, numberOfActiveStreets] = await Promise.all([
-      features.query, // Get paginated streets
+      features.query,
       Street.countDocuments(parsedQuery), // Count all filtered documents
     ]);
 
     res.status(200).json({
       status: "success",
-      results: streets.length, // Number of streets returned in the current query
-      numberOfActiveStreets, // Total number of active streets matching filters
-      data: streets, // The actual street data
+      results: streets.length,
+      numberOfActiveStreets,
+      data: streets,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -75,8 +73,8 @@ const updateStreet = async (req, res) => {
       req.params.id,
       req.body,
       {
-        new: true, // Return the updated document
-        runValidators: true, // Validate the update
+        new: true,
+        runValidators: true,
       }
     );
 
@@ -94,14 +92,14 @@ const updateStreet = async (req, res) => {
   }
 };
 
-// Deactivate a street and remove it from the associated city's street array
+// Deactivate a street
 const deactivateStreet = async (req, res) => {
   try {
     // Deactivate the street
     const street = await Street.findByIdAndUpdate(
       req.params.id,
-      { active: false }, // Set active to false
-      { new: true } // Return the updated document
+      { active: false },
+      { new: true }
     );
 
     if (!street) {
