@@ -24,7 +24,7 @@ const regionSchema = new mongoose.Schema(
 
 regionSchema.index(
   { name: 1 },
-  { unique: true, partialFilterExpression: { active: true } }
+  { unique: true, partialFilterExpression: { active: true } } 
 );
 
 const Region = mongoose.model("Region", regionSchema);

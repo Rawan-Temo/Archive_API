@@ -114,10 +114,94 @@ const deactivateGovernment = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+const search = async (req, res) => {
+  try {
+    const query = req.body.search; // The search term from the client
+
+    // Ensure the search query is provided
+    if (!query) {
+      return res.status(400).json({
+        status: "error",
+        message: "Search query is required",
+      });
+    }
+
+    console.log("Search Query:", query);
+
+    // Perform fuzzy search using mongoose-fuzzy-searching plugin
+    const features = new APIFeatures(Government.fuzzySearch(query), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const featurersCount = new APIFeatures(
+      Government.fuzzySearch(query),
+      req.query
+    ).filter();
+
+    let [results, numberOfActiveGovernments] = await Promise.all([
+      features.query,
+      featurersCount.query.countDocuments(),
+    ]);
+
+    return res.status(200).json({
+      status: "success",
+      numberOfActiveGovernments, // Total number of results found
+      data: results, // The matching documents
+    });
+  } catch (err) {
+    console.error("Error during search:", err); // Log error for debugging
+    return res.status(500).json({
+      status: "error",
+      message: err.message || "Something went wrong during the search",
+    });
+  }
+};
+const autocomplete = async (req, res) => {
+  try {
+    const searchText = req.body.search || "";
+    const regex = new RegExp(searchText.split("").join(".*"), "i");
+
+    // Base query for direct matching
+    let features = new APIFeatures(
+      Government.find({
+        $or: [{ name: regex }],
+      }),
+      req.query
+    )
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    // Execute query and count matching documents
+    let [results, totalResults] = await Promise.all([
+      features.query,
+      Government.countDocuments({
+        $or: [{ name: regex }],
+      }),
+    ]);
+    res.status(200).json({
+      status: "success",
+      totalResults,
+      results: results.length,
+      data: results,
+    });
+  } catch (err) {
+    console.error("Error during search:", err);
+    return res.status(500).json({
+      status: "error",
+      message: err.message || "Something went wrong during the search",
+    });
+  }
+};
 module.exports = {
   getAllGovernments,
   createGovernment,
   getGovernmentById,
   updateGovernment,
   deactivateGovernment,
+  search,
+  autocomplete,
 };

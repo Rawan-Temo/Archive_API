@@ -3,6 +3,8 @@ const router = express.Router();
 const governmentController = require("../../controllers/Address/governmentController");
 
 // Route for fetching all governments and creating a new one
+router.route("/search").get(governmentController.search);
+router.route("/autocomplete").get(governmentController.autocomplete);
 router
   .route("/")
   .get(governmentController.getAllGovernments) // GET /api/v1/governments

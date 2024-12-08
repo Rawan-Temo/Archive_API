@@ -21,7 +21,7 @@ const getAllCities = async (req, res) => {
       .paginate();
 
     // Step 4: Execute both the paginated query and the total count of active records
-    const [cities, numberOfActiveCities] = await Promise.all([
+    const [cities, numberOfActiveCities] = await Promise.all([ 
       features.query, // Paginated, filtered, and sorted data
       City.countDocuments(parsedQuery), // Total count of filtered records
     ]);

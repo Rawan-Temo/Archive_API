@@ -91,7 +91,7 @@ const updateStreet = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-
+ 
 // Deactivate a street
 const deactivateStreet = async (req, res) => {
   try {

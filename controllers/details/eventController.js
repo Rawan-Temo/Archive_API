@@ -20,7 +20,7 @@ const getAllEvents = async (req, res) => {
       .sort() // Apply sorting based on query params
       .limitFields() // Limit the fields based on query params
       .paginate(); // Apply pagination based on query params
-
+ 
     const [events, numberOfActiveEvents] = await Promise.all([
       features.query, // Get the events with applied query features
       Event.countDocuments(parsedQuery), // Count all filtered events

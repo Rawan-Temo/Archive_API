@@ -21,7 +21,7 @@ const getAllParties = async (req, res) => {
     const [parties, numberOfActiveParties] = await Promise.all([
       features.query, // Get the filtered and paginated parties
       Party.countDocuments(parsedQuery), // Count the filtered active parties
-    ]);
+    ]); 
 
     res.status(200).json({
       status: "success",

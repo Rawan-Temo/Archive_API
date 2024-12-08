@@ -23,3 +23,4 @@ partySchema.index(
 const Party = mongoose.model("Party", partySchema);
 
 module.exports = Party;
+ 

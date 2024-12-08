@@ -22,6 +22,11 @@ const eventRouter = require("./routes/details/eventRouter.js");
 const partyRouter = require("./routes/details/partyRouter.js");
 
 //DETAILS ROUTES
+//INFORMATION ROUTES
+
+const personRouter = require("./routes/information/personRouter.js");
+
+//INFORMATION ROUTES
 
 // Import and initialize database connection
 const connection = require("./db.js");
@@ -54,6 +59,13 @@ app.use("/api/Events", eventRouter);
 app.use("/api/Parties", partyRouter);
 
 //DETAILS
+
+//IFORMATION
+
+app.use("/api/people", personRouter);
+
+//IFORMATION
+
 // API Routes Ends
 // 404 Handler
 app.use((req, res, next) => {
