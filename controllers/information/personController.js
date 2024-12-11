@@ -30,7 +30,6 @@ const allPeople = async (req, res) => {
       features.query,
       Person.countDocuments(parsedQuery),
     ]);
-
     res.status(200).json({
       status: "success",
       results: people.length,
