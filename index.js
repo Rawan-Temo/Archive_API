@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const helmet = require("helmet"); // For security enhancements
 const app = express();
 const port = process.env.PORT || 8000;
+const path = require("path");
 
 // Import routers
 //ADDRESS ROUTES
@@ -38,7 +39,7 @@ app.use(express.json()); // Built-in JSON parser
 app.use(cors());
 app.use(morgan("tiny"));
 app.use(helmet()); // Security middleware
-
+app.use(express.static(path.join(__dirname, "public")));
 // API Routes
 
 //ADDRESS

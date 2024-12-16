@@ -1,6 +1,7 @@
 const Person = require("../../models/information/person");
 const APIFeatures = require("../../utils/apiFeatures");
-
+const multer = require("multer");
+const path = require("path");
 // Get all people
 const allPeople = async (req, res) => {
   try {
@@ -16,7 +17,11 @@ const allPeople = async (req, res) => {
         .populate("parties")
         .populate("sources"),
       req.query
-    );
+    )
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];
@@ -92,12 +97,17 @@ const getPersonById = async (req, res) => {
 // Update a person by ID
 const updatePerson = async (req, res) => {
   try {
+    // If a file is uploaded, add the file path to the `image` field
+    if (req.file) {
+      req.body.image = `/images/profileImages/${req.file.filename}`;
+    }
+
     const updatedPerson = await Person.findByIdAndUpdate(
       req.params.id,
       req.body,
       {
-        new: true,
-        runValidators: true,
+        new: true, // Return the updated document
+        runValidators: true, // Enforce schema validators
       }
     );
 
@@ -142,10 +152,12 @@ const deactivatePerson = async (req, res) => {
     });
   }
 };
-const allJobs = async(req,res)=>{
+const allJobs = async (req, res) => {
   try {
     // Fetch distinct occupations
-    const jobs = await Person.distinct("occupation", { occupation: { $ne: null } });
+    const jobs = await Person.distinct("occupation", {
+      occupation: { $ne: null },
+    });
 
     res.status(200).json({
       status: "success",
@@ -158,12 +170,50 @@ const allJobs = async(req,res)=>{
       message: "Error retrieving distinct jobs",
     });
   }
-}
+};
+
+// Multer storage configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../../public/images/profileImages")); // Save files to the desired folder
+  },
+  filename: function (req, file, cb) {
+    // Generate a unique file name with timestamp
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(
+      null,
+      `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`
+    );
+  },
+});
+
+// Multer file filter for validating image uploads
+const fileFilter = (req, file, cb) => {
+  const allowedFileTypes = /jpeg|jpg|png/;
+  const mimeType = allowedFileTypes.test(file.mimetype);
+  const extName = allowedFileTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+
+  if (mimeType && extName) {
+    return cb(null, true);
+  }
+  cb(new Error("Only .jpeg, .jpg, and .png file formats are allowed!"));
+};
+
+// Multer instance
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 5MB
+  fileFilter: fileFilter,
+});
+
 module.exports = {
   allPeople,
   createPerson,
   getPersonById,
   updatePerson,
   deactivatePerson,
-  allJobs
+  allJobs,
+  upload,
 };

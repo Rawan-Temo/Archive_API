@@ -5,6 +5,7 @@ pnp.js
 /coverage
 
 /build
+/public
 
 
 .DS_Store

@@ -47,6 +47,9 @@ const personSchema = new mongoose.Schema(
       type: String,
       enum: ["Male", "Female"],
     },
+    image: {
+      type: String,
+    },
     cityId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "City",
