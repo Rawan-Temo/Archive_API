@@ -14,14 +14,22 @@ const getAllCities = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Step 3: Use APIFeatures for advanced queries (filter, sort, limitFields, paginate)
-    const features = new APIFeatures(City.find().populate('government'), req.query)
+    const features = new APIFeatures(
+      City.find().populate({
+        path: "government",
+        populate: {
+          path: "country", // Populates the `country` field inside `government`
+        },
+      }),
+      req.query
+    )
       .filter()
       .sort()
       .limitFields()
       .paginate();
 
     // Step 4: Execute both the paginated query and the total count of active records
-    const [cities, numberOfActiveCities] = await Promise.all([ 
+    const [cities, numberOfActiveCities] = await Promise.all([
       features.query, // Paginated, filtered, and sorted data
       City.countDocuments(parsedQuery), // Total count of filtered records
     ]);
