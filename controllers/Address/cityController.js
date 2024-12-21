@@ -14,7 +14,7 @@ const getAllCities = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Step 3: Use APIFeatures for advanced queries (filter, sort, limitFields, paginate)
-    const features = new APIFeatures(City.find(), req.query)
+    const features = new APIFeatures(City.find().populate('government'), req.query)
       .filter()
       .sort()
       .limitFields()

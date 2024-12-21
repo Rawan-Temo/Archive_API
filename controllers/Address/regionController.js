@@ -12,7 +12,7 @@ const getAllRegions = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Region.find(), req.query)
+    const features = new APIFeatures(Region.find().populate('city'), req.query)
       .filter()
       .sort()
       .limitFields()
