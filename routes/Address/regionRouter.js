@@ -1,7 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const regionController = require("../../controllers/Address/regionController");
-
+const { deActivateMany } = require("../../utils/deActivateMany");
+const Region = require("../../models/Address/region");
+//
+router.route("/deActivate-many").patch(async (req, res) => {
+  await deActivateMany(Region, req, res);
+}); // PATCH /api/v1/sources/deActivate-many/:id
 // Route for fetching all regions and creating a new region
 router
   .route("/")

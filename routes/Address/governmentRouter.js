@@ -1,7 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const governmentController = require("../../controllers/Address/governmentController");
-
+const { deActivateMany } = require("../../utils/deActivateMany");
+const Government = require("../../models/Address/government");
+//
+router.route("/deActivate-many").patch(async (req, res) => {
+  await deActivateMany(Government, req, res);
+}); // PATCH /api/v1/sources/deActivate-many/:id
 // Route for fetching all governments and creating a new one
 router.route("/search").get(governmentController.search);
 router.route("/autocomplete").get(governmentController.autocomplete);

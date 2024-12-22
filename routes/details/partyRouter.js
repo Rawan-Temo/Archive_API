@@ -1,7 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const partyController = require("../../controllers/details/partyController");
-
+const Party = require("../../models/details/party");
+const { deActivateMany } = require("../../utils/deActivateMany");
+//
+router.route("/deActivate-many").patch(async (req, res) => {
+  await deActivateMany(Party, req, res);
+}); // PATCH /api/v1/sources/deActivate-many/:id
 // Route for fetching all parties, creating a new party
 router
   .route("/")

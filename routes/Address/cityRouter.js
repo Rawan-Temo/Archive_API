@@ -1,7 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const cityController = require("../../controllers/Address/cityController");
-
+const { deActivateMany } = require("../../utils/deActivateMany");
+const City = require("../../models/Address/city");
+//
+router.route("/deActivate-many").patch(async (req, res) => {
+  await deActivateMany(City, req, res);
+}); // PATCH /api/v1/sources/deActivate-many/:id
 // Route for fetching all cities and creating a new one
 router
   .route("/")

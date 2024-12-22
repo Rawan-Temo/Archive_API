@@ -1,7 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const personController = require("../../controllers/information/personController");
-
+const { deActivateMany } = require("../../utils/deActivateMany");
+const Person = require("../../models/information/person");
+//
+router.route("/deActivate-many").patch(async (req, res) => {
+  await deActivateMany(Person, req, res);
+}); // PATCH /api/v1/sources/deActivate-many/:id
 // Routes for getting all people and creating a new person
 router.route("/Jobs").get(personController.allJobs); // Get all people
 router

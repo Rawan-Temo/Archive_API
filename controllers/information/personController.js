@@ -12,10 +12,7 @@ const allPeople = async (req, res) => {
         .populate("governmentId")
         .populate("regionId")
         .populate("streetId")
-        .populate("villageId")
-        .populate("events")
-        .populate("parties")
-        .populate("sources"),
+        .populate("villageId"),
       req.query
     )
       .filter()

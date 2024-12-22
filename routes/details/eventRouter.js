@@ -1,7 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const eventController = require("../../controllers/details/eventController");
-
+const Event = require("../../models/details/event");
+const { deActivateMany } = require("../../utils/deActivateMany");
+//
+router.route("/deActivate-many").patch(async (req, res) => {
+  await deActivateMany(Event, req, res);
+}); // PATCH /api/v1/sources/deActivate-many/:id
 // Route for fetching all events and creating a new event
 router
   .route("/")

@@ -1,8 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const sourceController = require("../../controllers/details/sourceController");
+const { deActivateMany } = require("../../utils/deActivateMany");
+const Source = require("../../models/details/source");
+
+router.route("/deActivate-many").patch(async (req, res) => {
+  await deActivateMany(Source, req, res);
+}); // PATCH /api/v1/sources/deActivate-many/:id
 
 // Route for fetching all sources and creating a new source
+
 router
   .route("/")
   .get(sourceController.getAllSources) // GET /api/v1/sources
