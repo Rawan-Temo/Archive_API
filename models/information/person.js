@@ -32,19 +32,23 @@ const personSchema = new mongoose.Schema(
     },
     birthDate: {
       type: Date,
+      required: true,
     },
     placeOfBirth: {
       type: String,
     },
     maritalStatus: {
       type: String,
+      required: true,
       enum: ["Married", "Single", "Other"],
     },
     occupation: {
       type: String,
+      required: true,
     },
     gender: {
       type: String,
+      required: true,
       enum: ["Male", "Female"],
     },
     image: {
@@ -53,14 +57,17 @@ const personSchema = new mongoose.Schema(
     cityId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "City",
+      required: true,
     },
     countryId: {
       type: mongoose.Schema.Types.ObjectId,
+      required: true,
       ref: "Country",
     },
     governmentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Government",
+      required: true,
     },
     regionId: {
       type: mongoose.Schema.Types.ObjectId,
