@@ -28,6 +28,11 @@ const partyRouter = require("./routes/details/partyRouter.js");
 const personRouter = require("./routes/information/personRouter.js");
 
 //INFORMATION ROUTES
+//MEDIA ROUTES
+const imageRouter = require("./routes/media/imageRouter.js");
+
+
+//MEDIA ROUTES
 
 // Import and initialize database connection
 const connection = require("./db.js");
@@ -66,6 +71,13 @@ app.use("/api/Parties", partyRouter);
 app.use("/api/people", personRouter);
 
 //IFORMATION
+
+
+//MEDIA
+app.use("/api/media/images", imageRouter);
+
+//MEDIA
+
 
 // API Routes Ends
 // 404 Handler
