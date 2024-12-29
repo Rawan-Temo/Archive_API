@@ -21,7 +21,6 @@ countrySchema.index(
 );
 
 
-
 const Country = mongoose.model("Country", countrySchema);
 
 module.exports = Country;

@@ -3,7 +3,21 @@ const router = express.Router();
 const regionController = require("../../controllers/Address/regionController");
 const { deActivateMany } = require("../../utils/deActivateMany");
 const Region = require("../../models/Address/region");
+
+const { autocomplete, search } = require("../../utils/serach");
 //
+
+//SEARCH
+
+router.route("/search").get(async (req, res) => {
+  await search(Region,["name"],"city",  req, res);
+});
+router.route("/autoComplete").get(async (req, res) => {
+  await autocomplete(Region, ["name"], req, res);
+});
+//SEARCH
+//
+
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Region, req, res);
 }); // PATCH /api/v1/sources/deActivate-many/:id

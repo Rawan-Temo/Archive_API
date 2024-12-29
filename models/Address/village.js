@@ -19,7 +19,7 @@ const villageSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  } 
+  }
 );
 
 villageSchema.index(

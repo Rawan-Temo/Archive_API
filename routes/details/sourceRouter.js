@@ -3,7 +3,17 @@ const router = express.Router();
 const sourceController = require("../../controllers/details/sourceController");
 const { deActivateMany } = require("../../utils/deActivateMany");
 const Source = require("../../models/details/source");
+const { search, autocomplete } = require("../../utils/serach");
+//SEARCH
 
+router.route("/search").get(async (req, res) => {
+  await search(Source, ["source_name"], "", req, res);
+});
+router.route("/autoComplete").get(async (req, res) => {
+  await autocomplete(Source, ["source_name"], req, res);
+});
+
+//
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Source, req, res);
 }); // PATCH /api/v1/sources/deActivate-many/:id

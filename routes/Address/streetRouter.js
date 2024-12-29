@@ -3,6 +3,19 @@ const router = express.Router();
 const streetController = require("../../controllers/Address/streetController");
 const { deActivateMany } = require("../../utils/deActivateMany");
 const Street = require("../../models/Address/street");
+const { autocomplete, search } = require("../../utils/serach");
+//
+
+//SEARCH
+
+router.route("/search").get(async (req, res) => {
+  await search(Street,["name"],"city",  req, res);
+});
+router.route("/autoComplete").get(async (req, res) => {
+  await autocomplete(Street, ["name"], req, res);
+});
+
+
 //
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Street, req, res);

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const mongooseFuzzySearching = require("mongoose-fuzzy-searching");
 
 const governmentSchema = new mongoose.Schema(
   {
@@ -27,7 +26,6 @@ governmentSchema.index(
   { name: 1 },
   { unique: true, partialFilterExpression: { active: true } }
 );
-governmentSchema.plugin(mongooseFuzzySearching, { fields: ["name"] });
 
 const Government = mongoose.model("Government", governmentSchema);
 

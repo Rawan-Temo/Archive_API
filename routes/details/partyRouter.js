@@ -3,6 +3,17 @@ const router = express.Router();
 const partyController = require("../../controllers/details/partyController");
 const Party = require("../../models/details/party");
 const { deActivateMany } = require("../../utils/deActivateMany");
+const { search, autocomplete } = require("../../utils/serach");
+//SEARCH
+
+router.route("/search").get(async (req, res) => {
+  await search(Party, ["name"],"", req, res);
+});
+router.route("/autoComplete").get(async (req, res) => {
+  await autocomplete(Party, ["name"], req, res);
+});
+
+
 //
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Party, req, res);

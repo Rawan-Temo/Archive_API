@@ -174,7 +174,7 @@ const updateImage = async (req, res) => {
 
     // Determine the new image path (if any)
     const newImagePath = req.files[0]
-      ? `/images/${req.files[0].filename}` // New image path
+      ? `/images/other/${req.files[0].filename}` // New image path
       : existingImage.src; // If no new image, keep the old one
 
     // If an old image exists and a new one is uploaded, delete the old one

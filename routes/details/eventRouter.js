@@ -3,6 +3,16 @@ const router = express.Router();
 const eventController = require("../../controllers/details/eventController");
 const Event = require("../../models/details/event");
 const { deActivateMany } = require("../../utils/deActivateMany");
+const { search, autocomplete } = require("../../utils/serach");
+//SEARCH
+
+router.route("/search").get(async (req, res) => {
+  await search(Event, ["name"],"", req, res);
+});
+router.route("/autoComplete").get(async (req, res) => {
+  await autocomplete(Event, ["name"], req, res);
+});
+
 //
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Event, req, res);
