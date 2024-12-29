@@ -6,10 +6,10 @@ const Government = require("../../models/Address/government");
 const { search, autocomplete } = require("../../utils/serach");
 //SEARCH
 
-router.route("/search").get(async (req, res) => {
+router.route("/search").post(async (req, res) => {
   await search(Government, ["name"], "country", req, res);
 });
-router.route("/autoComplete").get(async (req, res) => {
+router.route("/autoComplete").post(async (req, res) => {
   await autocomplete(Government, ["name"], req, res);
 });
 //SEARCH

@@ -54,6 +54,11 @@ const personSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    sectionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Section",
+      required: true,
+    },
     cityId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "City",

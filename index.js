@@ -21,6 +21,7 @@ const villageRouter = require("./routes/Address/villageRouter.js");
 const sourceRouter = require("./routes/details/sourceRouter.js");
 const eventRouter = require("./routes/details/eventRouter.js");
 const partyRouter = require("./routes/details/partyRouter.js");
+const sectionRouter = require("./routes/details/sectionRouter.js");
 
 //DETAILS ROUTES
 //INFORMATION ROUTES
@@ -30,7 +31,6 @@ const personRouter = require("./routes/information/personRouter.js");
 //INFORMATION ROUTES
 //MEDIA ROUTES
 const imageRouter = require("./routes/media/imageRouter.js");
-
 
 //MEDIA ROUTES
 
@@ -63,6 +63,7 @@ app.use("/api/Villages", villageRouter);
 app.use("/api/Sources", sourceRouter);
 app.use("/api/Events", eventRouter);
 app.use("/api/Parties", partyRouter);
+app.use("/api/Sections", sectionRouter);
 
 //DETAILS
 
@@ -72,12 +73,10 @@ app.use("/api/people", personRouter);
 
 //IFORMATION
 
-
 //MEDIA
 app.use("/api/media/images", imageRouter);
 
 //MEDIA
-
 
 // API Routes Ends
 // 404 Handler
