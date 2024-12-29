@@ -31,6 +31,9 @@ const personRouter = require("./routes/information/personRouter.js");
 //INFORMATION ROUTES
 //MEDIA ROUTES
 const imageRouter = require("./routes/media/imageRouter.js");
+const videoRouter = require("./routes/media/videoRouter.js");
+const audioRouter = require("./routes/media/audioRouter.js");
+const documentRouter = require("./routes/media/documentRouter.js");
 
 //MEDIA ROUTES
 
@@ -75,6 +78,9 @@ app.use("/api/people", personRouter);
 
 //MEDIA
 app.use("/api/media/images", imageRouter);
+app.use("/api/media/videos", videoRouter);
+app.use("/api/media/audios", audioRouter);
+app.use("/api/media/documents", documentRouter);
 
 //MEDIA
 
