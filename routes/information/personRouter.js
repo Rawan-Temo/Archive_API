@@ -7,7 +7,21 @@ const { search, autocomplete } = require("../../utils/serach");
 //SEARCH
 
 router.route("/search").post(async (req, res) => {
-  await search(Person, ["firstName", "surName", "fatherName"],"cityId countryId governmentId regionId streetId villageId", req, res);
+  await search(
+    Person,
+    ["firstName", "surName", "fatherName"],
+    [
+      { path: "sectionId", select: "name" },
+      { path: "cityId", select: "name" },
+      { path: "countryId", select: "name" },
+      { path: "governmentId", select: "name" },
+      { path: "regionId", select: "name" },
+      { path: "streetId", select: "name" },
+      { path: "villageId", select: "name" },
+    ],
+    req,
+    res
+  );
 });
 router.route("/autoComplete").post(async (req, res) => {
   await autocomplete(Person, ["firstName", "surName", "fatherName"], req, res);

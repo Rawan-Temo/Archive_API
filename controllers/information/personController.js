@@ -6,13 +6,16 @@ const path = require("path");
 const allPeople = async (req, res) => {
   try {
     const features = new APIFeatures(
-      Person.find()
-        .populate("cityId")
-        .populate("countryId")
-        .populate("governmentId")
-        .populate("regionId")
-        .populate("streetId")
-        .populate("villageId"),
+      Person.find().populate([
+        { path: "sectionId", select: "name" },
+        { path: "cityId", select: "name" },
+        { path: "countryId", select: "name" },
+        { path: "governmentId", select: "name" },
+        { path: "regionId", select: "name" },
+        { path: "streetId", select: "name" },
+        { path: "villageId", select: "name" },
+        { path: "sources", select: "source_name" },
+      ]),
       req.query
     )
       .filter()
@@ -70,10 +73,7 @@ const getPersonById = async (req, res) => {
       .populate("governmentId")
       .populate("regionId")
       .populate("streetId")
-      .populate("villageId")
-      .populate("events")
-      .populate("parties")
-      .populate("sources");
+      .populate("villageId");
 
     if (!person) {
       return res.status(404).json({ message: "Person not found" });

@@ -89,24 +89,10 @@ const personSchema = new mongoose.Schema(
     addressDetails: {
       type: String, // Optional field for additional address details
     },
-    events: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Event",
-      },
-    ],
-    parties: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Party",
-      },
-    ],
-    sources: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Source",
-      },
-    ],
+    sources: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Source",
+    },
 
     active: {
       type: Boolean,

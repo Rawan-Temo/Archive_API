@@ -27,6 +27,7 @@ const sectionRouter = require("./routes/details/sectionRouter.js");
 //INFORMATION ROUTES
 
 const personRouter = require("./routes/information/personRouter.js");
+const securityInformationRouter = require("./routes/information/securityInformationRouter.js");
 
 //INFORMATION ROUTES
 //MEDIA ROUTES
@@ -45,7 +46,9 @@ connection();
 
 app.use(express.json()); // Built-in JSON parser
 app.use(cors());
-app.use(morgan("tiny"));
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
 app.use(helmet()); // Security middleware
 app.use(express.static(path.join(__dirname, "public")));
 // API Routes
@@ -72,7 +75,8 @@ app.use("/api/Sections", sectionRouter);
 
 //IFORMATION
 
-app.use("/api/people", personRouter);
+app.use("/api/People", personRouter);
+app.use("/api/Information", securityInformationRouter);
 
 //IFORMATION
 
