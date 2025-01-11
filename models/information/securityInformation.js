@@ -10,7 +10,7 @@ const SecurityInformationSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    detiles: {
+    details: {
       type: String,
       required: true,
     },
