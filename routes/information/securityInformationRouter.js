@@ -21,7 +21,7 @@ router.route("/search").post(async (req, res) => {
       { path: "events", select: "name" }, // Only include specific fields
       { path: "parties", select: "name" },
       { path: "sources", select: "source_name" },
-      { path: "people", select: "firstName lastName" },
+      { path: "people", select: "firstName surName" },
     ],
     req,
     res
