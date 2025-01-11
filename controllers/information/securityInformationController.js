@@ -21,7 +21,7 @@ const allInformation = async (req, res) => {
         { path: "parties", select: "name" },
         { path: "sources", select: "source_name" },
 
-        { path: "people", select: "firstName lastName" },
+        { path: "people", select: "firstName surName" },
       ]),
       req.query
     )
