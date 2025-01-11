@@ -68,12 +68,16 @@ const createPerson = async (req, res) => {
 const getPersonById = async (req, res) => {
   try {
     const person = await Person.findById(req.params.id)
-      .populate("cityId")
-      .populate("countryId")
-      .populate("governmentId")
-      .populate("regionId")
-      .populate("streetId")
-      .populate("villageId");
+    .populate([
+      { path: "sectionId", select: "name" },
+      { path: "cityId", select: "name" },
+      { path: "countryId", select: "name" },
+      { path: "governmentId", select: "name" },
+      { path: "regionId", select: "name" },
+      { path: "streetId", select: "name" },
+      { path: "villageId", select: "name" },
+      { path: "sources", select: "source_name" },
+    ])
 
     if (!person) {
       return res.status(404).json({ message: "Person not found" });

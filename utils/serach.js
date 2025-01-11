@@ -12,7 +12,6 @@ const search = async (model, fields, populate, req, res) => {
       });
     }
 
-    console.log("Search Query:", query);
 
     // Perform fuzzy search with dynamic fields
     const tokens = query.split(/\s+/).map((word) => new RegExp(word, "i")); // Split the query into tokens
@@ -27,10 +26,7 @@ const search = async (model, fields, populate, req, res) => {
       populateObject = eval(`(${populate})`);
     } catch (err) {
       // If evaluation fails, fallback to the string as it is
-      console.log(
-        "Populate string couldn't be evaluated, using as is:",
-        populate
-      );
+      
     }
 
     console.log(populateObject);

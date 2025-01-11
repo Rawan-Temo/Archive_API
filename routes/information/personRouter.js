@@ -17,7 +17,7 @@ router.route("/search").post(async (req, res) => {
       { path: "governmentId", select: "name" },
       { path: "regionId", select: "name" },
       { path: "streetId", select: "name" },
-      { path: "villageId", select: "name" },
+      { path: "villageId", select: "name" },{ path: "sources", select: "source_name" },
     ],
     req,
     res
