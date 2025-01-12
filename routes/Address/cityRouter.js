@@ -9,13 +9,7 @@ const { autocomplete, search } = require("../../utils/serach");
 //SEARCH
 
 router.route("/search").post(async (req, res) => {
-  await search(
-    City,
-    ["name"],
-    '{path: "government",populate: {path: "country", },}',
-    req,
-    res
-  );
+  await search(City, ["name"], "country", req, res);
 });
 router.route("/autoComplete").post(async (req, res) => {
   await autocomplete(City, ["name"], req, res);

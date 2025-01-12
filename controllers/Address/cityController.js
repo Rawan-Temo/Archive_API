@@ -14,15 +14,7 @@ const getAllCities = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Step 3: Use APIFeatures for advanced queries (filter, sort, limitFields, paginate)
-    const features = new APIFeatures(
-      City.find().populate({
-        path: "government",
-        populate: {
-          path: "country", // Populates the `country` field inside `government`
-        },
-      }),
-      req.query
-    )
+    const features = new APIFeatures(City.find().populate("country"), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -60,7 +52,7 @@ const createCity = async (req, res) => {
 
 const getCityById = async (req, res) => {
   try {
-    const city = await City.findById(req.params.id);
+    const city = await City.findById(req.params.id).populate("country");
     if (!city) {
       return res.status(404).json({ message: "No city found with that ID" });
     }
