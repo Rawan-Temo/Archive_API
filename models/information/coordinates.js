@@ -10,6 +10,38 @@ const coordinatesSchema = new mongoose.Schema(
     note: {
       type: String,
     },
+    sectionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Section",
+      required: true,
+    },
+    cityId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "City",
+      required: true,
+    },
+    countryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Country",
+    },
+    governmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Government",
+      required: true,
+    },
+    regionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Region",
+    },
+    streetId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Street",
+    },
+    villageId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Village",
+    },
     active: {
       type: Boolean,
       default: true,
