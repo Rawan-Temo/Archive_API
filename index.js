@@ -27,7 +27,7 @@ const sectionRouter = require("./routes/details/sectionRouter.js");
 //INFORMATION ROUTES
 
 const personRouter = require("./routes/information/personRouter.js");
-const securityInformationRouter = require("./routes/information/securityInformationRouter.js");
+const informationRouter = require("./routes/information/informationRouter.js");
 
 //INFORMATION ROUTES
 //MEDIA ROUTES
@@ -76,7 +76,8 @@ app.use("/api/Sections", sectionRouter);
 //IFORMATION
 
 app.use("/api/People", personRouter);
-app.use("/api/Information", securityInformationRouter);
+app.use("/api/Information", informationRouter);
+app.use("/api/Coordinates", coordianteRouter);
 
 //IFORMATION
 

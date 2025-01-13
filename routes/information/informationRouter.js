@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const securityInformationController = require("../../controllers/information/securityInformationController");
+const InformationController = require("../../controllers/information/informationController");
 const { deActivateMany } = require("../../utils/deActivateMany");
 const { search, autocomplete } = require("../../utils/serach");
-const SecurityInformation = require("../../models/information/securityInformation");
+const Information = require("../../models/information/information");
 //SEARCH
 
 router.route("/search").post(async (req, res) => {
   await search(
-    SecurityInformation,
+    Information,
     ["subject"],
     [
       { path: "sectionId", select: "name" }, // Only include `name` from Section
@@ -28,30 +28,30 @@ router.route("/search").post(async (req, res) => {
   );
 });
 router.route("/autoComplete").post(async (req, res) => {
-  await autocomplete(SecurityInformation, ["subject"], req, res);
+  await autocomplete(Information, ["subject"], req, res);
 });
 
 //
 
 router.route("/deActivate-many").patch(async (req, res) => {
-  await deActivateMany(SecurityInformation, req, res);
+  await deActivateMany(Information, req, res);
 }); // PATCH /api/Information/deActivate-many/:id
 
 // Routes for getting all information and creating a new person
 router
   .route("/")
-  .get(securityInformationController.allInformation) // Get all information
-  .post(securityInformationController.createInformation); // Create a new Information
+  .get(InformationController.allInformation) // Get all information
+  .post(InformationController.createInformation); // Create a new Information
 
 // Routes for specific Information by ID
 router
   .route("/:id")
-  .get(securityInformationController.getInformationById) // Get a Information by ID
-  .patch(securityInformationController.updateInformation); // Update a Information by ID
+  .get(InformationController.getInformationById) // Get a Information by ID
+  .patch(InformationController.updateInformation); // Update a Information by ID
 
 // Route for deactivating a Information
 router
   .route("/deActivate/:id")
-  .patch(securityInformationController.deactivateInformation);
+  .patch(InformationController.deactivateInformation);
 
 module.exports = router;

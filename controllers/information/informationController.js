@@ -1,4 +1,4 @@
-const SecurityInformation = require("../../models/information/securityInformation");
+const Information = require("../../models/information/information");
 const Audio = require("../../models/media/audio");
 const Document = require("../../models/media/document");
 const Image = require("../../models/media/image");
@@ -9,7 +9,7 @@ const APIFeatures = require("../../utils/apiFeatures");
 const allInformation = async (req, res) => {
   try {
     const features = new APIFeatures(
-      SecurityInformation.find().populate([
+      Information.find().populate([
         { path: "sectionId", select: "name" }, // Only include `name` from Section
         { path: "cityId", select: "name" },
         { path: "countryId", select: "name" },
@@ -40,7 +40,7 @@ const allInformation = async (req, res) => {
 
     const [informations, numberOfActiveInformations] = await Promise.all([
       features.query,
-      SecurityInformation.countDocuments(parsedQuery),
+      Information.countDocuments(parsedQuery),
     ]);
     res.status(200).json({
       status: "success",
@@ -58,7 +58,7 @@ const allInformation = async (req, res) => {
 // Create a new information
 const createInformation = async (req, res) => {
   try {
-    const newInformation = await SecurityInformation.create(req.body);
+    const newInformation = await Information.create(req.body);
     res.status(201).json({
       status: "success",
       data: newInformation,
@@ -75,9 +75,7 @@ const createInformation = async (req, res) => {
 const getInformationById = async (req, res) => {
   try {
     // Fetch the main information document by ID
-    const information = await SecurityInformation.findById(
-      req.params.id
-    ).populate([
+    const information = await Information.findById(req.params.id).populate([
       { path: "sectionId", select: "name" }, // Only include `name` from Section
       { path: "cityId", select: "name" },
       { path: "countryId", select: "name" },
@@ -130,7 +128,7 @@ const getInformationById = async (req, res) => {
 // Update an information by ID
 const updateInformation = async (req, res) => {
   try {
-    const updatedInformation = await SecurityInformation.findByIdAndUpdate(
+    const updatedInformation = await Information.findByIdAndUpdate(
       req.params.id,
       req.body,
       {
@@ -158,7 +156,7 @@ const updateInformation = async (req, res) => {
 // Deactivate an information by ID
 const deactivateInformation = async (req, res) => {
   try {
-    const deactivatedInformation = await SecurityInformation.findByIdAndUpdate(
+    const deactivatedInformation = await Information.findByIdAndUpdate(
       req.params.id,
       { active: false },
       { new: true, runValidators: true }
