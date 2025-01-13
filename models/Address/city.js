@@ -7,10 +7,10 @@ const citySchema = new mongoose.Schema(
       required: [true, "A city must have a name"],
       trim: true,
     },
-    government: {
+    country: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Government",
-      required: [true, "A city must belong to a Government"],
+      ref: "Country",
+      required: [true, "A city must belong to a Country"],
     },
     active: {
       type: Boolean,
