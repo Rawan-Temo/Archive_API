@@ -42,6 +42,11 @@ const coordinatesSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Village",
     },
+    source: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Source",
+      required: true,
+    },
     active: {
       type: Boolean,
       default: true,
@@ -51,10 +56,15 @@ const coordinatesSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
 coordinatesSchema.index(
   { coordinates: 1 },
   { unique: true, partialFilterExpression: { active: true } }
 );
+coordinatesSchema.pre("save", function (next) {
+  this.coordinates = this.coordinates.replace(/\s+/g, "");
+  next();
+});
 
 const Coordinates = mongoose.model("Coordinates", coordinatesSchema);
 
