@@ -73,7 +73,7 @@ const SecurityInformationSchema = new mongoose.Schema(
         ref: "Person",
       },
     ],
-    Coordinates: [
+    coordinates: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Coordinates",

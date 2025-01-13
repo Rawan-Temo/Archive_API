@@ -20,7 +20,7 @@ const allInformation = async (req, res) => {
         { path: "events", select: "name" }, // Only include specific fields
         { path: "parties", select: "name" },
         { path: "sources", select: "source_name" },
-
+        { path: "coordinates", select: "coordinates note" },
         { path: "people", select: "firstName surName" },
       ]),
       req.query
@@ -74,19 +74,19 @@ const createInformation = async (req, res) => {
 // Get an information by ID
 const getInformationById = async (req, res) => {
   try {
-    // Fetch the main information document by ID
+    // Fetch the main information document by ID with populated fields
     const information = await Information.findById(req.params.id).populate([
-      { path: "sectionId", select: "name" }, // Only include `name` from Section
+      { path: "sectionId", select: "name" },
       { path: "cityId", select: "name" },
       { path: "countryId", select: "name" },
       { path: "governmentId", select: "name" },
       { path: "regionId", select: "name" },
       { path: "streetId", select: "name" },
       { path: "villageId", select: "name" },
-      { path: "events", select: "name" }, // Only include specific fields
+      { path: "events", select: "name" },
       { path: "parties", select: "name" },
       { path: "sources", select: "source_name" },
-
+      { path: "coordinates", select: "coordinates note" },
       { path: "people", select: "firstName lastName" },
     ]);
 
@@ -95,12 +95,13 @@ const getInformationById = async (req, res) => {
     }
 
     // Fetch related media for the information
-    const [images, videos, documents, audios] = await Promise.all([
-      Image.find({ informationId: information._id }), // Fetch related images
-      Video.find({ informationId: information._id }), // Fetch related videos
-      Document.find({ informationId: information._id }), // Fetch related documents
-      Audio.find({ informationId: information._id }), // Fetch related audios
-    ]);
+    const mediaTypes = [Image, Video, Document, Audio];
+    const mediaPromises = mediaTypes.map((Model) =>
+      Model.find({ informationId: information._id })
+    );
+    const [images, videos, documents, audios] = await Promise.all(
+      mediaPromises
+    );
 
     // Add media to the information object
     const informationWithMedia = {
@@ -124,7 +125,6 @@ const getInformationById = async (req, res) => {
     });
   }
 };
-
 // Update an information by ID
 const updateInformation = async (req, res) => {
   try {

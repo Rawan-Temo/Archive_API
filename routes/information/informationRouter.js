@@ -22,6 +22,7 @@ router.route("/search").post(async (req, res) => {
       { path: "parties", select: "name" },
       { path: "sources", select: "source_name" },
       { path: "people", select: "firstName surName" },
+      { path: "coordinates", select: "coordinates note" },
     ],
     req,
     res
