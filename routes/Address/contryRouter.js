@@ -16,7 +16,7 @@ router.route("/autoComplete").post(async (req, res) => {
 //
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Country, req, res);
-}); // PATCH /api/v1/sources/deActivate-many/:id
+}); // PATCH /api/sources/deActivate-many/:id
 router
   .route("/")
   .get(countryController.getAllCountries)

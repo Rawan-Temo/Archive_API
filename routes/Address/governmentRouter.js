@@ -16,18 +16,18 @@ router.route("/autoComplete").post(async (req, res) => {
 //
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Government, req, res);
-}); // PATCH /api/v1/sources/deActivate-many/:id
+}); // PATCH /api/sources/deActivate-many/:id
 // Route for fetching all governments and creating a new one
 router
   .route("/")
-  .get(governmentController.getAllGovernments) // GET /api/v1/governments
-  .post(governmentController.createGovernment); // POST /api/v1/governments
+  .get(governmentController.getAllGovernments) // GET /api/governments
+  .post(governmentController.createGovernment); // POST /api/governments
 
 // Route for fetching, updating, and deleting a specific government
 router
   .route("/:id")
-  .get(governmentController.getGovernmentById) // GET /api/v1/governments/:id
-  .patch(governmentController.updateGovernment); // PATCH /api/v1/governments/:id
+  .get(governmentController.getGovernmentById) // GET /api/governments/:id
+  .patch(governmentController.updateGovernment); // PATCH /api/governments/:id
 router
   .route("/deActivate/:id")
   .patch(governmentController.deactivateGovernment);

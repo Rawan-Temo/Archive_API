@@ -6,39 +6,9 @@ const helmet = require("helmet"); // For security enhancements
 const app = express();
 const port = process.env.PORT || 8000;
 const path = require("path");
-
-// Import routers
-//ADDRESS ROUTES
-const countryRouter = require("./routes/Address/contryRouter.js");
-const governmentRouter = require("./routes/Address/governmentRouter.js");
-const cityRouter = require("./routes/Address/cityRouter.js");
-const streetRouter = require("./routes/Address/streetRouter.js");
-const regionRouter = require("./routes/Address/regionRouter.js");
-const villageRouter = require("./routes/Address/villageRouter.js");
-//ADDRESS ROUTES
-//DETAILS ROUTES
-
-const sourceRouter = require("./routes/details/sourceRouter.js");
-const eventRouter = require("./routes/details/eventRouter.js");
-const partyRouter = require("./routes/details/partyRouter.js");
-const sectionRouter = require("./routes/details/sectionRouter.js");
-
-//DETAILS ROUTES
-//INFORMATION ROUTES
-
-const personRouter = require("./routes/information/personRouter.js");
-const informationRouter = require("./routes/information/informationRouter.js");
-const coordinatesRouter = require("./routes/information/coordinatesRouter.js");
-
-//INFORMATION ROUTES
-//MEDIA ROUTES
-const imageRouter = require("./routes/media/imageRouter.js");
-const videoRouter = require("./routes/media/videoRouter.js");
-const audioRouter = require("./routes/media/audioRouter.js");
-const documentRouter = require("./routes/media/documentRouter.js");
-
-//MEDIA ROUTES
-
+const rateLimit = require("express-rate-limit");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 // Import and initialize database connection
 const connection = require("./db.js");
 connection();
@@ -52,44 +22,50 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(helmet()); // Security middleware
 app.use(express.static(path.join(__dirname, "public")));
+
+// Rate limiting to prevent abuse
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  message: "Too many requests, please try again later.",
+});
+app.use("/api", apiLimiter);
+// Data sanitization against NoSQL injection
+app.use(mongoSanitize());
+// Data sanitization against XSS attacks
+app.use(xss());
+
 // API Routes
 
-//ADDRESS
+// Dynamically import routers
+const routers = {
+  "/api/Countries": "./routes/Address/contryRouter.js",
+  "/api/Governments": "./routes/Address/governmentRouter.js",
+  "/api/Cities": "./routes/Address/cityRouter.js",
+  "/api/Streets": "./routes/Address/streetRouter.js",
+  "/api/Regions": "./routes/Address/regionRouter.js",
+  "/api/Villages": "./routes/Address/villageRouter.js",
+  "/api/Sources": "./routes/details/sourceRouter.js",
+  "/api/Events": "./routes/details/eventRouter.js",
+  "/api/Parties": "./routes/details/partyRouter.js",
+  "/api/Sections": "./routes/details/sectionRouter.js",
+  "/api/People": "./routes/information/personRouter.js",
+  "/api/Information": "./routes/information/informationRouter.js",
+  "/api/Coordinates": "./routes/information/coordinatesRouter.js",
+  "/api/media/images": "./routes/media/imageRouter.js",
+  "/api/media/videos": "./routes/media/videoRouter.js",
+  "/api/media/audios": "./routes/media/audioRouter.js",
+  "/api/media/documents": "./routes/media/documentRouter.js",
+  "/api/Users": "./routes/login/userRouter.js",
+};
 
-app.use("/api/Countries", countryRouter);
-app.use("/api/Governments", governmentRouter);
-app.use("/api/Cities", cityRouter);
-app.use("/api/Streets", streetRouter);
-app.use("/api/Regions", regionRouter);
-app.use("/api/Villages", villageRouter);
-
-//ADDRESS
-
-//DETAILS
-
-app.use("/api/Sources", sourceRouter);
-app.use("/api/Events", eventRouter);
-app.use("/api/Parties", partyRouter);
-app.use("/api/Sections", sectionRouter);
-
-//DETAILS
-
-//IFORMATION
-
-app.use("/api/People", personRouter);
-app.use("/api/Information", informationRouter);
-app.use("/api/Coordinates", coordinatesRouter);
-
-//IFORMATION
-
-//MEDIA
-app.use("/api/media/images", imageRouter);
-app.use("/api/media/videos", videoRouter);
-app.use("/api/media/audios", audioRouter);
-app.use("/api/media/documents", documentRouter);
-
-//MEDIA
-
+for (const [route, routerPath] of Object.entries(routers)) {
+  try {
+    app.use(route, require(routerPath));
+  } catch (err) {
+    console.error(`Failed to load router at ${routerPath}: ${err.message}`);
+  }
+}
 // API Routes Ends
 // 404 Handler
 app.use((req, res, next) => {
