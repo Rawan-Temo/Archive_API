@@ -34,5 +34,17 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+userSchema.pre('findOneAndUpdate', async function(next) {
+  const update = this.getUpdate();
+  if (update.role === 'user' && !update.sectionId) {
+    const user = await this.model.findOne(this.getQuery());
+    if (user.role === 'admin') {
+      throw new Error('A sectionId is required when updating an admin to a user.');
+    }
+  }
+  next();
+});
+
 const User = mongoose.model("User", userSchema);
 module.exports = User;

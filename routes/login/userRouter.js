@@ -20,9 +20,6 @@ router.route("/autoComplete").post(async (req, res) => {
 router.route("/login").post(userController.login); ///api/users/login
 router.route("/profile").get(userController.userProfile);
 
-router.route("/deActivate-many").patch(async (req, res) => {
-  await deActivateMany(User, req, res);
-}); // PATCH /api/sources/deActivate-many/:id
 
 router.route("/").get(userController.allUsers).post(userController.createUser);
 
@@ -30,5 +27,5 @@ router
   .route("/:id")
   .get(userController.userById)
   .patch(userController.updateUser);
-router.route("deActivate").patch(userController.deactivateUser);
+router.route("/deActivate").patch(userController.deactivateUser);
 module.exports = router;
