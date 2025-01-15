@@ -16,18 +16,18 @@ router.route("/autoComplete").post(async (req, res) => {
 //
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Event, req, res);
-}); // PATCH /api/v1/sources/deActivate-many/:id
+}); // PATCH /api/sources/deActivate-many/:id
 // Route for fetching all events and creating a new event
 router
   .route("/")
-  .get(eventController.getAllEvents) // GET /api/v1/events
-  .post(eventController.createEvent); // POST /api/v1/events
+  .get(eventController.getAllEvents) // GET /api/events
+  .post(eventController.createEvent); // POST /api/events
 
 // Route for fetching, updating, and deactivating a specific event by ID
 router
   .route("/:id")
-  .get(eventController.getEventById) // GET /api/v1/events/:id
-  .patch(eventController.updateEvent); // PATCH /api/v1/events/:id
+  .get(eventController.getEventById) // GET /api/events/:id
+  .patch(eventController.updateEvent); // PATCH /api/events/:id
 
-router.route("/deActivate/:id").patch(eventController.deactivateEvent); // DELETE /api/v1/events/:id
+router.route("/deActivate/:id").patch(eventController.deactivateEvent); // DELETE /api/events/:id
 module.exports = router;

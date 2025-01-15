@@ -20,20 +20,20 @@ router.route("/autoComplete").post(async (req, res) => {
 
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Region, req, res);
-}); // PATCH /api/v1/sources/deActivate-many/:id
+}); // PATCH /api/sources/deActivate-many/:id
 // Route for fetching all regions and creating a new region
 router
   .route("/")
-  .get(regionController.getAllRegions) // GET /api/v1/regions
-  .post(regionController.createRegion); // POST /api/v1/regions
+  .get(regionController.getAllRegions) // GET /api/regions
+  .post(regionController.createRegion); // POST /api/regions
 
 // Route for fetching, updating, and deleting a specific region
 router
   .route("/:id")
-  .get(regionController.getRegionById) // GET /api/v1/regions/:id
-  .patch(regionController.updateRegion); // PATCH /api/v1/regions/:id
+  .get(regionController.getRegionById) // GET /api/regions/:id
+  .patch(regionController.updateRegion); // PATCH /api/regions/:id
 
 // Route for deactivating a region (also removes it from the city's regions array)
-router.route("/deActivate/:id").patch(regionController.deactivateRegion); // PATCH /api/v1/regions/deactivate/:id
+router.route("/deActivate/:id").patch(regionController.deactivateRegion); // PATCH /api/regions/deactivate/:id
 
 module.exports = router;

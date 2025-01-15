@@ -16,20 +16,20 @@ router.route("/autoComplete").post(async (req, res) => {
 //
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Village, req, res);
-}); // PATCH /api/v1/sources/deActivate-many/:id
+}); // PATCH /api/sources/deActivate-many/:id
 // Route for fetching all villages and creating a new village
 router
   .route("/")
-  .get(villageController.getAllVillages) // GET /api/v1/villages
-  .post(villageController.createVillage); // POST /api/v1/villages
+  .get(villageController.getAllVillages) // GET /api/villages
+  .post(villageController.createVillage); // POST /api/villages
 
 // Route for fetching, updating, and deleting a specific village
 router
   .route("/:id")
-  .get(villageController.getVillageById) // GET /api/v1/villages/:id
-  .patch(villageController.updateVillage); // PATCH /api/v1/villages/:id
+  .get(villageController.getVillageById) // GET /api/villages/:id
+  .patch(villageController.updateVillage); // PATCH /api/villages/:id
 
 // Route for deactivating a village (also removes it from the region's villages array)
-router.route("/deActivate/:id").patch(villageController.deactivateVillage); // PATCH /api/v1/villages/deactivate/:id
+router.route("/deActivate/:id").patch(villageController.deactivateVillage); // PATCH /api/villages/deactivate/:id
 
 module.exports = router;

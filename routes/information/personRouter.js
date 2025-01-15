@@ -31,7 +31,7 @@ router.route("/autoComplete").post(async (req, res) => {
 
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Person, req, res);
-}); // PATCH /api/v1/sources/deActivate-many/:id
+}); // PATCH /api/sources/deActivate-many/:id
 // Routes for getting all people and creating a new person
 router.route("/Jobs").get(personController.allJobs); // Get all people
 router

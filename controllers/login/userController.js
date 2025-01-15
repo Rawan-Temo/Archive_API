@@ -2,7 +2,6 @@ const APIFeatures = require("../../utils/apiFeatures");
 const User = require("../../models/login/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const allUsers = async (req, res) => {
   try {
     const features = new APIFeatures(

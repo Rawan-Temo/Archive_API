@@ -17,20 +17,20 @@ router.route("/autoComplete").post(async (req, res) => {
 //
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Party, req, res);
-}); // PATCH /api/v1/sources/deActivate-many/:id
+}); // PATCH /api/sources/deActivate-many/:id
 // Route for fetching all parties, creating a new party
 router
   .route("/")
-  .get(partyController.getAllParties) // GET /api/v1/parties
-  .post(partyController.createParty); // POST /api/v1/parties
+  .get(partyController.getAllParties) // GET /api/parties
+  .post(partyController.createParty); // POST /api/parties
 
 // Route for fetching, updating, and deleting a specific party
 router
   .route("/:id")
-  .get(partyController.getPartyById) // GET /api/v1/parties/:id
-  .patch(partyController.updateParty); // PATCH /api/v1/parties/:id
+  .get(partyController.getPartyById) // GET /api/parties/:id
+  .patch(partyController.updateParty); // PATCH /api/parties/:id
 
 // Route for deactivating a party (setting active to false)
-router.route("/deActivate/:id").patch(partyController.deactivateParty); // PATCH /api/v1/parties/deactivate/:id
+router.route("/deActivate/:id").patch(partyController.deactivateParty); // PATCH /api/parties/deactivate/:id
 
 module.exports = router;

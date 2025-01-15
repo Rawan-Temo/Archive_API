@@ -32,7 +32,7 @@ router.route("/autoComplete").post(async (req, res) => {
 
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Coordinate, req, res);
-}); // PATCH /api/v1/sources/deActivate-many/:id
+}); // PATCH /api/sources/deActivate-many/:id
 // Routes for getting all Coordinates and creating a new Coordinates
 router
   .route("/")
