@@ -1,5 +1,4 @@
 const Street = require("../../models/Address/street");
-const City = require("../../models/Address/city");
 const APIFeatures = require("../../utils/apiFeatures");
 
 // Create a new street
@@ -28,7 +27,7 @@ const getAllStreets = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Street.find().populate('city'), req.query)
+    const features = new APIFeatures(Street.find().populate("city"), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -91,7 +90,7 @@ const updateStreet = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
- 
+
 // Deactivate a street
 const deactivateStreet = async (req, res) => {
   try {

@@ -9,12 +9,11 @@ const { autocomplete, search } = require("../../utils/serach");
 //SEARCH
 
 router.route("/search").post(async (req, res) => {
-  await search(Street,["name"],"city",  req, res);
+  await search(Street, ["name"], "city", req, res);
 });
 router.route("/autoComplete").post(async (req, res) => {
   await autocomplete(Street, ["name"], req, res);
 });
-
 
 //
 router.route("/deActivate-many").patch(async (req, res) => {
@@ -32,7 +31,6 @@ router
   .get(streetController.getStreetById) // GET /api/streets/:id
   .patch(streetController.updateStreet); // PATCH /api/streets/:id
 
-// Route for deactivating a specific street and removing it from the city's street array
 router.route("/deActivate/:id").patch(streetController.deactivateStreet); // PATCH /api/streets/deactivate/:id
 
 module.exports = router;
