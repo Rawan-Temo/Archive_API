@@ -142,7 +142,7 @@ const getAllCountriesWithDetails = async (req, res) => {
         // Fetch cities and governments associated with the country
         const [cities, governments] = await Promise.all([
           City.find({ country: country._id }).select("name"), // Fetch cities by countryId
-          Government.findOne({ country: country._id }).select("name"), // Fetch government by countryId
+          Government.find({ country: country._id }).select("name"), // Fetch government by countryId
         ]);
 
         // For each city, fetch streets, villages, and regions
