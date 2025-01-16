@@ -1,3 +1,8 @@
+const City = require("../../models/Address/city");
+const Government = require("../../models/Address/government");
+const Street = require("../../models/Address/street");
+const Village = require("../../models/Address/village");
+const Region = require("../../models/Address/region");
 const Country = require("../../models/Address/country");
 const APIFeatures = require("../../utils/apiFeatures");
 // Create a new country
@@ -107,10 +112,83 @@ const deActivateCountry = async (req, res) => {
   }
 };
 
+const getAllCountriesWithDetails = async (req, res) => {
+  try {
+    // Parse query for filtering
+    const queryObj = { ...req.query };
+    const excludedFields = ["page", "sort", "limit", "fields", "month"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const parsedQuery = JSON.parse(queryStr);
+
+    // Apply filtering, sorting, limiting fields, and pagination
+    const features = new APIFeatures(Country.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    // Fetch countries
+    const [countries, numberOfActiveCountries] = await Promise.all([
+      features.query, // Fetch paginated countries
+      Country.countDocuments(parsedQuery), // Count filtered documents
+    ]);
+
+    // For each country, dynamically fetch cities and government data
+    const countryTree = await Promise.all(
+      countries.map(async (country) => {
+        // Fetch cities and governments associated with the country
+        const [cities, governments] = await Promise.all([
+          City.find({ country: country._id }).select("name"), // Fetch cities by countryId
+          Government.findOne({ country: country._id }).select("name"), // Fetch government by countryId
+        ]);
+
+        // For each city, fetch streets, villages, and regions
+        const citiesWithDetails = await Promise.all(
+          cities.map(async (city) => {
+            const [streets, villages, regions] = await Promise.all([
+              Street.find({ city: city._id }).select("name"), // Fetch streets by cityId
+              Village.find({ city: city._id }).select("name"), // Fetch villages by cityId
+              Region.find({ city: city._id }).select("name"), // Fetch regions by cityId
+            ]);
+
+            return {
+              id: city._id,
+              name: city.name,
+              streets,
+              villages,
+              regions,
+            };
+          })
+        );
+
+        return {
+          id: country._id,
+          name: country.name,
+          governments, // Add government details
+          cities: citiesWithDetails, // Add cities with nested details
+        };
+      })
+    );
+
+    res.status(200).json({
+      status: "success",
+      results: countries.length,
+      numberOfActiveCountries,
+      data: countryTree,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllCountries,
   createCountry,
   getCountryByName,
   updateCountry,
   deActivateCountry,
+  getAllCountriesWithDetails,
 };

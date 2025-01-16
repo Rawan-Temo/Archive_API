@@ -7,7 +7,7 @@ const { search, autocomplete } = require("../../utils/serach");
 //SEARCH
 
 router.route("/search").post(async (req, res) => {
-  await search(Country,["name"], "", req, res);
+  await search(Country, ["name"], "", req, res);
 });
 router.route("/autoComplete").post(async (req, res) => {
   await autocomplete(Country, ["name"], req, res);
@@ -17,6 +17,7 @@ router.route("/autoComplete").post(async (req, res) => {
 router.route("/deActivate-many").patch(async (req, res) => {
   await deActivateMany(Country, req, res);
 }); // PATCH /api/sources/deActivate-many/:id
+router.route("/country-tree").get(countryController.getAllCountriesWithDetails);
 router
   .route("/")
   .get(countryController.getAllCountries)

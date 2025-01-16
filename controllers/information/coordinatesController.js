@@ -21,7 +21,7 @@ const allCoordinates = async (req, res) => {
         { path: "regionId", select: "name" },
         { path: "streetId", select: "name" },
         { path: "villageId", select: "name" },
-        { path: "source", select: "source_name" },
+        { path: "sources", select: "source_name" },
       ]),
       req.query
     )

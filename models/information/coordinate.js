@@ -42,7 +42,7 @@ const coordinatesSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Village",
     },
-    source: {
+    sources: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Source",
       required: true,
