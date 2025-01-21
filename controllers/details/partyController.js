@@ -81,7 +81,6 @@ const updateParty = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-
 // Deactivate a party (set active to false)
 const deactivateParty = async (req, res) => {
   try {
