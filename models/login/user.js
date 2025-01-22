@@ -29,18 +29,24 @@ const userSchema = new mongoose.Schema(
         return this.role === "user"; // Use function() instead of arrow function
       },
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-userSchema.pre('findOneAndUpdate', async function(next) {
+userSchema.pre("findOneAndUpdate", async function (next) {
   const update = this.getUpdate();
-  if (update.role === 'user' && !update.sectionId) {
+  if (update.role === "user" && !update.sectionId) {
     const user = await this.model.findOne(this.getQuery());
-    if (user.role === 'admin') {
-      throw new Error('A sectionId is required when updating an admin to a user.');
+    if (user.role === "admin") {
+      throw new Error(
+        "A sectionId is required when updating an admin to a user."
+      );
     }
   }
   next();
