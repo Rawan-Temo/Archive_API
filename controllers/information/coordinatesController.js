@@ -69,7 +69,16 @@ const addCoordinates = async (req, res) => {
 // Get coordinates by ID
 const getCoordinatesById = async (req, res) => {
   try {
-    const coordinates = await Coordinate.findById(req.params.id);
+    const coordinates = await Coordinate.findById(req.params.id).populate([
+      { path: "sectionId", select: "name" },
+      { path: "cityId", select: "name" },
+      { path: "countryId", select: "name" },
+      { path: "governmentId", select: "name" },
+      { path: "regionId", select: "name" },
+      { path: "streetId", select: "name" },
+      { path: "villageId", select: "name" },
+      { path: "sources", select: "source_name" },
+    ]);
 
     if (!coordinates) {
       return res.status(404).json({ message: "Coordinates not found" });
