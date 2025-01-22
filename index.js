@@ -21,8 +21,12 @@ app.use(cors());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-app.use(helmet()); // Security middleware
 app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Disable CSP temporarily
+  })
+); // Security middleware
 
 // Rate limiting to prevent abuse
 const apiLimiter = rateLimit({
