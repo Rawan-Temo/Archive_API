@@ -16,9 +16,6 @@ router.route("/profile").get(userController.userProfile);
 
 router.route("/").get(userController.allUsers).post(userController.createUser);
 
-router
-  .route("/:id")
-  .get(userController.userById)
-  .patch(userController.updateUser);
+router.route("/:id").get(userController.userById);
 router.route("/deActivate/:id").patch(userController.deactivateUser);
 module.exports = router;

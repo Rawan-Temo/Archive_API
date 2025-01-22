@@ -107,10 +107,22 @@ const getInformationById = async (req, res) => {
     const informationWithMedia = {
       ...information.toObject(),
       media: {
-        images: images.map((image) => image.src),
-        videos: videos.map((video) => video.src),
-        documents: documents.map((doc) => doc.src),
-        audios: audios.map((audio) => audio.src),
+        images: images.map((image) => ({
+          _id: image._id,
+          src: image.src,
+        })),
+        videos: videos.map((video) => ({
+          _id: video._id,
+          src: video.src,
+        })),
+        documents: documents.map((doc) => ({
+          _id: doc._id,
+          src: doc.src,
+        })),
+        audios: audios.map((audio) => ({
+          _id: audio._id,
+          src: audio.src,
+        })),
       },
     };
 
