@@ -58,10 +58,10 @@ const documentStorage = multer.diskStorage({
 
 const documentFileFilter = (req, file, cb) => {
   const validMimeTypes = [
-    "application/pdf", 
-    "application/msword", 
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
-    "application/zip", 
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/zip",
     "application/x-rar-compressed",
   ]; // Specify allowed document types
   if (validMimeTypes.includes(file.mimetype)) {
@@ -121,14 +121,16 @@ const handleDocuments = async (req, res) => {
 // Delete documents
 const deleteDocuments = async (req, res) => {
   try {
-    const { documentIds } = req.body; // Assuming you pass an array of document IDs to delete
+    const { ids } = req.body; // Assuming you pass an array of document IDs to delete
 
-    if (!documentIds || documentIds.length === 0) {
-      return res.status(400).json({ error: "No document IDs provided for deletion" });
+    if (!ids || ids.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "No document IDs provided for deletion" });
     }
 
     // Find documents by their IDs
-    const documentsToDelete = await Document.find({ _id: { $in: documentIds } });
+    const documentsToDelete = await Document.find({ _id: { $in: ids } });
 
     if (documentsToDelete.length === 0) {
       return res.status(404).json({ error: "No documents found to delete" });
@@ -136,17 +138,24 @@ const deleteDocuments = async (req, res) => {
 
     // Delete each document file from the file system
     for (const document of documentsToDelete) {
-      const documentPath = path.join(__dirname, "..", "..", "public", document.src); // Path to the document file
+      const documentPath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "public",
+        document.src
+      ); // Path to the document file
       if (fs.existsSync(documentPath)) {
         fs.unlinkSync(documentPath); // Delete the document file from the server
       }
     }
 
     // Delete the documents from the database
-    await Document.deleteMany({ _id: { $in: documentIds } });
+    await Document.deleteMany({ _id: { $in: ids } });
 
     res.status(200).json({
-      message: "Documents deleted successfully from both database and file system.",
+      message:
+        "Documents deleted successfully from both database and file system.",
     });
   } catch (error) {
     console.error(error);

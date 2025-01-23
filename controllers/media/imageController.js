@@ -121,16 +121,16 @@ const handleImages = async (req, res) => {
 //delete images
 const deleteImages = async (req, res) => {
   try {
-    const { imageIds } = req.body; // Assuming you pass an array of image IDs to delete
+    const { ids } = req.body; // Assuming you pass an array of image IDs to delete
 
-    if (!imageIds || imageIds.length === 0) {
+    if (!ids || ids.length === 0) {
       return res
         .status(400)
         .json({ error: "No image IDs provided for deletion" });
     }
 
     // Find images by their IDs
-    const imagesToDelete = await Image.find({ _id: { $in: imageIds } });
+    const imagesToDelete = await Image.find({ _id: { $in: ids } });
 
     if (imagesToDelete.length === 0) {
       return res.status(404).json({ error: "No images found to delete" });
@@ -146,7 +146,7 @@ const deleteImages = async (req, res) => {
     }
 
     // Delete the images from the database
-    await Image.deleteMany({ _id: { $in: imageIds } });
+    await Image.deleteMany({ _id: { $in: ids } });
 
     res.status(200).json({
       message:

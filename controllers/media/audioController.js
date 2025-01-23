@@ -121,14 +121,14 @@ const handleAudios = async (req, res) => {
 // Delete audios
 const deleteAudios = async (req, res) => {
   try {
-    const { audioIds } = req.body; // Assuming you pass an array of audio IDs to delete
+    const { ids } = req.body; // Assuming you pass an array of audio IDs to delete
 
-    if (!audioIds || audioIds.length === 0) {
+    if (!ids || ids.length === 0) {
       return res.status(400).json({ error: "No audio IDs provided for deletion" });
     }
 
     // Find audios by their IDs
-    const audiosToDelete = await Audio.find({ _id: { $in: audioIds } });
+    const audiosToDelete = await Audio.find({ _id: { $in: ids } });
 
     if (audiosToDelete.length === 0) {
       return res.status(404).json({ error: "No audios found to delete" });
@@ -143,7 +143,7 @@ const deleteAudios = async (req, res) => {
     }
 
     // Delete the audios from the database
-    await Audio.deleteMany({ _id: { $in: audioIds } });
+    await Audio.deleteMany({ _id: { $in: ids } });
 
     res.status(200).json({
       message: "Audios deleted successfully from both database and file system.",

@@ -115,14 +115,16 @@ const handleVideos = async (req, res) => {
 // Delete videos
 const deleteVideos = async (req, res) => {
   try {
-    const { videoIds } = req.body; // Assuming you pass an array of video IDs to delete
+    const { ids } = req.body; // Assuming you pass an array of video IDs to delete
 
-    if (!videoIds || videoIds.length === 0) {
-      return res.status(400).json({ error: "No video IDs provided for deletion" });
+    if (!ids || ids.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "No video IDs provided for deletion" });
     }
 
     // Find videos by their IDs
-    const videosToDelete = await Video.find({ _id: { $in: videoIds } });
+    const videosToDelete = await Video.find({ _id: { $in: ids } });
 
     if (videosToDelete.length === 0) {
       return res.status(404).json({ error: "No videos found to delete" });
@@ -137,10 +139,11 @@ const deleteVideos = async (req, res) => {
     }
 
     // Delete the videos from the database
-    await Video.deleteMany({ _id: { $in: videoIds } });
+    await Video.deleteMany({ _id: { $in: ids } });
 
     res.status(200).json({
-      message: "Videos deleted successfully from both database and file system.",
+      message:
+        "Videos deleted successfully from both database and file system.",
     });
   } catch (error) {
     console.error(error);
