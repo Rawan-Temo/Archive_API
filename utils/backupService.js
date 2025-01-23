@@ -1,10 +1,9 @@
 const fs = require("fs");
 const path = require("path");
-const archiver = require("archiver");
 const { exec } = require("child_process");
 const util = require("util");
 const { MongoClient } = require("mongodb");
-const unzipper = require("unzipper"); // This requires the 'unzipper' package
+const Seven = require("node-7z"); // Use 'node-7z' package for 7z compression
 
 // Promisify exec for async/await
 const execAsync = util.promisify(exec);
@@ -15,6 +14,7 @@ const dbName = "test"; // Replace with your database name
 
 // Paths
 const publicFolderPath = path.join(__dirname, "../public");
+const unzipFolderPath = path.join(__dirname, "../");
 const backupsFolderPath = path.join(__dirname, "../backups");
 
 // Ensure backups folder exists
@@ -32,7 +32,7 @@ const BackupService = {
         `backup-${timestamp}`
       );
       const dbBackupPath = path.join(backupFolderPath, "db-backup"); // MongoDB JSON backup folder
-      const publicZipPath = path.join(backupFolderPath, "public.zip"); // Public folder zip file
+      const public7zPath = path.join(backupFolderPath, "public.7z"); // Public folder 7z file
 
       console.log("Starting backup process...");
 
@@ -56,11 +56,15 @@ const BackupService = {
 
       console.log("MongoDB data exported as JSON.");
 
-      // Step 3: Zip the public folder
-      console.log("Zipping public folder...");
-      await zipFolder(publicFolderPath, publicZipPath);
-      console.log("Public folder zipped.");
+      // Step 3: 7z the public folder
 
+      if (fs.existsSync(publicFolderPath)) {
+        console.log("Compressed public folder...");
+        await sevenZipFolder(publicFolderPath, public7zPath);
+        console.log("Public folder compressed.");
+      } else {
+        console.warn("Public folder not found.");
+      }
       return {
         success: true,
         message: `Backup created successfully at ${backupFolderPath}`,
@@ -81,7 +85,7 @@ const BackupService = {
       console.log("Starting restoration process...");
 
       const dbBackupPath = path.join(backupFolderPath, "db-backup");
-      const publicZipPath = path.join(backupFolderPath, "public.zip");
+      const public7zPath = path.join(backupFolderPath, "public.7z");
 
       // Step 1: Restore MongoDB
       console.log("Restoring MongoDB...");
@@ -108,13 +112,13 @@ const BackupService = {
       }
       console.log("MongoDB restored.");
 
-      // Step 2: Unzip and replace the public folder
+      // Step 2: Un7z and replace the public folder
       console.log("Replacing public folder...");
-      if (fs.existsSync(publicZipPath)) {
-        await unzipFolder(publicZipPath, publicFolderPath);
+      if (fs.existsSync(public7zPath)) {
+        await sevenUnzipFolder(public7zPath, unzipFolderPath);
         console.log("Public folder restored.");
       } else {
-        console.warn("Public folder zip not found in backup.");
+        console.warn("Public folder 7z not found in backup.");
       }
 
       return { success: true, message: "Restoration completed successfully." };
@@ -138,27 +142,25 @@ const getCollections = async () => {
   }
 };
 
-// Helper function to zip a folder
-const zipFolder = (sourceFolder, zipFilePath) => {
+// Helper function to 7z a folder
+const sevenZipFolder = (sourceFolder, sevenZipFilePath) => {
   return new Promise((resolve, reject) => {
-    const output = fs.createWriteStream(zipFilePath);
-    const archive = archiver("zip", { zlib: { level: 9 } });
-
-    output.on("close", resolve);
+    const archive = Seven.add(sevenZipFilePath, path.join(sourceFolder, "*"), {
+      baseFolder: sourceFolder,
+    });
+    archive.on("end", resolve);
     archive.on("error", reject);
-
-    archive.pipe(output);
-    archive.directory(sourceFolder, false);
-    archive.finalize();
   });
 };
-
-// Helper function to unzip a folder
-const unzipFolder = (zipFilePath, destinationFolder) => {
-  return fs
-    .createReadStream(zipFilePath)
-    .pipe(unzipper.Extract({ path: destinationFolder }))
-    .promise();
+// Helper function to un7z a folder
+const sevenUnzipFolder = (sevenZipFilePath, destinationFolder) => {
+  return new Promise((resolve, reject) => {
+    const archive = Seven.extractFull(sevenZipFilePath, destinationFolder, {
+      $cherryPick: "*",
+    });
+    archive.on("end", resolve);
+    archive.on("error", reject);
+  });
 };
 
 module.exports = BackupService;

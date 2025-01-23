@@ -15,6 +15,17 @@ const BackupController = {
     if (!backupFolderPath) {
       return res.status(400).json({ error: "Backup folder path is required" });
     }
+    try {
+      console.log("Starting backup...");
+      const result = await BackupService.createBackup();
+      if (result.success) {
+        console.log(result.message);
+      } else {
+        console.error(result.message, result.error);
+      }
+    } catch (err) {
+      console.error("Error during backup:", err);
+    }
 
     const result = await BackupService.restoreBackup(backupFolderPath);
     if (result.success) {
