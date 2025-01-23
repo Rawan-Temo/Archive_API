@@ -12,6 +12,8 @@ const xss = require("xss-clean");
 // Import and initialize database connection
 const connection = require("./db.js");
 connection();
+// Initialize task scheduler
+require("./utils/taskScheduler");
 
 // Middleware
 
@@ -63,6 +65,7 @@ const routers = {
   "/api/media/audios": "./routes/media/audioRouter.js",
   "/api/media/documents": "./routes/media/documentRouter.js",
   "/api/Users": "./routes/login/userRouter.js",
+  "/api/backup": "./routes/backUp/backupRouter.js",
 };
 
 for (const [route, routerPath] of Object.entries(routers)) {
