@@ -7,7 +7,7 @@ router
   .route("/")
   .get(videoController.allVideos)
   .post(videoController.uploadVideos, videoController.handleVideos)
-  .delete(videoController.deleteVideos);
+  .patch(videoController.deleteVideos);
 router
   .route("/:id")
   .patch(videoController.uploadVideos, videoController.updateVideo);

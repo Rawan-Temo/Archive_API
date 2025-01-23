@@ -7,7 +7,7 @@ router
   .route("/")
   .get(imageController.allImages)
   .post(imageController.uploadImages, imageController.handleImages)
-  .delete(imageController.deleteImages);
+  .patch(imageController.deleteImages);
 router
   .route("/:id")
   .patch(imageController.uploadImages, imageController.updateImage);

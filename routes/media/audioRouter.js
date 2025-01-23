@@ -7,7 +7,7 @@ router
   .route("/")
   .get(audioController.allAudios)
   .post(audioController.uploadAudios, audioController.handleAudios)
-  .delete(audioController.deleteAudios);
+  .patch(audioController.deleteAudios);
 router
   .route("/:id")
   .patch(audioController.uploadAudios, audioController.updateAudio);

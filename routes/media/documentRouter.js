@@ -7,7 +7,7 @@ router
   .route("/")
   .get(documentController.allDocuments)
   .post(documentController.uploadDocuments, documentController.handleDocuments)
-  .delete(documentController.deleteDocuments);
+  .patch(documentController.deleteDocuments);
 router
   .route("/:id")
   .patch(documentController.uploadDocuments, documentController.updateDocument);
