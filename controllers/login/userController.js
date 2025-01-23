@@ -40,7 +40,7 @@ const allUsers = async (req, res) => {
 };
 const userById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).populate("sectionId");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -129,7 +129,6 @@ const deactivateUser = async (req, res) => {
     res.status(200).json({
       status: "success",
       message: "User deactivated successfully",
-      data: deactivatedUser,
     });
   } catch (error) {
     res.status(500).json({
@@ -152,7 +151,7 @@ const login = async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
-    if (!user) {
+    if (!user || user.active === false) {
       return res
         .status(400)
         .json({ message: "Invalid username/email or password" });

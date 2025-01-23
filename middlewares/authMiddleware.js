@@ -18,13 +18,17 @@ const authenticateToken = async (req, res, next) => {
 };
 
 const isAdmin = async (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
+  if (req.user && req.user.role === "admin" && req.user.active === true) {
     return next();
   }
   res.status(403).json({ message: "Access denied." });
 };
 const isUser = async (req, res, next) => {
-  if (req.user && (req.user.role === "user" || req.user.role === "admin")) {
+  if (
+    req.user &&
+    (req.user.role === "user" || req.user.role === "admin") &&
+    req.user.active === true
+  ) {
     return next();
   }
   res.status(403).json({ message: "Access denied." });

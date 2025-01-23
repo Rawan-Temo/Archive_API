@@ -16,6 +16,7 @@ connection();
 // Middleware
 
 app.use(express.json()); // Built-in JSON parser
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
