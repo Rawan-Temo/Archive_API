@@ -3,32 +3,37 @@ const router = express.Router();
 const governmentController = require("../../controllers/Address/governmentController");
 const { deActivateMany } = require("../../utils/deActivateMany");
 const Government = require("../../models/Address/government");
+const {
+  authenticateToken,
+  isAdmin,
+  isUser,
+} = require("../../middlewares/authMiddleware");
 const { search, autocomplete } = require("../../utils/serach");
 //SEARCH
 
-router.route("/search").post(async (req, res) => {
+router.route("/search").post(  authenticateToken,async (req, res) => {
   await search(Government, ["name"], "country", req, res);
 });
-router.route("/autoComplete").post(async (req, res) => {
+router.route("/autoComplete").post(  authenticateToken,async (req, res) => {
   await autocomplete(Government, ["name"], req, res);
 });
 //SEARCH
 //
-router.route("/deActivate-many").patch(async (req, res) => {
+router.route("/deActivate-many").patch(  authenticateToken,async (req, res) => {
   await deActivateMany(Government, req, res);
 }); // PATCH /api/sources/deActivate-many/:id
 // Route for fetching all governments and creating a new one
 router
   .route("/")
-  .get(governmentController.getAllGovernments) // GET /api/governments
-  .post(governmentController.createGovernment); // POST /api/governments
+  .get(  authenticateToken,governmentController.getAllGovernments) // GET /api/governments
+  .post(  authenticateToken,governmentController.createGovernment); // POST /api/governments
 
 // Route for fetching, updating, and deleting a specific government
 router
   .route("/:id")
-  .get(governmentController.getGovernmentById) // GET /api/governments/:id
-  .patch(governmentController.updateGovernment); // PATCH /api/governments/:id
+  .get(  authenticateToken,governmentController.getGovernmentById) // GET /api/governments/:id
+  .patch(  authenticateToken,governmentController.updateGovernment); // PATCH /api/governments/:id
 router
   .route("/deActivate/:id")
-  .patch(governmentController.deactivateGovernment);
+  .patch(  authenticateToken,governmentController.deactivateGovernment);
 module.exports = router;

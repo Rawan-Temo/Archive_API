@@ -1,16 +1,28 @@
 const express = require("express");
 const router = express.Router();
 const videoController = require("../../controllers/media/videoController");
-
+const {
+  authenticateToken,
+  isAdmin,
+  isUser,
+} = require("../../middlewares/authMiddleware");
 //Media
 router
   .route("/")
-  .get(videoController.allVideos)
-  .post(videoController.uploadVideos, videoController.handleVideos)
-  .patch(videoController.deleteVideos);
+  .get(authenticateToken, videoController.allVideos)
+  .post(
+    authenticateToken,
+    videoController.uploadVideos,
+    videoController.handleVideos
+  )
+  .patch(authenticateToken, videoController.deleteVideos);
 router
   .route("/:id")
-  .patch(videoController.uploadVideos, videoController.updateVideo);
+  .patch(
+    authenticateToken,
+    videoController.uploadVideos,
+    videoController.updateVideo
+  );
 
 //Media
 module.exports = router;

@@ -4,9 +4,14 @@ const personController = require("../../controllers/information/personController
 const { deActivateMany } = require("../../utils/deActivateMany");
 const Person = require("../../models/information/person");
 const { search, autocomplete } = require("../../utils/serach");
+const {
+  authenticateToken,
+  isAdmin,
+  isUser,
+} = require("../../middlewares/authMiddleware");
 //SEARCH
 
-router.route("/search").post(async (req, res) => {
+router.route("/search").post(authenticateToken, async (req, res) => {
   await search(
     Person,
     ["firstName", "surName", "fatherName"],
@@ -17,38 +22,46 @@ router.route("/search").post(async (req, res) => {
       { path: "governmentId", select: "name" },
       { path: "regionId", select: "name" },
       { path: "streetId", select: "name" },
-      { path: "villageId", select: "name" },{ path: "sources", select: "source_name" },
+      { path: "villageId", select: "name" },
+      { path: "sources", select: "source_name" },
     ],
     req,
     res
   );
 });
-router.route("/autoComplete").post(async (req, res) => {
+router.route("/autoComplete").post(authenticateToken, async (req, res) => {
   await autocomplete(Person, ["firstName", "surName", "fatherName"], req, res);
 });
 
 //
 
-router.route("/deActivate-many").patch(async (req, res) => {
+router.route("/deActivate-many").patch(authenticateToken, async (req, res) => {
   await deActivateMany(Person, req, res);
 }); // PATCH /api/sources/deActivate-many/:id
 // Routes for getting all people and creating a new person
-router.route("/Jobs").get(personController.allJobs); // Get all people
+router.route("/Jobs").get(authenticateToken, personController.allJobs); // Get all people
 router
   .route("/")
-  .get(personController.allPeople) // Get all people
-  .post(personController.upload.single("image"), personController.createPerson); // Create a new person
+  .get(authenticateToken, personController.allPeople) // Get all people
+  .post(
+    authenticateToken,
+    personController.upload.single("image"),
+    personController.createPerson
+  ); // Create a new person
 
 // Routes for specific person by ID
 router
   .route("/:id")
-  .get(personController.getPersonById) // Get a person by ID
+  .get(authenticateToken, personController.getPersonById) // Get a person by ID
   .patch(
+    authenticateToken,
     personController.upload.single("image"),
     personController.updatePerson
   ); // Update a person by ID
 
 // Route for deactivating a person
-router.route("/deActivate/:id").patch(personController.deactivatePerson);
+router
+  .route("/deActivate/:id")
+  .patch(authenticateToken, personController.deactivatePerson);
 
 module.exports = router;

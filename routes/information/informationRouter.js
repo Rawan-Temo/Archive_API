@@ -4,9 +4,14 @@ const InformationController = require("../../controllers/information/information
 const { deActivateMany } = require("../../utils/deActivateMany");
 const { search, autocomplete } = require("../../utils/serach");
 const Information = require("../../models/information/information");
+const {
+  authenticateToken,
+  isAdmin,
+  isUser,
+} = require("../../middlewares/authMiddleware");
 //SEARCH
 
-router.route("/search").post(async (req, res) => {
+router.route("/search").post(authenticateToken, async (req, res) => {
   await search(
     Information,
     ["subject"],
@@ -28,31 +33,31 @@ router.route("/search").post(async (req, res) => {
     res
   );
 });
-router.route("/autoComplete").post(async (req, res) => {
+router.route("/autoComplete").post(authenticateToken, async (req, res) => {
   await autocomplete(Information, ["subject"], req, res);
 });
 
 //
 
-router.route("/deActivate-many").patch(async (req, res) => {
+router.route("/deActivate-many").patch(authenticateToken, async (req, res) => {
   await deActivateMany(Information, req, res);
 }); // PATCH /api/Information/deActivate-many/:id
 
 // Routes for getting all information and creating a new person
 router
   .route("/")
-  .get(InformationController.allInformation) // Get all information
-  .post(InformationController.createInformation); // Create a new Information
+  .get(authenticateToken, InformationController.allInformation) // Get all information
+  .post(authenticateToken, InformationController.createInformation); // Create a new Information
 
 // Routes for specific Information by ID
 router
   .route("/:id")
-  .get(InformationController.getInformationById) // Get a Information by ID
-  .patch(InformationController.updateInformation); // Update a Information by ID
+  .get(authenticateToken, InformationController.getInformationById) // Get a Information by ID
+  .patch(authenticateToken, InformationController.updateInformation); // Update a Information by ID
 
 // Route for deactivating a Information
 router
   .route("/deActivate/:id")
-  .patch(InformationController.deactivateInformation);
+  .patch(authenticateToken, InformationController.deactivateInformation);
 
 module.exports = router;

@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+userSchema.index(
+  { username: 1 },
+  { unique: true, partialFilterExpression: { active: true } }
+);
 
 userSchema.pre("findOneAndUpdate", async function (next) {
   const update = this.getUpdate();
