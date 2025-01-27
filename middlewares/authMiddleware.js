@@ -11,6 +11,7 @@ const authenticateToken = async (req, res, next) => {
 
     const foundUser = await User.findById(user.userId);
     if (!foundUser) return res.sendStatus(404); // User not found
+    if (!foundUser.active) return res.sendStatus(404); // User not found
 
     req.user = foundUser; // Attach user to request object
     next();
