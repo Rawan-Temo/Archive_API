@@ -18,7 +18,7 @@ const dbName = "test"; // Replace with your database name
 
 // Paths
 const publicFolderPath = path.join(__dirname, "../public");
-const unzipFolderPath = path.join(__dirname, "../");
+const unzipFolderPath = path.join(__dirname, "../public");
 const backupsFolderPath = path.join(__dirname, "../backups");
 
 // Ensure backups folder exists
@@ -72,6 +72,7 @@ const BackupService = {
       return {
         success: true,
         message: `Backup created successfully at ${backupFolderPath}`,
+        backupRoot: backupFolderPath,
       };
     } catch (error) {
       console.error("Error during backup:", error);
@@ -140,7 +141,10 @@ const getCollections = async () => {
     await client.connect();
     const db = client.db(dbName);
     const collections = await db.listCollections().toArray();
-    return collections.map((collection) => collection.name);
+    // Filter out the backup collections
+    return collections
+      .map((collection) => collection.name)
+      .filter((name) => !name.includes("backup"));
   } finally {
     await client.close();
   }
