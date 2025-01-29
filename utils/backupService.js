@@ -9,7 +9,11 @@ const Seven = require("node-7z"); // Use 'node-7z' package for 7z compression
 const execAsync = util.promisify(exec);
 
 // MongoDB connection string
-const mongoUri = "mongodb://localhost:27017"; // Replace with your MongoDB URI
+const mongoUri = process.env.DB.replace(
+  "<db_password>",
+  process.env.DB_PASSWORD
+);
+// Replace with your MongoDB URI
 const dbName = "test"; // Replace with your database name
 
 // Paths
