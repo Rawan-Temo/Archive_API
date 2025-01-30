@@ -60,6 +60,8 @@ const BackupController = {
       console.log("Starting backup...");
       const result = await BackupService.createBackup();
       if (result.success) {
+        const newBackup = new Backup({ root: result.backupRoot });
+        await newBackup.save();
         console.log(result.message);
       } else {
         console.error(result.message, result.error);

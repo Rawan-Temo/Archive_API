@@ -7,10 +7,10 @@ const {
   isUser,
 } = require("../../middlewares/authMiddleware");
 // Route to create a backup
-router.get("/roots", BackupController.allRoots);
-router.post("/", BackupController.createBackup);
+router.get("/roots",authenticateToken, BackupController.allRoots);
+router.post("/",authenticateToken, BackupController.createBackup);
 
 // Route to restore a backup
-router.post("/restore", BackupController.restoreBackup);
+router.post("/restore",authenticateToken, BackupController.restoreBackup);
 
 module.exports = router;

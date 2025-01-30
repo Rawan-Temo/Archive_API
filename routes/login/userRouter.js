@@ -25,7 +25,7 @@ router.route("/profile").get(authenticateToken, userController.userProfile);
 router
   .route("/")
   .get(authenticateToken, userController.allUsers)
-  .post(userController.createUser);
+  .post(authenticateToken, userController.createUser);
 
 router.route("/:id").get(authenticateToken, userController.userById);
 router

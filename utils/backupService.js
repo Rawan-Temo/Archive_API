@@ -110,6 +110,7 @@ const BackupService = {
         }
         await execAsync(
           `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file=${jsonFilePath} --jsonArray --drop`
+          // `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file=${jsonFilePath} --jsonArray --mode=upsert`
         );
         console.log(
           `Restored collection '${collectionName}' from ${jsonFilePath}`
