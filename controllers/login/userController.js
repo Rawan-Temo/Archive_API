@@ -150,7 +150,7 @@ const userProfile = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }).lean();
     if (!user || user.active === false) {
       return res
         .status(400)

@@ -27,9 +27,16 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   helmet({
-    contentSecurityPolicy: false, // Disable CSP temporarily
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "trusted-cdn.com"],
+        styleSrc: ["'self'", "trusted-cdn.com"],
+        imgSrc: ["'self'", "data:", "trusted-cdn.com"],
+      },
+    },
   })
-); // Security middleware
+);
 
 // Rate limiting to prevent abuse
 const apiLimiter = rateLimit({
@@ -38,6 +45,12 @@ const apiLimiter = rateLimit({
   message: "Too many requests, please try again later.",
 });
 app.use("/api", apiLimiter);
+const authLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 5,
+  message: "Too many login attempts, please try again later.",
+});
+app.use("/api/Users/login", authLimiter);
 // Data sanitization against NoSQL injection
 app.use(mongoSanitize());
 // Data sanitization against XSS attacks
@@ -70,9 +83,10 @@ const routers = {
 
 for (const [route, routerPath] of Object.entries(routers)) {
   try {
-    app.use(route, require(routerPath));
+    const router = require(routerPath);
+    if (router) app.use(route, router);
   } catch (err) {
-    console.error(`Failed to load router at ${routerPath}: ${err.message}`);
+    console.warn(`Skipping ${routerPath}: ${err.message}`);
   }
 }
 // API Routes Ends

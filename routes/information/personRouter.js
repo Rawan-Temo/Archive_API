@@ -11,7 +11,7 @@ const {
 } = require("../../middlewares/authMiddleware");
 //SEARCH
 
-router.route("/search").post(authenticateToken, async (req, res) => {
+router.route("/search").post(authenticateToken, isUser, async (req, res) => {
   await search(
     Person,
     ["firstName", "surName", "fatherName"],
@@ -29,22 +29,32 @@ router.route("/search").post(authenticateToken, async (req, res) => {
     res
   );
 });
-router.route("/autoComplete").post(authenticateToken, async (req, res) => {
-  await autocomplete(Person, ["firstName", "surName", "fatherName"], req, res);
-});
+router
+  .route("/autoComplete")
+  .post(authenticateToken, isUser, async (req, res) => {
+    await autocomplete(
+      Person,
+      ["firstName", "surName", "fatherName"],
+      req,
+      res
+    );
+  });
 
 //
 
-router.route("/deActivate-many").patch(authenticateToken, async (req, res) => {
-  await deActivateMany(Person, req, res);
-}); // PATCH /api/sources/deActivate-many/:id
+router
+  .route("/deActivate-many")
+  .patch(authenticateToken, isUser, async (req, res) => {
+    await deActivateMany(Person, req, res);
+  }); // PATCH /api/sources/deActivate-many/:id
 // Routes for getting all people and creating a new person
 router.route("/Jobs").get(authenticateToken, personController.allJobs); // Get all people
 router
   .route("/")
-  .get(authenticateToken, personController.allPeople) // Get all people
+  .get(authenticateToken, isUser, personController.allPeople) // Get all people
   .post(
     authenticateToken,
+    isUser,
     personController.upload.single("image"),
     personController.createPerson
   ); // Create a new person
@@ -52,9 +62,10 @@ router
 // Routes for specific person by ID
 router
   .route("/:id")
-  .get(authenticateToken, personController.getPersonById) // Get a person by ID
+  .get(authenticateToken, isUser, personController.getPersonById) // Get a person by ID
   .patch(
     authenticateToken,
+    isUser,
     personController.upload.single("image"),
     personController.updatePerson
   ); // Update a person by ID
@@ -62,6 +73,6 @@ router
 // Route for deactivating a person
 router
   .route("/deActivate/:id")
-  .patch(authenticateToken, personController.deactivatePerson);
+  .patch(authenticateToken, isUser, personController.deactivatePerson);
 
 module.exports = router;

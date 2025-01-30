@@ -11,30 +11,34 @@ const {
 } = require("../../middlewares/authMiddleware");
 //SEARCH
 
-router.route("/search").post(authenticateToken, async (req, res) => {
+router.route("/search").post(authenticateToken, isUser, async (req, res) => {
   await search(Country, ["name"], "", req, res);
 });
-router.route("/autoComplete").post(authenticateToken, async (req, res) => {
-  await autocomplete(Country, ["name"], req, res);
-});
+router
+  .route("/autoComplete")
+  .post(authenticateToken, isUser, async (req, res) => {
+    await autocomplete(Country, ["name"], req, res);
+  });
 //SEARCH
 //
-router.route("/deActivate-many").patch(authenticateToken, async (req, res) => {
-  await deActivateMany(Country, req, res);
-}); // PATCH /api/sources/deActivate-many/:id
+router
+  .route("/deActivate-many")
+  .patch(authenticateToken, isAdmin, async (req, res) => {
+    await deActivateMany(Country, req, res);
+  }); // PATCH /api/sources/deActivate-many/:id
 router
   .route("/country-tree")
-  .get(authenticateToken, countryController.getAllCountriesWithDetails);
+  .get(authenticateToken, isUser, countryController.getAllCountriesWithDetails);
 router
   .route("/")
-  .get(authenticateToken, countryController.getAllCountries)
-  .post(authenticateToken, countryController.createCountry);
+  .get(authenticateToken, isUser, countryController.getAllCountries)
+  .post(authenticateToken, isAdmin, countryController.createCountry);
 router
   .route("/:id")
-  .get(authenticateToken, countryController.getCountryByName)
-  .patch(authenticateToken, countryController.updateCountry);
+  .get(authenticateToken, isUser, countryController.getCountryByName)
+  .patch(authenticateToken, isAdmin, countryController.updateCountry);
 router
   .route("/deActivate/:id")
-  .patch(authenticateToken, countryController.deActivateCountry);
+  .patch(authenticateToken, isAdmin, countryController.deActivateCountry);
 
 module.exports = router;

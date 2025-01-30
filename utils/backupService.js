@@ -81,7 +81,7 @@ const BackupService = {
   },
 
   // Restore from a backup
-  restoreBackup: async (backupFolderPath) => {
+  restoreBackup: async (backupFolderPath, replace) => {
     try {
       if (!fs.existsSync(backupFolderPath)) {
         throw new Error("Backup folder does not exist.");
@@ -108,10 +108,13 @@ const BackupService = {
           console.log(`Skipping empty file: ${jsonFilePath}`);
           continue; // Skip empty files
         }
-        await execAsync(
-          `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file=${jsonFilePath} --jsonArray --drop`
-          // `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file=${jsonFilePath} --jsonArray --mode=upsert`
-        );
+        replace
+          ? await execAsync(
+              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file=${jsonFilePath} --jsonArray --drop`
+            )
+          : await execAsync(
+              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file=${jsonFilePath} --jsonArray --mode=upsert`
+            );
         console.log(
           `Restored collection '${collectionName}' from ${jsonFilePath}`
         );

@@ -9,17 +9,19 @@ const {
 //Media
 router
   .route("/")
-  .get(authenticateToken, audioController.allAudios)
+  .get(authenticateToken, isUser, audioController.allAudios)
   .post(
     authenticateToken,
+    isUser,
     audioController.uploadAudios,
     audioController.handleAudios
   )
-  .patch(authenticateToken, audioController.deleteAudios);
+  .patch(authenticateToken, isUser, audioController.deleteAudios);
 router
   .route("/:id")
   .patch(
     authenticateToken,
+    isUser,
     audioController.uploadAudios,
     audioController.updateAudio
   );

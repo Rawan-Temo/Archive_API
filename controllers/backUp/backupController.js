@@ -51,7 +51,7 @@ const BackupController = {
     }
   },
 
-  restoreBackup: async (req, res) => {
+  restoreBackup: async (req, res, replace) => {
     const { backupFolderPath } = req.body; // Pass the backup folder path in the request body
     if (!backupFolderPath) {
       return res.status(400).json({ error: "Backup folder path is required" });
@@ -70,7 +70,7 @@ const BackupController = {
       console.error("Error during backup:", err);
     }
 
-    const result = await BackupService.restoreBackup(backupFolderPath);
+    const result = await BackupService.restoreBackup(backupFolderPath, replace);
     if (result.success) {
       res.status(200).json({ message: result.message });
     } else {

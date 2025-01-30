@@ -9,17 +9,19 @@ const {
 //Media
 router
   .route("/")
-  .get(authenticateToken, imageController.allImages)
+  .get(authenticateToken, isUser, imageController.allImages)
   .post(
     authenticateToken,
+    isUser,
     imageController.uploadImages,
     imageController.handleImages
   )
-  .patch(authenticateToken, imageController.deleteImages);
+  .patch(authenticateToken, isUser, imageController.deleteImages);
 router
   .route("/:id")
   .patch(
     authenticateToken,
+    isUser,
     imageController.uploadImages,
     imageController.updateImage
   );

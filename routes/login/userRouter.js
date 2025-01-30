@@ -8,27 +8,31 @@ const {
   isAdmin,
   isUser,
 } = require("../../middlewares/authMiddleware");
-router.route("/search").post(authenticateToken, async (req, res) => {
+router.route("/search").post(authenticateToken, isAdmin, async (req, res) => {
   await search(User, ["username"], "sectionId", req, res);
 });
-router.route("/autoComplete").post(authenticateToken, async (req, res) => {
-  await autocomplete(User, ["username"], req, res);
-});
+router
+  .route("/autoComplete")
+  .post(authenticateToken, isAdmin, async (req, res) => {
+    await autocomplete(User, ["username"], req, res);
+  });
 
-router.route("/deActivate-many").patch(authenticateToken, async (req, res) => {
-  await deActivateMany(User, req, res);
-}); // PATCH /api/sources/deActivate-many/:id
+router
+  .route("/deActivate-many")
+  .patch(authenticateToken, isAdmin, async (req, res) => {
+    await deActivateMany(User, req, res);
+  }); // PATCH /api/sources/deActivate-many/:id
 //
 router.route("/login").post(userController.login); ///api/users/login
 router.route("/profile").get(authenticateToken, userController.userProfile);
 
 router
   .route("/")
-  .get(authenticateToken, userController.allUsers)
-  .post(authenticateToken, userController.createUser);
+  .get(authenticateToken, isAdmin, userController.allUsers)
+  .post(authenticateToken, isAdmin, userController.createUser);
 
-router.route("/:id").get(authenticateToken, userController.userById);
+router.route("/:id").get(authenticateToken, isAdmin, userController.userById);
 router
   .route("/deActivate/:id")
-  .patch(authenticateToken, userController.deactivateUser);
+  .patch(authenticateToken, isAdmin, userController.deactivateUser);
 module.exports = router;

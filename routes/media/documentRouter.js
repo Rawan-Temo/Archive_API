@@ -9,17 +9,19 @@ const {
 //Media
 router
   .route("/")
-  .get(authenticateToken, documentController.allDocuments)
+  .get(authenticateToken, isUser, documentController.allDocuments)
   .post(
     authenticateToken,
+    isUser,
     documentController.uploadDocuments,
     documentController.handleDocuments
   )
-  .patch(authenticateToken, documentController.deleteDocuments);
+  .patch(authenticateToken, isUser, documentController.deleteDocuments);
 router
   .route("/:id")
   .patch(
     authenticateToken,
+    isUser,
     documentController.uploadDocuments,
     documentController.updateDocument
   );

@@ -9,17 +9,19 @@ const {
 //Media
 router
   .route("/")
-  .get(authenticateToken, videoController.allVideos)
+  .get(authenticateToken, isUser, videoController.allVideos)
   .post(
     authenticateToken,
+    isUser,
     videoController.uploadVideos,
     videoController.handleVideos
   )
-  .patch(authenticateToken, videoController.deleteVideos);
+  .patch(authenticateToken, isUser, videoController.deleteVideos);
 router
   .route("/:id")
   .patch(
     authenticateToken,
+    isUser,
     videoController.uploadVideos,
     videoController.updateVideo
   );
