@@ -28,7 +28,7 @@ if (!fs.existsSync(backupsFolderPath)) {
 
 const BackupService = {
   // Create a backup
-  createBackup: async () => {
+  createBackup: async (req, res) => {
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const backupFolderPath = path.join(
@@ -38,62 +38,64 @@ const BackupService = {
       const dbBackupPath = path.join(backupFolderPath, "db-backup"); // MongoDB JSON backup folder
       const public7zPath = path.join(backupFolderPath, "public.7z"); // Public folder 7z file
 
-      console.log("Starting backup process...");
+      res.write("Starting backup process...\n");
 
       // Step 1: Create the backup folder
       fs.mkdirSync(backupFolderPath, { recursive: true });
       fs.mkdirSync(dbBackupPath, { recursive: true });
 
       // Step 2: Export MongoDB data dynamically
-      console.log("Fetching collections...");
+      res.write("Fetching collections...\n");
       const collections = await getCollections();
-      console.log(`Found collections: ${collections.join(", ")}`);
+      res.write(`Found collections: ${collections.join(", ")}\n`);
 
       for (const collection of collections) {
         const jsonFilePath = path.join(dbBackupPath, `${collection}.json`);
-        console.log(`Exporting collection '${collection}'...`);
+        res.write(`Exporting collection '${collection}'...\n`);
         await execAsync(
           `mongoexport --uri="${mongoUri}" --db=${dbName} --collection=${collection} --out=${jsonFilePath} --jsonArray`
         );
-        console.log(`Exported collection '${collection}' to ${jsonFilePath}`);
+        res.write(`Exported collection '${collection}' to ${jsonFilePath}\n`);
       }
 
-      console.log("MongoDB data exported as JSON.");
+      res.write("MongoDB data exported as JSON.\n");
 
       // Step 3: 7z the public folder
 
       if (fs.existsSync(publicFolderPath)) {
-        console.log("Compressed public folder...");
+        res.write("Compressing public folder...\n");
         await sevenZipFolder(publicFolderPath, public7zPath);
-        console.log("Public folder compressed.");
+        res.write("Public folder compressed.\n");
       } else {
-        console.warn("Public folder not found.");
+        res.write("Public folder not found.\n");
       }
+      res.write(`Backup created successfully at ${backupFolderPath}\n`);
       return {
         success: true,
         message: `Backup created successfully at ${backupFolderPath}`,
         backupRoot: backupFolderPath,
       };
     } catch (error) {
-      console.error("Error during backup:", error);
+      res.write(`Error during backup: ${error.message}\n`);
+      res.end();
       return { success: false, message: "Failed to create backup", error };
     }
   },
 
   // Restore from a backup
-  restoreBackup: async (backupFolderPath, replace) => {
+  restoreBackup: async (backupFolderPath, replace, req, res) => {
     try {
       if (!fs.existsSync(backupFolderPath)) {
         throw new Error("Backup folder does not exist.");
       }
 
-      console.log("Starting restoration process...");
+      res.write("Starting restoration process...\n");
 
       const dbBackupPath = path.join(backupFolderPath, "db-backup");
       const public7zPath = path.join(backupFolderPath, "public.7z");
 
       // Step 1: Restore MongoDB
-      console.log("Restoring MongoDB...");
+      res.write("Restoring MongoDB...\n");
       const collections = fs
         .readdirSync(dbBackupPath)
         .filter((file) => file.endsWith(".json"));
@@ -105,7 +107,7 @@ const BackupService = {
         const fileContent = fs.readFileSync(jsonFilePath, "utf-8").trim();
         const jsonContent = JSON.parse(fileContent); // Ensure valid JSON
         if (jsonContent.length === 0) {
-          console.log(`Skipping empty file: ${jsonFilePath}`);
+          res.write(`Skipping empty file: ${jsonFilePath}\n`);
           continue; // Skip empty files
         }
         replace
@@ -115,24 +117,27 @@ const BackupService = {
           : await execAsync(
               `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file=${jsonFilePath} --jsonArray --mode=upsert`
             );
-        console.log(
-          `Restored collection '${collectionName}' from ${jsonFilePath}`
+        res.write(
+          `Restored collection '${collectionName}' from ${jsonFilePath}\n`
         );
       }
-      console.log("MongoDB restored.");
+      res.write("MongoDB restored.\n");
 
       // Step 2: Un7z and replace the public folder
-      console.log("Replacing public folder...");
+      res.write("Replacing public folder...\n");
       if (fs.existsSync(public7zPath)) {
         await sevenUnzipFolder(public7zPath, unzipFolderPath);
-        console.log("Public folder restored.");
+        res.write("Public folder restored.\n");
       } else {
-        console.warn("Public folder 7z not found in backup.");
+        res.write("Public folder 7z not found in backup.\n");
       }
 
+      res.write("Restoration completed successfully.\n");
+      res.end();
       return { success: true, message: "Restoration completed successfully." };
     } catch (error) {
-      console.error("Error during restoration:", error);
+      res.write(`Error during restoration: ${error.message}\n`);
+      res.end();
       return { success: false, message: "Failed to restore backup", error };
     }
   },
