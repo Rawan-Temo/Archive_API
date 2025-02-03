@@ -46,7 +46,7 @@ const BackupController = {
       await newBackup.save();
       res.end();
     } else {
-      res.write(result.message, result.error);
+      res.write(result.message);
       res.end();
     }
   },
@@ -66,13 +66,12 @@ const BackupController = {
         console.log(result.message);
       } else {
         console.error(result.message);
-        res.write(result.message, result.error);
+        res.write(result.message);
         res.end();
       }
     } catch (err) {
       console.error("Error during backup:", err);
-      res.write("Error during backup:", err);
-
+      res.write(`Error during backup: ${err.message}`);
       res.end();
     }
 

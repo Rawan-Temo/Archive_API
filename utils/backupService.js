@@ -77,7 +77,6 @@ const BackupService = {
       };
     } catch (error) {
       res.write(`Error during backup: ${error.message}\n`);
-      res.end();
       return { success: false, message: "Failed to create backup", error };
     }
   },
@@ -136,7 +135,6 @@ const BackupService = {
       return { success: true, message: "Restoration completed successfully." };
     } catch (error) {
       res.write(`Error during restoration: ${error.message}\n`);
-      res.end();
       return { success: false, message: "Failed to restore backup", error };
     }
   },
