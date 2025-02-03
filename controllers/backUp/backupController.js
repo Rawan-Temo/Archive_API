@@ -38,44 +38,62 @@ const BackupController = {
       res.status(400).json({ message: error.message });
     }
   },
+
   createBackup: async (req, res) => {
-    const result = await BackupService.createBackup(req, res);
-    if (result.success) {
-      // Store the backup root in the database
-      const newBackup = new Backup({ root: result.backupRoot });
-      await newBackup.save();
-      res.end();
-    } else {
-      res.write(result.message);
-      res.end();
-    }
-  },
+    res.setHeader("Content-Type", "text/plain"); // Ensure text stream response
+    res.write("Starting backup process...\n");
 
-  restoreBackup: async (req, res, replace) => {
-    const { backupFolderPath } = req.body; // Pass the backup folder path in the request body
-    if (!backupFolderPath) {
-      return res.status(400).json({ error: "Backup folder path is required" });
-    }
     try {
-      console.log("Starting backup...");
       const result = await BackupService.createBackup(req, res);
-
       if (result.success) {
         const newBackup = new Backup({ root: result.backupRoot });
         await newBackup.save();
-        console.log(result.message);
+        res.write("Backup saved to database.\n");
+        res.write("Backup process completed successfully.\n");
       } else {
-        console.error(result.message);
-        res.write(result.message);
-        res.end();
+        res.write(`Error: ${result.message}\n`);
+      }
+    } catch (error) {
+      res.write(`Error: ${error.message}\n`);
+    } finally {
+      res.end(); // Ensure the response is properly closed
+    }
+  },
+
+  restoreBackup: async (req, res) => {
+    res.setHeader("Content-Type", "text/plain"); // Stream text response
+    res.write("Starting restoration process...\n");
+
+    try {
+      const { backupFolderPath } = req.body;
+      if (!backupFolderPath) {
+        res.write("Error: Backup folder path is required.\n");
+        return res.end();
+      }
+
+      const backupResult = await BackupService.createBackup(req, res);
+      if (backupResult.success) {
+        const newBackup = new Backup({ root: backupResult.backupRoot });
+        await newBackup.save();
+        res.write("Backup before restoration saved.\n");
+      }
+
+      const restoreResult = await BackupService.restoreBackup(
+        backupFolderPath,
+        true,
+        req,
+        res
+      );
+      if (restoreResult.success) {
+        res.write("Backup restoration completed successfully.\n");
+      } else {
+        res.write(`Error: ${restoreResult.message}\n`);
       }
     } catch (err) {
-      console.error("Error during backup:", err);
-      res.write(`Error during backup: ${err.message}`);
+      res.write(`Error: ${err.message}\n`);
+    } finally {
       res.end();
     }
-
-    await BackupService.restoreBackup(backupFolderPath, replace, req, res);
   },
 };
 
