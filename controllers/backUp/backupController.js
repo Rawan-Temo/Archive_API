@@ -45,6 +45,9 @@ const BackupController = {
       const newBackup = new Backup({ root: result.backupRoot });
       await newBackup.save();
       res.end();
+    } else {
+      res.write(result.message, result.error);
+      res.end();
     }
   },
 
@@ -56,17 +59,21 @@ const BackupController = {
     try {
       console.log("Starting backup...");
       const result = await BackupService.createBackup(req, res);
-      
+
       if (result.success) {
         const newBackup = new Backup({ root: result.backupRoot });
         await newBackup.save();
         console.log(result.message);
-
       } else {
-        console.error(result.message, result.error);
+        console.error(result.message);
+        res.write(result.message, result.error);
+        res.end();
       }
     } catch (err) {
       console.error("Error during backup:", err);
+      res.write("Error during backup:", err);
+
+      res.end();
     }
 
     await BackupService.restoreBackup(backupFolderPath, replace, req, res);

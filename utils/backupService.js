@@ -133,7 +133,6 @@ const BackupService = {
       }
 
       res.write("Restoration completed successfully.\n");
-      res.end();
       return { success: true, message: "Restoration completed successfully." };
     } catch (error) {
       res.write(`Error during restoration: ${error.message}\n`);
