@@ -107,6 +107,7 @@ const getCoordinatesById = async (req, res) => {
       coordinate = await Coordinate.findOne({
         _id: req.params.id,
         sectionId: req.user.sectionId,
+        active: true, // Ensure only active coordinates are returned
       }).populate([
         { path: "sectionId", select: "name" },
         { path: "cityId", select: "name" },
@@ -119,7 +120,10 @@ const getCoordinatesById = async (req, res) => {
       ]);
       // Fetch the main information document by ID with populated fields
     } else {
-      coordinate = await Coordinate.findById(req.params.id).populate([
+      coordinate = await Coordinate.findOne({
+        _id: req.params.id,
+        active: true, // Ensure only active coordinates are returned
+      }).populate([
         { path: "sectionId", select: "name" },
         { path: "cityId", select: "name" },
         { path: "countryId", select: "name" },

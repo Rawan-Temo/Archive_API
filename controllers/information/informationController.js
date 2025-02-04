@@ -118,6 +118,7 @@ const getInformationById = async (req, res) => {
       information = await Information.findOne({
         _id: req.params.id,
         sectionId: req.user.sectionId,
+        active: true, // Ensure only active information is returned
       }).populate([
         { path: "sectionId", select: "name" },
         { path: "cityId", select: "name" },
@@ -135,7 +136,10 @@ const getInformationById = async (req, res) => {
       // Fetch the main information document by ID with populated fields
     } else {
       // Fetch the main information document by ID with populated fields
-      information = await Information.findById(req.params.id).populate([
+      information = await Information.findOne({
+        _id: req.params.id,
+        active: true, // Ensure only active information is returned
+      }).populate([
         { path: "sectionId", select: "name" },
         { path: "cityId", select: "name" },
         { path: "countryId", select: "name" },

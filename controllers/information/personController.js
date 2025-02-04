@@ -115,6 +115,7 @@ const getPersonById = async (req, res) => {
       person = await Person.findOne({
         _id: req.params.id,
         sectionId: req.user.sectionId, // Ensure sectionId matches the logged-in user
+        active: true, // Ensure only active persons are returned
       }).populate([
         { path: "sectionId", select: "name" },
         { path: "cityId", select: "name" },
@@ -126,7 +127,10 @@ const getPersonById = async (req, res) => {
         { path: "sources", select: "source_name" },
       ]);
     } else {
-      person = await Person.findById(req.params.id).populate([
+      person = await Person.findOne({
+        _id: req.params.id,
+        active: true, // Ensure only active persons are returned
+      }).populate([
         { path: "sectionId", select: "name" },
         { path: "cityId", select: "name" },
         { path: "countryId", select: "name" },
