@@ -2,7 +2,7 @@ const cron = require("node-cron");
 const BackupService = require("./backupService");
 
 // Schedule a task to run every 10 minutes for testing
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 0 * * 1", async () => {
   console.log("Cron job triggered at", new Date().toISOString());
   try {
     console.log("Starting backup...");
