@@ -4,31 +4,59 @@ const Document = require("../../models/media/document");
 const Image = require("../../models/media/image");
 const Video = require("../../models/media/video");
 const APIFeatures = require("../../utils/apiFeatures");
+const { ObjectId } = require("mongoose").Types;
 
 // Get all information
 const allInformation = async (req, res) => {
   try {
-    const features = new APIFeatures(
-      Information.find().populate([
-        { path: "sectionId", select: "name" }, // Only include `name` from Section
-        { path: "cityId", select: "name" },
-        { path: "countryId", select: "name" },
-        { path: "governmentId", select: "name" },
-        { path: "regionId", select: "name" },
-        { path: "streetId", select: "name" },
-        { path: "villageId", select: "name" },
-        { path: "events", select: "name" }, // Only include specific fields
-        { path: "parties", select: "name" },
-        { path: "sources", select: "source_name" },
-        { path: "coordinates", select: "coordinates note" },
-        { path: "people", select: "firstName surName image" },
-      ]),
-      req.query
-    )
-      .filter()
-      .sort()
-      .limitFields()
-      .paginate();
+    const role = req.user.role;
+    const sectionId = new ObjectId(req.user.sectionId);
+    let features;
+    if (role === "user") {
+      features = new APIFeatures(
+        Information.find({ sectionId }).populate([
+          { path: "sectionId", select: "name" }, // Only include `name` from Section
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governmentId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "events", select: "name" }, // Only include specific fields
+          { path: "parties", select: "name" },
+          { path: "sources", select: "source_name" },
+          { path: "coordinates", select: "coordinates note" },
+          { path: "people", select: "firstName surName image" },
+        ]),
+        req.query
+      )
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
+    } else {
+      features = new APIFeatures(
+        Information.find().populate([
+          { path: "sectionId", select: "name" }, // Only include `name` from Section
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governmentId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "events", select: "name" }, // Only include specific fields
+          { path: "parties", select: "name" },
+          { path: "sources", select: "source_name" },
+          { path: "coordinates", select: "coordinates note" },
+          { path: "people", select: "firstName surName image" },
+        ]),
+        req.query
+      )
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
+    }
 
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];
@@ -37,7 +65,9 @@ const allInformation = async (req, res) => {
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const parsedQuery = JSON.parse(queryStr);
-
+    if (role === "user") {
+      parsedQuery.sectionId = sectionId;
+    }
     const [informations, numberOfActiveInformations] = await Promise.all([
       features.query,
       Information.countDocuments(parsedQuery),
@@ -58,6 +88,14 @@ const allInformation = async (req, res) => {
 // Create a new information
 const createInformation = async (req, res) => {
   try {
+    const role = req.user.role;
+    const sectionId = new ObjectId(req.user.sectionId);
+
+    // If the user is a regular user, add the sectionId to the request body
+    if (role === "user") {
+      req.body.sectionId = sectionId;
+    }
+
     const newInformation = await Information.create(req.body);
     res.status(201).json({
       status: "success",
@@ -74,21 +112,48 @@ const createInformation = async (req, res) => {
 // Get an information by ID
 const getInformationById = async (req, res) => {
   try {
-    // Fetch the main information document by ID with populated fields
-    const information = await Information.findById(req.params.id).populate([
-      { path: "sectionId", select: "name" },
-      { path: "cityId", select: "name" },
-      { path: "countryId", select: "name" },
-      { path: "governmentId", select: "name" },
-      { path: "regionId", select: "name" },
-      { path: "streetId", select: "name" },
-      { path: "villageId", select: "name" },
-      { path: "events", select: "name" },
-      { path: "parties", select: "name" },
-      { path: "sources", select: "source_name" },
-      { path: "coordinates", select: "coordinates note" },
-      { path: "people", select: "firstName surName image fatherName" },
-    ]);
+    const role = req.user.role;
+    let information;
+    if (role === "user") {
+      information = await Information.findOne({
+        _id: req.params.id,
+        sectionId: req.user.sectionId,
+        active: true, // Ensure only active information is returned
+      }).populate([
+        { path: "sectionId", select: "name" },
+        { path: "cityId", select: "name" },
+        { path: "countryId", select: "name" },
+        { path: "governmentId", select: "name" },
+        { path: "regionId", select: "name" },
+        { path: "streetId", select: "name" },
+        { path: "villageId", select: "name" },
+        { path: "events", select: "name" },
+        { path: "parties", select: "name" },
+        { path: "sources", select: "source_name" },
+        { path: "coordinates", select: "coordinates note" },
+        { path: "people", select: "firstName surName image fatherName" },
+      ]);
+      // Fetch the main information document by ID with populated fields
+    } else {
+      // Fetch the main information document by ID with populated fields
+      information = await Information.findOne({
+        _id: req.params.id,
+        active: true, // Ensure only active information is returned
+      }).populate([
+        { path: "sectionId", select: "name" },
+        { path: "cityId", select: "name" },
+        { path: "countryId", select: "name" },
+        { path: "governmentId", select: "name" },
+        { path: "regionId", select: "name" },
+        { path: "streetId", select: "name" },
+        { path: "villageId", select: "name" },
+        { path: "events", select: "name" },
+        { path: "parties", select: "name" },
+        { path: "sources", select: "source_name" },
+        { path: "coordinates", select: "coordinates note" },
+        { path: "people", select: "firstName surName image fatherName" },
+      ]);
+    }
 
     if (!information) {
       return res.status(404).json({ message: "Information not found" });
@@ -140,8 +205,18 @@ const getInformationById = async (req, res) => {
 // Update an information by ID
 const updateInformation = async (req, res) => {
   try {
-    const updatedInformation = await Information.findByIdAndUpdate(
-      req.params.id,
+    const role = req.user.role;
+    const sectionId = new ObjectId(req.user.sectionId);
+    const query = { _id: req.params.id };
+
+    // If the user is a regular user, ensure the sectionId matches
+    if (role === "user") {
+      req.body.sectionId = sectionId;
+      query.sectionId = sectionId;
+    }
+
+    const updatedInformation = await Information.findOneAndUpdate(
+      query,
       req.body,
       {
         new: true, // Return the updated document
@@ -168,8 +243,17 @@ const updateInformation = async (req, res) => {
 // Deactivate an information by ID
 const deactivateInformation = async (req, res) => {
   try {
-    const deactivatedInformation = await Information.findByIdAndUpdate(
-      req.params.id,
+    const role = req.user.role;
+    const sectionId = new ObjectId(req.user.sectionId);
+
+    // If the user is a regular user, ensure the sectionId matches
+    const query = { _id: req.params.id };
+    if (role === "user") {
+      query.sectionId = sectionId;
+    }
+
+    const deactivatedInformation = await Information.findOneAndUpdate(
+      query,
       { active: false },
       { new: true, runValidators: true }
     );

@@ -48,7 +48,7 @@ router
     await deActivateMany(Person, req, res);
   }); // PATCH /api/sources/deActivate-many/:id
 // Routes for getting all people and creating a new person
-router.route("/Jobs").get(authenticateToken, personController.allJobs); // Get all people
+// router.route("/Jobs").get(authenticateToken, personController.allJobs); // Get all people
 router
   .route("/")
   .get(authenticateToken, isUser, personController.allPeople) // Get all people

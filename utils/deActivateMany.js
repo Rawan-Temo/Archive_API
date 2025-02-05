@@ -1,6 +1,13 @@
+const Coordinate = require("../models/information/coordinate");
+const Information = require("../models/information/information");
+const Person = require("../models/information/person");
+const { ObjectId } = require("mongoose").Types;
 exports.deActivateMany = async (model, req, res) => {
   try {
     const Ids = req.body.ids;
+    const role = req.user?.role;
+    const sectionId = new ObjectId(req.user.sectionId);
+    let result;
 
     // Validate input
     if (!Ids || !Array.isArray(Ids) || Ids.length === 0) {
@@ -10,11 +17,26 @@ exports.deActivateMany = async (model, req, res) => {
       });
     }
 
-    // Step 1: Soft delete the students by updating the 'active' status
-    const result = await model.updateMany(
-      { _id: { $in: Ids } }, // Match documents with IDs in the array
-      { $set: { active: false } } // Soft delete by setting 'active' to false
-    );
+    // Step 1: Soft delete the models by updating the 'active' status
+    if (model === Coordinate || model === Information || model === Person) {
+      console.log(req.user);
+      if (role === "user") {
+        result = await model.updateMany(
+          { _id: { $in: Ids }, sectionId }, // Match documents with IDs in the array
+          { $set: { active: false } } // Soft delete by setting 'active' to false
+        );
+      } else {
+        result = await model.updateMany(
+          { _id: { $in: Ids } }, // Match documents with IDs in the array
+          { $set: { active: false } } // Soft delete by setting 'active' to false
+        );
+      }
+    } else {
+      result = await model.updateMany(
+        { _id: { $in: Ids } }, // Match documents with IDs in the array
+        { $set: { active: false } } // Soft delete by setting 'active' to false
+      );
+    }
 
     // Check if any documents were modified
     if (result.modifiedCount === 0) {

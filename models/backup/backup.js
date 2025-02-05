@@ -8,7 +8,7 @@ const backupSchema = new mongoose.Schema(
       required: [true, "Backup root path is required."],
       trim: true,
       match: [
-        /^(?:[a-zA-Z]:)?[\\\/]?(?:[\w\s-]+[\\\/]?)*$/,
+        /^(?:[a-zA-Z]:)?[\\\/]?(?:[\w\s\u0600-\u06FF-]+[\\\/]?)*$/,
         "Invalid file path format",
       ],
     },

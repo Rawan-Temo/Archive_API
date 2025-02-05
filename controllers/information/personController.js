@@ -2,26 +2,51 @@ const Person = require("../../models/information/person");
 const APIFeatures = require("../../utils/apiFeatures");
 const multer = require("multer");
 const path = require("path");
+const { ObjectId } = require("mongoose").Types;
+
 // Get all people
 const allPeople = async (req, res) => {
   try {
-    const features = new APIFeatures(
-      Person.find().populate([
-        { path: "sectionId", select: "name" },
-        { path: "cityId", select: "name" },
-        { path: "countryId", select: "name" },
-        { path: "governmentId", select: "name" },
-        { path: "regionId", select: "name" },
-        { path: "streetId", select: "name" },
-        { path: "villageId", select: "name" },
-        { path: "sources", select: "source_name" },
-      ]),
-      req.query
-    )
-      .filter()
-      .sort()
-      .limitFields()
-      .paginate();
+    const role = req.user.role;
+    const sectionId = new ObjectId(req.user.sectionId);
+    let features;
+    if (role === "user") {
+      features = new APIFeatures(
+        Person.find({ sectionId }).populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governmentId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "sources", select: "source_name" },
+        ]),
+        req.query
+      )
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
+    } else {
+      features = new APIFeatures(
+        Person.find().populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governmentId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "sources", select: "source_name" },
+        ]),
+        req.query
+      )
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
+    }
 
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];
@@ -30,6 +55,11 @@ const allPeople = async (req, res) => {
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const parsedQuery = JSON.parse(queryStr);
+
+    // Add sectionId to the parsed query if the user is not an admin
+    if (role === "user") {
+      parsedQuery.sectionId = sectionId;
+    }
 
     const [people, numberOfActivePeople] = await Promise.all([
       features.query,
@@ -51,6 +81,17 @@ const allPeople = async (req, res) => {
 // Create a new person
 const createPerson = async (req, res) => {
   try {
+    const role = req.user.role;
+    const sectionId = new ObjectId(req.user.sectionId);
+
+    // If the user is a regular user, add the sectionId to the request body
+    if (role === "user") {
+      req.body.sectionId = sectionId;
+    }
+    if (req.file) {
+      req.body.image = `/images/profileImages/${req.file.filename}`;
+    }
+
     const newPerson = await Person.create(req.body);
     res.status(201).json({
       status: "success",
@@ -67,17 +108,39 @@ const createPerson = async (req, res) => {
 // Get a person by ID
 const getPersonById = async (req, res) => {
   try {
-    const person = await Person.findById(req.params.id)
-    .populate([
-      { path: "sectionId", select: "name" },
-      { path: "cityId", select: "name" },
-      { path: "countryId", select: "name" },
-      { path: "governmentId", select: "name" },
-      { path: "regionId", select: "name" },
-      { path: "streetId", select: "name" },
-      { path: "villageId", select: "name" },
-      { path: "sources", select: "source_name" },
-    ])
+    const role = req.user.role;
+    const sectionId = new ObjectId(req.user.sectionId);
+    let person;
+    if (role === "user") {
+      person = await Person.findOne({
+        _id: req.params.id,
+        sectionId: req.user.sectionId, // Ensure sectionId matches the logged-in user
+        active: true, // Ensure only active persons are returned
+      }).populate([
+        { path: "sectionId", select: "name" },
+        { path: "cityId", select: "name" },
+        { path: "countryId", select: "name" },
+        { path: "governmentId", select: "name" },
+        { path: "regionId", select: "name" },
+        { path: "streetId", select: "name" },
+        { path: "villageId", select: "name" },
+        { path: "sources", select: "source_name" },
+      ]);
+    } else {
+      person = await Person.findOne({
+        _id: req.params.id,
+        active: true, // Ensure only active persons are returned
+      }).populate([
+        { path: "sectionId", select: "name" },
+        { path: "cityId", select: "name" },
+        { path: "countryId", select: "name" },
+        { path: "governmentId", select: "name" },
+        { path: "regionId", select: "name" },
+        { path: "streetId", select: "name" },
+        { path: "villageId", select: "name" },
+        { path: "sources", select: "source_name" },
+      ]);
+    }
 
     if (!person) {
       return res.status(404).json({ message: "Person not found" });
@@ -98,19 +161,24 @@ const getPersonById = async (req, res) => {
 // Update a person by ID
 const updatePerson = async (req, res) => {
   try {
+    const role = req.user.role;
+    const sectionId = new ObjectId(req.user.sectionId);
+    const query = { _id: req.params.id };
+    // If the user is a regular user, ensure the sectionId matches
+    if (role === "user") {
+      req.body.sectionId = sectionId;
+      query.sectionId = sectionId;
+    }
+
     // If a file is uploaded, add the file path to the `image` field
     if (req.file) {
       req.body.image = `/images/profileImages/${req.file.filename}`;
     }
 
-    const updatedPerson = await Person.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true, // Return the updated document
-        runValidators: true, // Enforce schema validators
-      }
-    );
+    const updatedPerson = await Person.findOneAndUpdate(query, req.body, {
+      new: true, // Return the updated document
+      runValidators: true, // Enforce schema validators
+    });
 
     if (!updatedPerson) {
       return res.status(404).json({ message: "Person not found" });
@@ -131,8 +199,17 @@ const updatePerson = async (req, res) => {
 // Deactivate a person by ID
 const deactivatePerson = async (req, res) => {
   try {
-    const deactivatedPerson = await Person.findByIdAndUpdate(
-      req.params.id,
+    const role = req.user.role;
+    const sectionId = new ObjectId(req.user.sectionId);
+
+    // If the user is a regular user, ensure the sectionId matches
+    const query = { _id: req.params.id };
+    if (role === "user") {
+      query.sectionId = sectionId;
+    }
+
+    const deactivatedPerson = await Person.findOneAndUpdate(
+      query,
       { active: false },
       { new: true, runValidators: true }
     );
@@ -153,6 +230,7 @@ const deactivatePerson = async (req, res) => {
     });
   }
 };
+
 const allJobs = async (req, res) => {
   try {
     // Fetch distinct occupations
