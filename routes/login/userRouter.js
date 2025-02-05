@@ -3,6 +3,7 @@ const router = express.Router();
 const { search, autocomplete } = require("../../utils/serach");
 const User = require("../../models/login/user");
 const userController = require("../../controllers/login/userController");
+const { deActivateMany } = require("../../utils/deActivateMany");
 const {
   authenticateToken,
   isAdmin,
