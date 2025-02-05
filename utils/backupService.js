@@ -28,7 +28,7 @@ if (!fs.existsSync(backupsFolderPath)) {
 
 const BackupService = {
   // Create a backup
-  createBackup: async () => {
+  createBackup: async (req, res) => {
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const backupFolderPath = path.join(
@@ -101,7 +101,7 @@ const BackupService = {
   },
 
   // Restore from a backup
-  restoreBackup: async (backupFolderPath) => {
+  restoreBackup: async (backupFolderPath, replace, req, res) => {
     try {
       if (!fs.existsSync(backupFolderPath)) {
         throw new Error("Backup folder does not exist.");
