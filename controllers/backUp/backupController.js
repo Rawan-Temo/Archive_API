@@ -50,13 +50,14 @@ const BackupController = {
         await newBackup.save();
         res.write("Backup saved to database.\n");
         res.write("Backup process completed successfully.\n");
+        res.status(201).end(); // Return 201 Created
       } else {
         res.write(`Error: ${result.message}\n`);
+        res.status(500).end(); // Return 500 Internal Server Error
       }
     } catch (error) {
       res.write(`Error: ${error.message}\n`);
-    } finally {
-      res.end(); // Ensure the response is properly closed
+      res.status(500).end(); // Return 500 Internal Server Error
     }
   },
 
@@ -68,7 +69,7 @@ const BackupController = {
       const { backupFolderPath } = req.body;
       if (!backupFolderPath) {
         res.write("Error: Backup folder path is required.\n");
-        return res.end();
+        return res.status(400).end(); // Return 400 Bad Request
       }
 
       const backupResult = await BackupService.createBackup(req, res);
@@ -86,13 +87,14 @@ const BackupController = {
       );
       if (restoreResult.success) {
         res.write("Backup restoration completed successfully.\n");
+        res.status(200).end(); // Return 200 OK
       } else {
         res.write(`Error: ${restoreResult.message}\n`);
+        res.status(500).end(); // Return 500 Internal Server Error
       }
     } catch (err) {
       res.write(`Error: ${err.message}\n`);
-    } finally {
-      res.end();
+      res.status(500).end(); // Return 500 Internal Server Error
     }
   },
 };
