@@ -40,7 +40,6 @@ const BackupController = {
   },
 
   createBackup: async (req, res) => {
-    res.setHeader("Content-Type", "text/plain"); // Ensure text stream response
     res.write("Starting backup process...\n");
 
     try {
@@ -61,7 +60,7 @@ const BackupController = {
     }
   },
 
-  restoreBackup: async (req, res) => {
+  restoreBackup: async (req, res, replace) => {
     res.setHeader("Content-Type", "text/plain"); // Stream text response
     res.write("Starting restoration process...\n");
 
@@ -81,7 +80,7 @@ const BackupController = {
 
       const restoreResult = await BackupService.restoreBackup(
         backupFolderPath,
-        true,
+        replace,
         req,
         res
       );
