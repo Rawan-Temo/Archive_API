@@ -131,7 +131,6 @@ const BackupService = {
           else console.log(`Skipping empty file: ${jsonFilePath}`);
           continue; // Skip empty files
         }
-        console.log(replace);
         replace
           ? await execAsync(
               `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --drop`
