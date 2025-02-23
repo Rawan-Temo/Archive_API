@@ -8,11 +8,11 @@ const {
 } = require("../../middlewares/authMiddleware");
 const searchImages = require("../../utils/searchImages");
 //Media
-router.route("/searchImages").post(imageController.uploadImages, searchImages);
+router.route("/searchImages").post(searchImages.upload.single('image'), searchImages.searchImages);
 //Media
 router
   .route("/")
-  .get(authenticateToken, isUser, imageController.allImages)
+  .get( imageController.allImages)
   .post(
     authenticateToken,
     isUser,
