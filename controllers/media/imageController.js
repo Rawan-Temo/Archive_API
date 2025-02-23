@@ -217,31 +217,3 @@ module.exports = {
   deleteImages,
   updateImage,
 };
-/* 
-  {
-  "firstName": "John",
-  "surName": "Doe",
-  "fatherName": "Michael",
-  "motherName": "Sarah",
-  "email": "john.doe@example.com",
-  "phone": "1234567890",
-  "birthDate": "1990-05-15",
-  "placeOfBirth": "New York",
-  "maritalStatus": "Single",
-  "occupation": "Engineer",
-  "gender": "Male",
-  "cityId": "67500e138244556edada9a87",
-  "countryId": "6750044e739df7ce922f9bb0",
-  "governmentId": "675006771db1fe1b1cf3d78b",
-  "regionId": "67501d6585407af2a65d386b",
-  "streetId": "675019fd1dd718dbeeb5e18f",
-  "villageId": "67501ed72b7b6116b9f79358",
-  "addressDetails": "Apartment 101, Main Street",
-  "sources": ["6751562a568f865d227fcdbb"], // Replace with actual Event IDs
-  "events": ["675949136542f38dbb5b809c"], // Replace with actual Event IDs
-  "parties": ["67516f1c053866a816a5f8ec"], // Replace with actual Party IDs
-  "active": true
-}
-
- 
- */

@@ -6,6 +6,9 @@ const {
   isAdmin,
   isUser,
 } = require("../../middlewares/authMiddleware");
+const searchImages = require("../../utils/searchImages");
+//Media
+router.route("/searchImages").post(imageController.uploadImages, searchImages);
 //Media
 router
   .route("/")
