@@ -56,6 +56,12 @@ app.use(mongoSanitize());
 // Data sanitization against XSS attacks
 app.use(xss());
 
+// Serve static files with authentication
+app.use(
+  "/files",
+  authenticateToken,
+  express.static(path.join(__dirname, "public"))
+);
 // API Routes
 
 // Dynamically import routers
@@ -89,7 +95,7 @@ for (const [route, routerPath] of Object.entries(routers)) {
     console.warn(`Skipping ${routerPath}: ${err.message}`);
   }
 }
-app.use(express.static(path.join(__dirname, "public")));
+
 // API Routes Ends
 // 404 Handler
 app.use((req, res, next) => {
