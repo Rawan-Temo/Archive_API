@@ -79,6 +79,11 @@ const SecurityInformationSchema = new mongoose.Schema(
         ref: "Coordinates",
       },
     ],
+    credibility: {
+      type: String,
+      required: [true, "Source must have a credibility rating"],
+      enum: ["High", "Medium", "Low"],
+    },
     active: {
       type: Boolean,
       default: true,
