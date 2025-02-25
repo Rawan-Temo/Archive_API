@@ -18,12 +18,10 @@ const downloadInforamtion = async (req, res) => {
 
   // 1. Retrieve file records related to this informationId from various collections
   const filesResult = await getFilesByInformationId(informationId);
-  console.log(filesResult);
   if (!filesResult.success) {
     // If an error occurred while fetching file records, return a 500 error response
     return res.status(500).json({ error: filesResult.message });
   }
-  console.log(informationId);
   // 2. Retrieve the corresponding SecurityInformation document from the database
   const securityInfo = await Information.findById(informationId)
     .populate([
@@ -64,7 +62,6 @@ const downloadInforamtion = async (req, res) => {
       // file.url is expected to be something like "/images/photo1.png"
       // Build the full file path by joining the public directory with the file's URL
       const fullPath = path.join(__dirname, "..", file.url);
-      console.log(fullPath);
       // Check if the file actually exists on the server
       if (fs.existsSync(fullPath)) {
         // Add the file to the archive, using its basename (e.g., photo1.png)

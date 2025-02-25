@@ -61,10 +61,6 @@ coordinatesSchema.index(
   { coordinates: 1 },
   { unique: true, partialFilterExpression: { active: true } }
 );
-coordinatesSchema.pre("save", function (next) {
-  this.coordinates = this.coordinates.replace(/\s+/g, "");
-  next();
-});
 
 const Coordinates = mongoose.model("Coordinates", coordinatesSchema);
 
