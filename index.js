@@ -20,6 +20,11 @@ require("./utils/taskScheduler");
 
 app.use(express.json()); // Built-in JSON parser
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  // "/files",
+  // authenticateToken,
+  express.static(path.join(__dirname, "public"))
+);
 app.use(cors());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -57,11 +62,7 @@ app.use(mongoSanitize());
 app.use(xss());
 
 // Serve static files with authentication
-app.use(
-  "/files",
-  authenticateToken,
-  express.static(path.join(__dirname, "public"))
-);
+
 // API Routes
 
 // Dynamically import routers

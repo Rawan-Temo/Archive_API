@@ -9,9 +9,10 @@ const {
   isAdmin,
   isUser,
 } = require("../../middlewares/authMiddleware");
+const downloadInforamtion = require("../../utils/infoFilesDownload");
 //SEARCH
 
-router.route("/search").post(authenticateToken, isUser,  async (req, res) => {
+router.route("/search").post(authenticateToken, isUser, async (req, res) => {
   await search(
     Information,
     ["subject"],
@@ -33,31 +34,44 @@ router.route("/search").post(authenticateToken, isUser,  async (req, res) => {
     res
   );
 });
-router.route("/autoComplete").post(authenticateToken, isUser,  async (req, res) => {
-  await autocomplete(Information, ["subject"], req, res);
-});
+router
+  .route("/autoComplete")
+  .post(authenticateToken, isUser, async (req, res) => {
+    await autocomplete(Information, ["subject"], req, res);
+  });
 
 //
 
-router.route("/deActivate-many").patch(authenticateToken, isUser,  async (req, res) => {
-  await deActivateMany(Information, req, res);
-}); // PATCH /api/Information/deActivate-many/:id
+router
+  .route("/download-information")
+  .post(authenticateToken, isUser, downloadInforamtion);
+//
+
+router
+  .route("/deActivate-many")
+  .patch(authenticateToken, isUser, async (req, res) => {
+    await deActivateMany(Information, req, res);
+  }); // PATCH /api/Information/deActivate-many/:id
 
 // Routes for getting all information and creating a new person
 router
   .route("/")
-  .get(authenticateToken, isUser,  InformationController.allInformation) // Get all information
-  .post(authenticateToken, isUser,  InformationController.createInformation); // Create a new Information
+  .get(authenticateToken, isUser, InformationController.allInformation) // Get all information
+  .post(authenticateToken, isUser, InformationController.createInformation); // Create a new Information
 
 // Routes for specific Information by ID
 router
   .route("/:id")
-  .get(authenticateToken, isUser,  InformationController.getInformationById) // Get a Information by ID
+  .get(authenticateToken, isUser, InformationController.getInformationById) // Get a Information by ID
   .patch(authenticateToken, isUser, InformationController.updateInformation); // Update a Information by ID
 
 // Route for deactivating a Information
 router
   .route("/deActivate/:id")
-  .patch(authenticateToken, isUser,  InformationController.deactivateInformation);
+  .patch(
+    authenticateToken,
+    isUser,
+    InformationController.deactivateInformation
+  );
 
 module.exports = router;
