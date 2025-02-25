@@ -11,6 +11,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 // Import and initialize database connection
 const connection = require("./db.js");
+const { authenticateToken } = require("./middlewares/authMiddleware.js");
 connection();
 // Initialize task scheduler
 require("./utils/taskScheduler");
@@ -23,7 +24,6 @@ app.use(cors());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   helmet({
@@ -56,6 +56,12 @@ app.use(mongoSanitize());
 // Data sanitization against XSS attacks
 app.use(xss());
 
+// Serve static files with authentication
+app.use(
+  "/files",
+  authenticateToken,
+  express.static(path.join(__dirname, "public"))
+);
 // API Routes
 
 // Dynamically import routers
@@ -89,6 +95,7 @@ for (const [route, routerPath] of Object.entries(routers)) {
     console.warn(`Skipping ${routerPath}: ${err.message}`);
   }
 }
+
 // API Routes Ends
 // 404 Handler
 app.use((req, res, next) => {
