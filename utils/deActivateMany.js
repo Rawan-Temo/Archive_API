@@ -19,7 +19,6 @@ exports.deActivateMany = async (model, req, res) => {
 
     // Step 1: Soft delete the models by updating the 'active' status
     if (model === Coordinate || model === Information || model === Person) {
-      console.log(req.user);
       if (role === "user") {
         result = await model.updateMany(
           { _id: { $in: Ids }, sectionId }, // Match documents with IDs in the array

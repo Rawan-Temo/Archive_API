@@ -86,7 +86,6 @@ const handleImages = async (req, res) => {
   try {
     const { informationId } = req.body; // Extract the informationId from the request body
 
-    console.log(req.files[0].filename);
     if (!informationId) {
       return res.status(400).json({ error: "informationId is required" });
     }
@@ -139,7 +138,6 @@ const deleteImages = async (req, res) => {
     // Delete each image file from the file system
     for (const image of imagesToDelete) {
       const imagePath = path.join(__dirname, "..", "..", "public", image.src); // Path to the image file
-      console.log(imagePath);
       if (fs.existsSync(imagePath)) {
         fs.unlinkSync(imagePath); // Delete the image file from the server
       }

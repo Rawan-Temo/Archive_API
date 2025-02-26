@@ -18,14 +18,14 @@ require("./utils/taskScheduler");
 
 // Middleware
 
+app.use(cors());
 app.use(express.json()); // Built-in JSON parser
 app.use(express.urlencoded({ extended: true }));
 app.use(
-  // "/files",
-  // authenticateToken,
+  "/files",
+  authenticateToken,
   express.static(path.join(__dirname, "public"))
 );
-app.use(cors());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }

@@ -29,7 +29,7 @@ const search = async (model, fields, populate, req, res) => {
       
     }
 
-    console.log(populateObject);
+  
     // Define the features query
     let features = new APIFeatures(
       model
