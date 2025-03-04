@@ -18,6 +18,27 @@ require("./utils/taskScheduler");
 
 // Middleware
 
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "trusted-cdn.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "trusted-cdn.com"],
+        imgSrc: ["'self'", "data:", "blob:", "trusted-cdn.com"],
+        mediaSrc: ["'self'", "blob:"], // Allow media from self and blob URLs
+        frameSrc: ["'self'", "blob:"], // ✅ Allow blob: URLs in iframes
+        connectSrc: ["'self'", "blob:"], // (Optional) Allow connections to blob: (WebSockets, Fetch, etc.)
+      },
+    },
+  })
+);
+
+// Data sanitization against NoSQL injection
+app.use(mongoSanitize());
+// Data sanitization against XSS attacks
+app.use(xss());
+
 app.use(cors());
 app.use(express.json()); // Built-in JSON parser
 app.use(express.urlencoded({ extended: true }));
@@ -26,22 +47,10 @@ app.use(
   authenticateToken,
   express.static(path.join(__dirname, "public"))
 );
+
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "trusted-cdn.com"],
-        styleSrc: ["'self'", "trusted-cdn.com"],
-        imgSrc: ["'self'", "data:", "trusted-cdn.com"],
-      },
-    },
-  })
-);
 
 // Rate limiting to prevent abuse
 const apiLimiter = rateLimit({
@@ -97,6 +106,13 @@ for (const [route, routerPath] of Object.entries(routers)) {
   }
 }
 
+// Serve React build files
+app.use(express.static(path.join(__dirname, "../build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+});
+console.log(path.join(__dirname, "../build", "index.html"));
 // API Routes Ends
 // 404 Handler
 app.use((req, res, next) => {
