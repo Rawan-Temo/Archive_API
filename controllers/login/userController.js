@@ -57,10 +57,6 @@ const createUser = async (req, res) => {
       username,
     });
 
-    if (existingUser) {
-      return res.status(400).json({ message: "Username already exists." });
-    }
-
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
