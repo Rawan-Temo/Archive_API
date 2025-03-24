@@ -12,7 +12,9 @@ const xss = require("xss-clean");
 // Import and initialize database connection
 const connection = require("./db.js");
 const { authenticateToken } = require("./middlewares/authMiddleware.js");
+
 connection();
+
 // Initialize task scheduler
 require("./utils/taskScheduler");
 

@@ -30,6 +30,7 @@
     "node-cron": "^3.0.3",
     "nodemon": "^3.1.7",
     "path": "^0.12.7",
+    "tileserver-gl-light": "^5.2.0",
     "unzipper": "^0.12.3",
     "xss-clean": "^0.1.4"
   }
