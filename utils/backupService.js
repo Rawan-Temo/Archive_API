@@ -9,12 +9,9 @@ const Seven = require("node-7z"); // Use 'node-7z' package for 7z compression
 const execAsync = util.promisify(exec);
 
 // MongoDB connection string
-const mongoUri = process.env.DB.replace(
-  "<db_password>",
-  process.env.DB_PASSWORD
-);
+const mongoUri = process.env.DB;
 // Replace with your MongoDB URI
-const dbName = "test"; // Replace with your database name
+const dbName = process.env.DB_NAME; // Replace with your database name
 
 // Paths
 const publicFolderPath = path.join(__dirname, "../public");

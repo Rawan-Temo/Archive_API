@@ -27,7 +27,14 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'", "trusted-cdn.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "trusted-cdn.com"],
-        imgSrc: ["'self'", "data:", "blob:", "trusted-cdn.com"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "blob:", // ✅ Explicitly allow blob URLs
+          "http://localhost:8000", // ✅ API server
+          "http://localhost:8080", // ✅ TileServer-GL
+          "trusted-cdn.com",
+        ],
         mediaSrc: ["'self'", "blob:"], // Allow media from self and blob URLs
         frameSrc: ["'self'", "blob:"], // ✅ Allow blob: URLs in iframes
         connectSrc: ["'self'", "blob:"], // (Optional) Allow connections to blob: (WebSockets, Fetch, etc.)

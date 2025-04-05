@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const DB = process.env.DB.replace("<db_password>", process.env.DB_PASSWORD);
+const DB = `${process.env.DB}/${process.env.DB_NAME}`;
 
 module.exports = async function connection() {
   try {
