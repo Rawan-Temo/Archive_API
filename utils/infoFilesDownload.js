@@ -99,7 +99,6 @@ const downloadInforamtion = async (req, res) => {
   if (!securityInfo) {
     return res.status(404).json({ error: "Security information not found" });
   }
-  console.log(securityInfo);
 
   res.setHeader("Content-Type", "application/zip");
   res.setHeader(
@@ -142,7 +141,6 @@ const downloadInforamtion = async (req, res) => {
 
   Object.keys(translations[lang]).forEach((key) => {
     const value = securityInfo[key];
-    console.log(key, value); // Log the key and value for debugging
     if (value) {
       let displayValue = "";
 
