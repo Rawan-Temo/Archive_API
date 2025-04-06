@@ -23,7 +23,10 @@ const allAudios = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter for querying and counting
-    const features = new APIFeatures(Audio.find(), req.query)
+    const features = new APIFeatures(
+      Audio.find().populate("informationId"),
+      req.query
+    )
       .filter()
       .sort()
       .limitFields()
@@ -58,10 +61,10 @@ const audioStorage = multer.diskStorage({
 
 const audioFileFilter = (req, file, cb) => {
   const validMimeTypes = [
-    "audio/mpeg", 
-    "audio/wav", 
-    "audio/ogg", 
-    "audio/mp4", 
+    "audio/mpeg",
+    "audio/wav",
+    "audio/ogg",
+    "audio/mp4",
     "audio/webm",
   ]; // Specify allowed audio types
   if (validMimeTypes.includes(file.mimetype)) {
@@ -124,7 +127,9 @@ const deleteAudios = async (req, res) => {
     const { ids } = req.body; // Assuming you pass an array of audio IDs to delete
 
     if (!ids || ids.length === 0) {
-      return res.status(400).json({ error: "No audio IDs provided for deletion" });
+      return res
+        .status(400)
+        .json({ error: "No audio IDs provided for deletion" });
     }
 
     // Find audios by their IDs
@@ -146,7 +151,8 @@ const deleteAudios = async (req, res) => {
     await Audio.deleteMany({ _id: { $in: ids } });
 
     res.status(200).json({
-      message: "Audios deleted successfully from both database and file system.",
+      message:
+        "Audios deleted successfully from both database and file system.",
     });
   } catch (error) {
     console.error(error);

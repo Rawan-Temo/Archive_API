@@ -4,7 +4,7 @@ const videoSchema = new mongoose.Schema(
   {
     informationId: {
       type: mongoose.Schema.Types.ObjectId, // References the News model
-      ref: "News", // Name of the related collection (News)
+      ref: "SecurityInformation", // Name of the related collection (News)
       required: true,
     },
     src: {
@@ -19,4 +19,3 @@ const videoSchema = new mongoose.Schema(
 videoSchema.index({ informationId: 1, src: 1 });
 const Video = mongoose.model("Video", videoSchema);
 module.exports = Video;
- 

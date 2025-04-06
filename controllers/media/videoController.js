@@ -23,7 +23,10 @@ const allVideos = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter for querying and counting
-    const features = new APIFeatures(Video.find(), req.query)
+    const features = new APIFeatures(
+      Video.find().populate("informationId"),
+      req.query
+    )
       .filter()
       .sort()
       .limitFields()
