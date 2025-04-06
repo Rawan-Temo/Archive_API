@@ -158,6 +158,7 @@ const getInformationById = async (req, res) => {
     if (!information) {
       return res.status(404).json({ message: "Information not found" });
     }
+    console.log(information);
 
     // Fetch related media for the information
     const mediaTypes = [Image, Video, Document, Audio];

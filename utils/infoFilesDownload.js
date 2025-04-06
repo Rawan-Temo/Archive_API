@@ -12,6 +12,7 @@ const { Document, Packer, Paragraph, TextRun } = require("docx");
 // Language translations for field labels
 const translations = {
   EN: {
+    subject: "Subject",
     sectionId: "Section",
     cityId: "City",
     countryId: "Country",
@@ -23,11 +24,13 @@ const translations = {
     parties: "Parties",
     sources: "Sources",
     people: "People",
+    addressDetails: "Address Details",
     coordinates: "Coordinates",
     note: "Note",
     details: "Details",
   },
   AR: {
+    subject: "الموضوع",
     sectionId: "القسم",
     cityId: "المدينة",
     countryId: "الدولة",
@@ -39,11 +42,13 @@ const translations = {
     parties: "الأطراف",
     sources: "المصادر",
     people: "الأشخاص",
+    addressDetails: "تفاصيل العنوان",
     coordinates: "الإحداثيات",
     note: "ملاحظة",
     details: "تفاصيل",
   },
   KU: {
+    subject: "Mijar",
     sectionId: "Beş",
     cityId: "Bajar",
     countryId: "Welat",
@@ -55,6 +60,7 @@ const translations = {
     parties: "Alih",
     sources: "Çavkanî",
     people: "Kes",
+    addressDetails: "Hûrîyên navnîşanê",
     coordinates: "Koordîn",
     note: "Têxe",
     details: "Hûr",
@@ -64,7 +70,6 @@ const translations = {
 const downloadInforamtion = async (req, res) => {
   const { informationId } = req.body;
   const lang = req.body.lang || "EN"; // Default to English if no lang is provided
-  console.log(lang, req.body.lang);
   if (!translations[lang]) {
     return res.status(400).json({ error: "Unsupported language" });
   }
@@ -94,6 +99,7 @@ const downloadInforamtion = async (req, res) => {
   if (!securityInfo) {
     return res.status(404).json({ error: "Security information not found" });
   }
+  console.log(securityInfo);
 
   res.setHeader("Content-Type", "application/zip");
   res.setHeader(
@@ -136,6 +142,7 @@ const downloadInforamtion = async (req, res) => {
 
   Object.keys(translations[lang]).forEach((key) => {
     const value = securityInfo[key];
+    console.log(key, value); // Log the key and value for debugging
     if (value) {
       let displayValue = "";
 
@@ -195,6 +202,10 @@ const downloadInforamtion = async (req, res) => {
           case "coordinates":
             displayValue = `(${value.coordinates || ""}) - ${value.note || ""}`;
             break;
+          case "note":
+            break;
+          case "details":
+            break;
           default:
             displayValue = value.toString();
         }
@@ -236,7 +247,7 @@ const downloadInforamtion = async (req, res) => {
             text: `${translations[lang]["details"]}: `,
             bold: true,
           }),
-          new TextRun({ text: securityInfo.details }),
+          new TextRun({ text: securityInfo.detiles }),
         ],
         spacing: { after: 200 },
         rightToLeft: lang === "AR", // Set right-to-left for Arabic
