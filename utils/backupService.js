@@ -9,10 +9,11 @@ const Seven = require("node-7z"); // Use 'node-7z' package for 7z compression
 const execAsync = util.promisify(exec);
 
 // MongoDB connection string
-const mongoUri = process.env.DB;
 // Replace with your MongoDB URI
 const dbName = process.env.DB_NAME; // Replace with your database name
-
+const DB_USER = process.env.DB_USER;
+const DB_PASS = process.env.DB_PASS;
+const mongoUri = process.env.DB;
 // Paths
 const publicFolderPath = path.join(__dirname, "../public");
 const unzipFolderPath = path.join(__dirname, "../public");
@@ -54,7 +55,7 @@ const BackupService = {
         if (res) res.write(`Exporting collection '${collection}'...\n`);
         else console.log(`Exporting collection '${collection}'...`);
         await execAsync(
-          `mongoexport --uri="${mongoUri}" --db=${dbName} --collection=${collection} --out="${jsonFilePath}" --jsonArray`
+          `mongoexport --uri="${mongoUri}" --db=${dbName} --collection=${collection} --out="${jsonFilePath}" --jsonArray   --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin"`
         );
         if (res)
           res.write(`Exported collection '${collection}' to ${jsonFilePath}\n`);
@@ -93,6 +94,7 @@ const BackupService = {
       } else {
         console.error(`Error during backup: ${error.message}`);
       }
+      console.error(`Error during restoration: ${error.message}`);
       return { success: false, message: "Failed to create backup", error };
     }
   },
@@ -130,10 +132,10 @@ const BackupService = {
         }
         replace
           ? await execAsync(
-              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --drop`
+              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --drop  --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin"`
             )
           : await execAsync(
-              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --mode=upsert`
+              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --mode=upsert --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin"`
             );
         if (res)
           res.write(
@@ -171,6 +173,8 @@ const BackupService = {
       } else {
         console.error(`Error during restoration: ${error.message}`);
       }
+      console.error(`Error during restoration: ${error.message}`);
+
       return { success: false, message: "Failed to restore backup", error };
     }
   },

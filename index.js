@@ -116,10 +116,12 @@ for (const [route, routerPath] of Object.entries(routers)) {
 }
 
 // Serve React build files
-app.use(express.static(path.join(__dirname, "../archive-project/build")));
+app.use(express.static(path.join(__dirname, "../archive-project-main/build")));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../archive-project/build", "index.html"));
+  res.sendFile(
+    path.join(__dirname, "../archive-project-main/build", "index.html")
+  );
 });
 // API Routes Ends
 // 404 Handler

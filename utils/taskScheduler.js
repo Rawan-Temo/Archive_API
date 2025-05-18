@@ -9,6 +9,8 @@ cron.schedule("0 0 * * 1", async () => {
     const result = await BackupService.createBackup();
     if (result.success) {
       console.log(result.message);
+      const newBackup = new Backup({ root: result.backupRoot });
+      await newBackup.save();
     } else {
       console.error(result.message, result.error);
     }
