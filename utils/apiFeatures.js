@@ -16,6 +16,38 @@ class APIFeatures {
     this.query = this.query.find(JSON.parse(queryStr));
     return this;
   }
+  //new filter
+  // filter() {
+  //   const queryObj = { ...this.queryString };
+  //   const excludedFields = ["page", "sort", "limit", "fields", "month"];
+  //   excludedFields.forEach((el) => delete queryObj[el]);
+
+  //   const mongoQuery = {};
+
+  //   for (let key in queryObj) {
+  //     if (/\b(gte|gt|lte|lt)\b/.test(key)) continue;
+
+  //     if (key.endsWith("_starts_with")) {
+  //       const field = key.replace("_starts_with", "");
+  //       mongoQuery[field] = { $regex: `^${queryObj[key]}`, $options: "i" };
+  //     } else if (key.endsWith("_ends_with")) {
+  //       const field = key.replace("_ends_with", "");
+  //       mongoQuery[field] = { $regex: `${queryObj[key]}$`, $options: "i" };
+  //     } else if (key.endsWith("_contains")) {
+  //       const field = key.replace("_contains", "");
+  //       mongoQuery[field] = { $regex: queryObj[key], $options: "i" };
+  //     } else {
+  //       mongoQuery[key] = queryObj[key];
+  //     }
+  //   }
+
+  //   // Handle operators like gte, gt, lte, lt
+  //   let queryStr = JSON.stringify(mongoQuery);
+  //   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+  //   this.query = this.query.find(JSON.parse(queryStr));
+  //   return this;
+  // }
 
   //2) SORT
   sort() {
