@@ -5,9 +5,33 @@ const Image = require("../../models/media/image");
 const Video = require("../../models/media/video");
 const APIFeatures = require("../../utils/apiFeatures");
 const { ObjectId } = require("mongoose").Types;
+const { search } = require("../../utils/serach");
 
 // Get all information
 const allInformation = async (req, res) => {
+  if (req.query.search) {
+    await search(
+      Information,
+      ["subject"],
+      [
+        { path: "sectionId", select: "name" }, // Only include `name` from Section
+        { path: "cityId", select: "name" },
+        { path: "countryId", select: "name" },
+        { path: "governmentId", select: "name" },
+        { path: "regionId", select: "name" },
+        { path: "streetId", select: "name" },
+        { path: "villageId", select: "name" },
+        { path: "events", select: "name" }, // Only include specific fields
+        { path: "parties", select: "name" },
+        { path: "sources", select: "source_name" },
+        { path: "people", select: "firstName surName" },
+        { path: "coordinates", select: "coordinates note" },
+      ],
+      req,
+      res
+    );
+    return;
+  }
   try {
     const role = req.user.role;
     const sectionId = new ObjectId(req.user.sectionId);

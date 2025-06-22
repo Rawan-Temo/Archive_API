@@ -1,5 +1,6 @@
 const Street = require("../../models/Address/street");
 const APIFeatures = require("../../utils/apiFeatures");
+const { search } = require("../../utils/serach");
 
 // Create a new street
 const createStreet = async (req, res) => {
@@ -17,6 +18,10 @@ const createStreet = async (req, res) => {
 
 // Get all streets with pagination and filtering
 const getAllStreets = async (req, res) => {
+  if (req.query.search) {
+    await search(Street, ["name"], "city", req, res);
+    return;
+  }
   try {
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];

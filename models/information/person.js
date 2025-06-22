@@ -108,12 +108,6 @@ personSchema.index({
   firstName: 1,
   surName: 1,
   fatherName: 1,
-  cityId: 1,
-  countryId: 1,
-  governmentId: 1,
-  regionId: 1,
-  streetId: 1,
-  villageId: 1,
 });
 const Person = mongoose.model("Person", personSchema);
 

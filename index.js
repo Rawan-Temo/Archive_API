@@ -92,6 +92,7 @@ const routers = {
   "/api/Regions": "./routes/Address/regionRouter.js",
   "/api/Villages": "./routes/Address/villageRouter.js",
   "/api/Sources": "./routes/details/sourceRouter.js",
+  "/api/Fields": "./routes/details/fieldRouter.js",
   "/api/Events": "./routes/details/eventRouter.js",
   "/api/Parties": "./routes/details/partyRouter.js",
   "/api/Sections": "./routes/details/sectionRouter.js",

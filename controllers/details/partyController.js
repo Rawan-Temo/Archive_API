@@ -1,8 +1,13 @@
 const Party = require("../../models/details/party");
 const APIFeatures = require("../../utils/apiFeatures");
+const { search } = require("../../utils/serach");
 
 // Get all parties
 const getAllParties = async (req, res) => {
+  if (req.query.search) {
+    await search(Party, ["name"], "", req, res);
+    return;
+  }
   try {
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];
@@ -21,7 +26,7 @@ const getAllParties = async (req, res) => {
     const [parties, numberOfActiveParties] = await Promise.all([
       features.query, // Get the filtered and paginated parties
       Party.countDocuments(parsedQuery), // Count the filtered active parties
-    ]); 
+    ]);
 
     res.status(200).json({
       status: "success",

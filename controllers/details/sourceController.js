@@ -1,8 +1,13 @@
 const Source = require("../../models/details/source");
 const APIFeatures = require("../../utils/apiFeatures");
+const { search } = require("../../utils/serach");
 
 // Get all sources
 const getAllSources = async (req, res) => {
+  if (req.query.search) {
+    await search(Source, ["source_name"], "field", req, res);
+    return;
+  }
   try {
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];
@@ -13,7 +18,7 @@ const getAllSources = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Source.find(), req.query)
+    const features = new APIFeatures(Source.find().populate("field"), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -51,7 +56,7 @@ const createSource = async (req, res) => {
 // Get a source by ID
 const getSourceById = async (req, res) => {
   try {
-    const source = await Source.findById(req.params.id);
+    const source = await Source.findById(req.params.id).populate("field");
     if (!source) {
       return res.status(404).json({ message: "Source not found" });
     }

@@ -1,8 +1,29 @@
 const Coordinate = require("../../models/information/coordinate");
 const APIFeatures = require("../../utils/apiFeatures");
 const { ObjectId } = require("mongoose").Types;
+const { search } = require("../../utils/serach");
+
 // Get all coordinates
 const allCoordinates = async (req, res) => {
+  if (req.query.search) {
+    await search(
+      Coordinate,
+      ["coordinates"],
+      [
+        { path: "sectionId", select: "name" },
+        { path: "cityId", select: "name" },
+        { path: "countryId", select: "name" },
+        { path: "governmentId", select: "name" },
+        { path: "regionId", select: "name" },
+        { path: "streetId", select: "name" },
+        { path: "villageId", select: "name" },
+        { path: "sources", select: "source_name" },
+      ],
+      req,
+      res
+    );
+    return;
+  }
   try {
     const role = req.user.role;
     const sectionId = new ObjectId(req.user.sectionId);

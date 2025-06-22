@@ -1,7 +1,12 @@
 const Village = require("../../models/Address/village");
 const APIFeatures = require("../../utils/apiFeatures");
+const { search } = require("../../utils/serach");
 // Get all villages
 const getAllVillages = async (req, res) => {
+  if (req.query.search) {
+    await search(Village, ["name"], "city", req, res);
+    return;
+  }
   try {
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];

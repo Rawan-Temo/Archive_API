@@ -1,7 +1,12 @@
 const City = require("../../models/Address/city");
 const APIFeatures = require("../../utils/apiFeatures");
+const { search } = require("../../utils/serach");
 
 const getAllCities = async (req, res) => {
+  if (req.query.search) {
+    await search(City, ["name"], "country", req, res);
+    return;
+  }
   try {
     // Step 1: Filter the query object to remove special fields
     const queryObj = { ...req.query };

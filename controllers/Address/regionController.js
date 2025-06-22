@@ -1,7 +1,12 @@
 const Region = require("../../models/Address/region");
 const APIFeatures = require("../../utils/apiFeatures");
+const { search } = require("../../utils/serach");
 // Get all regions
 const getAllRegions = async (req, res) => {
+  if (req.query.search) {
+    await search(Region, ["name"], "city", req, res);
+    return;
+  }
   try {
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];
@@ -12,7 +17,7 @@ const getAllRegions = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Region.find().populate('city'), req.query)
+    const features = new APIFeatures(Region.find().populate("city"), req.query)
       .filter()
       .sort()
       .limitFields()

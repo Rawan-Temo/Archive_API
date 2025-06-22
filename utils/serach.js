@@ -2,7 +2,7 @@ const APIFeatures = require("./apiFeatures");
 
 const search = async (model, fields, populate, req, res) => {
   try {
-    const query = req.body.search; // The search term from the client
+    const query = req.query.search; // The search term from the client
 
     // Ensure the search query is provided
     if (!query) {
@@ -11,7 +11,6 @@ const search = async (model, fields, populate, req, res) => {
         message: "Search query is required",
       });
     }
-
 
     // Perform fuzzy search with dynamic fields
     const tokens = query.split(/\s+/).map((word) => new RegExp(word, "i")); // Split the query into tokens
@@ -26,10 +25,8 @@ const search = async (model, fields, populate, req, res) => {
       populateObject = eval(`(${populate})`);
     } catch (err) {
       // If evaluation fails, fallback to the string as it is
-      
     }
 
-  
     // Define the features query
     let features = new APIFeatures(
       model

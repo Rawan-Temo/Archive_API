@@ -5,6 +5,7 @@ const Village = require("../../models/Address/village");
 const Region = require("../../models/Address/region");
 const Country = require("../../models/Address/country");
 const APIFeatures = require("../../utils/apiFeatures");
+const { search } = require("../../utils/serach");
 // Create a new country
 const createCountry = async (req, res) => {
   try {
@@ -19,6 +20,10 @@ const createCountry = async (req, res) => {
 
 // Get all countries
 const getAllCountries = async (req, res) => {
+  if (req.query.search) {
+    await search(Country, ["name"], "", req, res);
+    return;
+  }
   try {
     // Convert the filtered query into a plain object for counting
     const queryObj = { ...req.query };

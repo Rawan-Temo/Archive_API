@@ -2,7 +2,12 @@ const APIFeatures = require("../../utils/apiFeatures");
 const User = require("../../models/login/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { search } = require("../../utils/serach");
 const allUsers = async (req, res) => {
+  if (req.query.search) {
+    await search(User, ["username"], "sectionId", req, res);
+    return;
+  }
   try {
     const features = new APIFeatures(
       User.find().populate("sectionId"),
@@ -25,6 +30,10 @@ const allUsers = async (req, res) => {
       features.query,
       User.countDocuments(parsedQuery),
     ]);
+    users.forEach((user) => {
+      user.password = undefined; // Exclude password from the response
+    });
+
     res.status(200).json({
       status: "success",
       numberOfActiveUsers,
@@ -147,6 +156,9 @@ const login = async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username }).lean();
+
+    // exclude password from the user object
+
     if (!user || user.active === false) {
       return res
         .status(400)
@@ -171,6 +183,9 @@ const login = async (req, res) => {
         expiresIn: "10h",
       }
     );
+    if (user) {
+      user.password = undefined;
+    }
 
     res.status(200).json({
       message: "Login successful",

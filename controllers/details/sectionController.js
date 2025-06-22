@@ -1,8 +1,13 @@
 const Section = require("../../models/details/section");
 const APIFeatures = require("../../utils/apiFeatures");
+const { search } = require("../../utils/serach");
 
 // Get all parties
 const getAllSections = async (req, res) => {
+  if (req.query.search) {
+    await search(Section, ["name"], "", req, res);
+    return;
+  }
   try {
     const queryObj = { ...req.query };
     const excludedFields = ["page", "sort", "limit", "fields"];

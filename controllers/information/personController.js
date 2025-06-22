@@ -3,9 +3,29 @@ const APIFeatures = require("../../utils/apiFeatures");
 const multer = require("multer");
 const path = require("path");
 const { ObjectId } = require("mongoose").Types;
+const { search } = require("../../utils/serach");
 
 // Get all people
 const allPeople = async (req, res) => {
+  if (req.query.search) {
+    await search(
+      Person,
+      ["firstName", "surName", "fatherName"],
+      [
+        { path: "sectionId", select: "name" },
+        { path: "cityId", select: "name" },
+        { path: "countryId", select: "name" },
+        { path: "governmentId", select: "name" },
+        { path: "regionId", select: "name" },
+        { path: "streetId", select: "name" },
+        { path: "villageId", select: "name" },
+        { path: "sources", select: "source_name" },
+      ],
+      req,
+      res
+    );
+    return;
+  }
   try {
     const role = req.user.role;
     const sectionId = new ObjectId(req.user.sectionId);
