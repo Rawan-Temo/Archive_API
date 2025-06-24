@@ -16,7 +16,7 @@ const translations = {
     sectionId: "Section",
     cityId: "City",
     countryId: "Country",
-    governmentId: "Government",
+    governorateId: "Governorate",
     regionId: "Region",
     streetId: "Street",
     villageId: "Village",
@@ -34,7 +34,7 @@ const translations = {
     sectionId: "القسم",
     cityId: "المدينة",
     countryId: "الدولة",
-    governmentId: "المحافظة",
+    governorateId: "المحافظة",
     regionId: "المنطقة",
     streetId: "الشارع",
     villageId: "القرية",
@@ -52,7 +52,7 @@ const translations = {
     sectionId: "Beş",
     cityId: "Bajar",
     countryId: "Welat",
-    governmentId: "Hikûmet",
+    governorateId: "Hikûmet",
     regionId: "Herêm",
     streetId: "Rê",
     villageId: "Gund",
@@ -84,7 +84,7 @@ const downloadInforamtion = async (req, res) => {
       { path: "sectionId", select: "name" },
       { path: "cityId", select: "name" },
       { path: "countryId", select: "name" },
-      { path: "governmentId", select: "name" },
+      { path: "governorateId", select: "name" },
       { path: "regionId", select: "name" },
       { path: "streetId", select: "name" },
       { path: "villageId", select: "name" },
@@ -151,7 +151,7 @@ const downloadInforamtion = async (req, res) => {
               case "sectionId":
               case "cityId":
               case "countryId":
-              case "governmentId":
+              case "governorateId":
               case "regionId":
               case "streetId":
               case "villageId":
@@ -179,7 +179,7 @@ const downloadInforamtion = async (req, res) => {
           case "sectionId":
           case "cityId":
           case "countryId":
-          case "governmentId":
+          case "governorateId":
           case "regionId":
           case "streetId":
           case "villageId":

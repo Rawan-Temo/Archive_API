@@ -12,14 +12,13 @@ const countrySchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 countrySchema.index(
   { name: 1 },
   { unique: true, partialFilterExpression: { active: true } }
 );
-
 
 const Country = mongoose.model("Country", countrySchema);
 

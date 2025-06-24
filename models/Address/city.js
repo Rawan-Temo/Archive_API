@@ -7,10 +7,15 @@ const citySchema = new mongoose.Schema(
       required: [true, "A city must have a name"],
       trim: true,
     },
-    country: {
+    parent: {
+      type: String,
+      enum: ["County", "Governorate"], // Replace with actual country names
+      required: [true, "A county must belong to a country"],
+    },
+    parentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Country",
-      required: [true, "A city must belong to a Country"],
+      refPath: "parent", // Dynamically reference the model based on the parent field
+      required: [true, "A county must have a parent ID"],
     },
     active: {
       type: Boolean,

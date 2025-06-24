@@ -20,7 +20,7 @@ router.route("/search").post(authenticateToken, isUser, async (req, res) => {
       { path: "sectionId", select: "name" }, // Only include `name` from Section
       { path: "cityId", select: "name" },
       { path: "countryId", select: "name" },
-      { path: "governmentId", select: "name" },
+      { path: "governorateId", select: "name" },
       { path: "regionId", select: "name" },
       { path: "streetId", select: "name" },
       { path: "villageId", select: "name" },

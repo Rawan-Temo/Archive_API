@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 
-const governmentSchema = new mongoose.Schema(
+const governorateSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "A government entity must have a name"],
+      required: [true, "A governorate entity must have a name"],
       trim: true,
     },
     country: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Country",
-      required: [true, "A government must belong to a country"],
+      required: [true, "A governorate must belong to a country"],
     },
     active: {
       type: Boolean,
@@ -22,11 +22,10 @@ const governmentSchema = new mongoose.Schema(
   }
 );
 
-governmentSchema.index(
+governorateSchema.index(
   { name: 1 },
   { unique: true, partialFilterExpression: { active: true } }
 );
 
-const Government = mongoose.model("Government", governmentSchema);
-
-module.exports = Government;
+const Governorate = mongoose.model("Governorate", governorateSchema);
+module.exports = Governorate;

@@ -1,10 +1,11 @@
+const mongoose = require("mongoose");
 const City = require("../../models/Address/city");
 const APIFeatures = require("../../utils/apiFeatures");
 const { search } = require("../../utils/serach");
 
 const getAllCities = async (req, res) => {
   if (req.query.search) {
-    await search(City, ["name"], "country", req, res);
+    await search(City, ["name"], "parentId", req, res);
     return;
   }
   try {
@@ -19,7 +20,10 @@ const getAllCities = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Step 3: Use APIFeatures for advanced queries (filter, sort, limitFields, paginate)
-    const features = new APIFeatures(City.find().populate("country"), req.query)
+    const features = new APIFeatures(
+      City.find().populate({ path: "parentId" }),
+      req.query
+    )
       .filter()
       .sort()
       .limitFields()
@@ -45,7 +49,23 @@ const getAllCities = async (req, res) => {
 
 const createCity = async (req, res) => {
   try {
-    const newCity = await City.create(req.body);
+    const { parent, parentId, name } = req.body;
+
+    // Dynamically get the model
+    const ParentModel = mongoose.model(parent);
+
+    // Check if the ID exists in the correct model
+    const parentExists = await ParentModel.findById(parentId);
+    if (!parentExists) {
+      return res.status(400).json({
+        status: "fail",
+        message: `No ${parent} found with ID ${parentId}`,
+      });
+    }
+
+    // Create the city
+    const newCity = await City.create({ parent, parentId, name });
+
     res.status(201).json({
       status: "success",
       data: newCity,
@@ -54,10 +74,9 @@ const createCity = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-
 const getCityById = async (req, res) => {
   try {
-    const city = await City.findById(req.params.id).populate("country");
+    const city = await City.findById(req.params.id).populate("parentId");
     if (!city) {
       return res.status(404).json({ message: "No city found with that ID" });
     }

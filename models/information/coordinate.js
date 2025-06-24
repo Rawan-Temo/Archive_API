@@ -18,17 +18,18 @@ const coordinatesSchema = new mongoose.Schema(
     cityId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "City",
-      required: true,
     },
     countryId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
       ref: "Country",
     },
-    governmentId: {
+    governorateId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Government",
-      required: true,
+      ref: "Governorate",
+    },
+    countyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "County",
     },
     regionId: {
       type: mongoose.Schema.Types.ObjectId,

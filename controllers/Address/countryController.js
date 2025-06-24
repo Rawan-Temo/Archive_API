@@ -1,5 +1,5 @@
 const City = require("../../models/Address/city");
-const Government = require("../../models/Address/government");
+const Governorate = require("../../models/Address/governorate");
 const Street = require("../../models/Address/street");
 const Village = require("../../models/Address/village");
 const Region = require("../../models/Address/region");
@@ -59,8 +59,8 @@ const getAllCountries = async (req, res) => {
 // Get a country by name
 const getCountryByName = async (req, res) => {
   try {
-    const { name } = req.params;
-    const country = await Country.findOne({ name });
+    const { id } = req.params;
+    const country = await Country.findById(id);
 
     if (!country) {
       return res.status(404).json({ message: "Country not found" });
@@ -141,13 +141,13 @@ const getAllCountriesWithDetails = async (req, res) => {
       Country.countDocuments(parsedQuery), // Count filtered documents
     ]);
 
-    // For each country, dynamically fetch cities and government data
+    // For each country, dynamically fetch cities and  data
     const countryTree = await Promise.all(
       countries.map(async (country) => {
-        // Fetch cities and governments associated with the country
-        const [cities, governments] = await Promise.all([
+        // Fetch cities and  associated with the country
+        const [cities, governorates] = await Promise.all([
           City.find({ country: country._id }).select("name"), // Fetch cities by countryId
-          Government.find({ country: country._id }).select("name"), // Fetch government by countryId
+          Governorate.find({ country: country._id }).select("name"), // Fetch  by countryId
         ]);
 
         // For each city, fetch streets, villages, and regions
@@ -172,7 +172,7 @@ const getAllCountriesWithDetails = async (req, res) => {
         return {
           id: country._id,
           name: country.name,
-          governments, // Add government details
+          governorates, // Add  details
           cities: citiesWithDetails, // Add cities with nested details
         };
       })

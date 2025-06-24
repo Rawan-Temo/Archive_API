@@ -86,7 +86,8 @@ app.use(xss());
 // Dynamically import routers
 const routers = {
   "/api/Countries": "./routes/Address/contryRouter.js",
-  "/api/Governments": "./routes/Address/governmentRouter.js",
+  "/api/Governorates": "./routes/Address/governorateRouter.js",
+  "/api/Counties": "./routes/Address/countyRouter.js",
   "/api/Cities": "./routes/Address/cityRouter.js",
   "/api/Streets": "./routes/Address/streetRouter.js",
   "/api/Regions": "./routes/Address/regionRouter.js",

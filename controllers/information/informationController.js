@@ -17,7 +17,8 @@ const allInformation = async (req, res) => {
         { path: "sectionId", select: "name" }, // Only include `name` from Section
         { path: "cityId", select: "name" },
         { path: "countryId", select: "name" },
-        { path: "governmentId", select: "name" },
+        { path: "governorateId", select: "name" },
+        { path: "countyId", select: "name" },
         { path: "regionId", select: "name" },
         { path: "streetId", select: "name" },
         { path: "villageId", select: "name" },
@@ -42,7 +43,8 @@ const allInformation = async (req, res) => {
           { path: "sectionId", select: "name" }, // Only include `name` from Section
           { path: "cityId", select: "name" },
           { path: "countryId", select: "name" },
-          { path: "governmentId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
           { path: "regionId", select: "name" },
           { path: "streetId", select: "name" },
           { path: "villageId", select: "name" },
@@ -64,7 +66,8 @@ const allInformation = async (req, res) => {
           { path: "sectionId", select: "name" }, // Only include `name` from Section
           { path: "cityId", select: "name" },
           { path: "countryId", select: "name" },
-          { path: "governmentId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
           { path: "regionId", select: "name" },
           { path: "streetId", select: "name" },
           { path: "villageId", select: "name" },
@@ -147,7 +150,8 @@ const getInformationById = async (req, res) => {
         { path: "sectionId", select: "name" },
         { path: "cityId", select: "name" },
         { path: "countryId", select: "name" },
-        { path: "governmentId", select: "name" },
+        { path: "governorateId", select: "name" },
+        { path: "countyId", select: "name" },
         { path: "regionId", select: "name" },
         { path: "streetId", select: "name" },
         { path: "villageId", select: "name" },
@@ -167,7 +171,8 @@ const getInformationById = async (req, res) => {
         { path: "sectionId", select: "name" },
         { path: "cityId", select: "name" },
         { path: "countryId", select: "name" },
-        { path: "governmentId", select: "name" },
+        { path: "governorateId", select: "name" },
+        { path: "countyId", select: "name" },
         { path: "regionId", select: "name" },
         { path: "streetId", select: "name" },
         { path: "villageId", select: "name" },
@@ -182,7 +187,6 @@ const getInformationById = async (req, res) => {
     if (!information) {
       return res.status(404).json({ message: "Information not found" });
     }
-    console.log(information);
 
     // Fetch related media for the information
     const mediaTypes = [Image, Video, Document, Audio];

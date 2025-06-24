@@ -55,7 +55,7 @@ const BackupService = {
         if (res) res.write(`Exporting collection '${collection}'...\n`);
         else console.log(`Exporting collection '${collection}'...`);
         await execAsync(
-          `mongoexport --uri="${mongoUri}" --db=${dbName} --collection=${collection} --out="${jsonFilePath}" --jsonArray   --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin"`
+          `mongoexport --uri="${mongoUri}" --db=${dbName} --collection=${collection} --out="${jsonFilePath}" --jsonArray   `
         );
         if (res)
           res.write(`Exported collection '${collection}' to ${jsonFilePath}\n`);
@@ -130,12 +130,13 @@ const BackupService = {
           else console.log(`Skipping empty file: ${jsonFilePath}`);
           continue; // Skip empty files
         }
+        //  --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin" this for db authentication
         replace
           ? await execAsync(
-              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --drop  --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin"`
+              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --drop `
             )
           : await execAsync(
-              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --mode=upsert --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin"`
+              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --mode=upsert`
             );
         if (res)
           res.write(
