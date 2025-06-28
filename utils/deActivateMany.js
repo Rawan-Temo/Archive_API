@@ -6,7 +6,7 @@ exports.deActivateMany = async (model, req, res) => {
   try {
     const Ids = req.body.ids;
     const role = req.user?.role;
-    const sectionId = new ObjectId(req.user.sectionId);
+    const sectionId = new ObjectId (req.user.sectionId);
     let result;
 
     // Validate input

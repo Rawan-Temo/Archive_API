@@ -74,10 +74,6 @@ const authLimiter = rateLimit({
   message: "Too many login attempts, please try again later.",
 });
 app.use("/api/Users/login", authLimiter);
-// Data sanitization against NoSQL injection
-app.use(mongoSanitize());
-// Data sanitization against XSS attacks
-app.use(xss());
 
 // Serve static files with authentication
 
