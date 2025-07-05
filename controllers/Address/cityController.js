@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const City = require("../../models/Address/city");
 const APIFeatures = require("../../utils/apiFeatures");
 const { search } = require("../../utils/serach");
+const path = require("path");
 
 const getAllCities = async (req, res) => {
   if (req.query.search) {
@@ -21,7 +22,12 @@ const getAllCities = async (req, res) => {
 
     // Step 3: Use APIFeatures for advanced queries (filter, sort, limitFields, paginate)
     const features = new APIFeatures(
-      City.find().populate({ path: "parentId" }),
+      City.find().populate({
+        path: "parentId",
+        populate: {
+          path: "country",
+        },
+      }),
       req.query
     )
       .filter()

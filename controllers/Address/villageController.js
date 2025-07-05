@@ -17,7 +17,20 @@ const getAllVillages = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Village.find().populate("city"), req.query)
+    const features = new APIFeatures(
+      Village.find().populate({
+        path: "city",
+        populate: {
+          path: "parentId",
+          select: "country name", // assuming `country` is a field in parentId
+          populate: {
+            path: "country",
+            select: "name", // select the fields you want from country
+          },
+        },
+      }),
+      req.query
+    )
       .filter()
       .sort()
       .limitFields()
