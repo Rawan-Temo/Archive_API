@@ -102,6 +102,7 @@ const routers = {
   "/api/media/documents": "./routes/media/documentRouter.js",
   "/api/Users": "./routes/login/userRouter.js",
   "/api/backup": "./routes/backUp/backupRouter.js",
+  "/api/Statistics": "./routes/statistics/counterRouter.js",
 };
 
 for (const [route, routerPath] of Object.entries(routers)) {

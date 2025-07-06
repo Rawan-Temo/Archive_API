@@ -14,7 +14,6 @@ const { search, autocomplete } = require("../../utils/serach");
 router.route("/search").post(authenticateToken, isUser, async (req, res) => {
   await search(Governorate, ["name"], "country", req, res);
 });
-console.log(1);
 router
   .route("/autoComplete")
   .post(authenticateToken, isUser, async (req, res) => {

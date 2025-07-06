@@ -19,7 +19,23 @@ const createStreet = async (req, res) => {
 // Get all streets with pagination and filtering
 const getAllStreets = async (req, res) => {
   if (req.query.search) {
-    await search(Street, ["name"], "city", req, res);
+    await search(
+      Street,
+      ["name"],
+      {
+        path: "city",
+        populate: {
+          path: "parentId",
+          select: "country name", // assuming `country` is a field in parentId
+          populate: {
+            path: "country",
+            select: "name", // select the fields you want from country
+          },
+        },
+      },
+      req,
+      res
+    );
     return;
   }
   try {

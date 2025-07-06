@@ -6,7 +6,18 @@ const path = require("path");
 
 const getAllCities = async (req, res) => {
   if (req.query.search) {
-    await search(City, ["name"], "parentId", req, res);
+    await search(
+      City,
+      ["name"],
+      {
+        path: "parentId",
+        populate: {
+          path: "country",
+        },
+      },
+      req,
+      res
+    );
     return;
   }
   try {

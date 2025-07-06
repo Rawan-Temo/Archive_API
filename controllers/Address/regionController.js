@@ -4,7 +4,23 @@ const { search } = require("../../utils/serach");
 // Get all regions
 const getAllRegions = async (req, res) => {
   if (req.query.search) {
-    await search(Region, ["name"], "city", req, res);
+    await search(
+      Region,
+      ["name"],
+      {
+        path: "city",
+        populate: {
+          path: "parentId",
+          select: "country name", // assuming `country` is a field in parentId
+          populate: {
+            path: "country",
+            select: "name", // select the fields you want from country
+          },
+        },
+      },
+      req,
+      res
+    );
     return;
   }
   try {
