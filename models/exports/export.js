@@ -1,0 +1,20 @@
+const mongoose = require("mongoose");
+const exportSchema = new mongoose.Schema({
+  code: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  details: {
+    type: String,
+  },
+  questions: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Question",
+    },
+  ],
+});
+
+const Export = mongoose.model("Export", exportSchema);
+module.exports = Export;
