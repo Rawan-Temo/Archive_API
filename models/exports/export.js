@@ -9,10 +9,7 @@ const exportSchema = new mongoose.Schema({
     type: String,
   },
   questions: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Question",
-    },
+  
   ],
 });
 
