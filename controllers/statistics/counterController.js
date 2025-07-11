@@ -13,9 +13,17 @@ const Section = require("../../models/details/section");
 const Person = require("../../models/information/person");
 const Information = require("../../models/information/information");
 const Coordinate = require("../../models/information/coordinate");
+const APIFeatures = require("../../utils/apiFeatures");
 
 const countDocuments = async (req, res) => {
   try {
+    const queryObj = { ...req.query };
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const parsedQuery = JSON.parse(queryStr);
     const [
       cityCount,
       countryCount,
@@ -33,21 +41,21 @@ const countDocuments = async (req, res) => {
       informationCount,
       coordinateCount,
     ] = await Promise.all([
-      City.countDocuments({ active: true }),
-      Country.countDocuments({ active: true }),
-      Governorate.countDocuments({ active: true }),
-      County.countDocuments({ active: true }),
-      Street.countDocuments({ active: true }),
-      Region.countDocuments({ active: true }),
-      Village.countDocuments({ active: true }),
-      Source.countDocuments({ active: true }),
-      Field.countDocuments({ active: true }),
-      Event.countDocuments({ active: true }),
-      Party.countDocuments({ active: true }),
-      Section.countDocuments({ active: true }),
-      Person.countDocuments({ active: true }),
-      Information.countDocuments({ active: true }),
-      Coordinate.countDocuments({ active: true }),
+      City.countDocuments({ active: true, ...parsedQuery }),
+      Country.countDocuments({ active: true, ...parsedQuery }),
+      Governorate.countDocuments({ active: true, ...parsedQuery }),
+      County.countDocuments({ active: true, ...parsedQuery }),
+      Street.countDocuments({ active: true, ...parsedQuery }),
+      Region.countDocuments({ active: true, ...parsedQuery }),
+      Village.countDocuments({ active: true, ...parsedQuery }),
+      Source.countDocuments({ active: true, ...parsedQuery }),
+      Field.countDocuments({ active: true, ...parsedQuery }),
+      Event.countDocuments({ active: true, ...parsedQuery }),
+      Party.countDocuments({ active: true, ...parsedQuery }),
+      Section.countDocuments({ active: true, ...parsedQuery }),
+      Person.countDocuments({ active: true, ...parsedQuery }),
+      Information.countDocuments({ active: true, ...parsedQuery }),
+      Coordinate.countDocuments({ active: true, ...parsedQuery }),
     ]);
 
     res.status(200).json({
@@ -75,5 +83,123 @@ const countDocuments = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+const countInformation = async (req, res) => {
+  try {
+    const queryObj = { ...req.query };
+    const excludedFields = [
+      "page",
+      "sort",
+      "limit",
+      "fields",
+      "categoryStatistics",
+    ];
+    excludedFields.forEach((el) => delete queryObj[el]);
 
-module.exports = { countDocuments };
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const parsedQuery = JSON.parse(queryStr);
+    const category = req.query.categoryStatistics;
+    let Model;
+    let infoField; // The field to match inside Information
+
+    switch (category) {
+      case "section":
+        Model = Section;
+        infoField = "sectionId";
+        break;
+      case "city":
+        Model = City;
+        infoField = "cityId";
+        break;
+      case "country":
+        Model = Country;
+        infoField = "countryId";
+        break;
+      case "governorate":
+        Model = Governorate;
+        infoField = "governorateId";
+        break;
+      case "county":
+        Model = County;
+        infoField = "countyId";
+        break;
+      case "region":
+        Model = Region;
+        infoField = "regionId";
+        break;
+      case "street":
+        Model = Street;
+        infoField = "streetId";
+        break;
+      case "village":
+        Model = Village;
+        infoField = "villageId";
+        break;
+      case "event":
+        Model = Event;
+        infoField = "events";
+        break;
+      case "party":
+        Model = Party;
+        infoField = "parties";
+        break;
+      case "source":
+        Model = Source;
+        infoField = "sources";
+        break;
+      default:
+        return res.status(400).json({
+          status: "fail",
+          message: "Invalid category",
+        });
+    }
+
+    // Get all items in the category
+    // Apply the parsed filter to count active documents
+    const features = new APIFeatures(Model.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    // Get paginated students
+    const items = await features.query;
+    // For each item, count Information documents
+    const counts = await Promise.all(
+      items.map(async (item) => {
+        let count;
+        if (["events", "parties", "sources"].includes(infoField)) {
+          // If array field, use $in
+          count = await Information.countDocuments({
+            [infoField]: item._id,
+            active: true,
+            ...parsedQuery,
+          });
+        } else {
+          console.log(infoField, item._id);
+          count = await Information.countDocuments({
+            [infoField]: item._id,
+            active: true,
+            ...parsedQuery,
+          });
+        }
+
+        return {
+          _id: item._id,
+          name: item.name || item.source_name,
+          infoCount: count,
+        };
+      })
+    );
+
+    res.status(200).json({
+      status: "success",
+      numberOfItems: items.length,
+      category,
+      data: counts,
+    });
+  } catch (error) {
+    console.error("Error counting information:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+module.exports = { countDocuments, countInformation };
