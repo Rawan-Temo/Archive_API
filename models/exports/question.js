@@ -4,9 +4,8 @@ const questionSchema = new mongoose.Schema(
   {
     informationId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Information",
+      ref: "SecurityInformation",
       required: true,
-      
     },
     question: {
       type: String,
@@ -14,7 +13,6 @@ const questionSchema = new mongoose.Schema(
     },
     answer: {
       type: String,
-      required: true,
     },
   },
   {

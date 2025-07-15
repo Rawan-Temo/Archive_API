@@ -18,7 +18,10 @@ const getAllSources = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Source.find().populate("field"), req.query)
+    const features = new APIFeatures(
+      Source.find().populate("field").lean(),
+      req.query
+    )
       .filter()
       .sort()
       .limitFields()
@@ -56,7 +59,9 @@ const createSource = async (req, res) => {
 // Get a source by ID
 const getSourceById = async (req, res) => {
   try {
-    const source = await Source.findById(req.params.id).populate("field");
+    const source = await Source.findById(req.params.id)
+      .populate("field")
+      .lean();
     if (!source) {
       return res.status(404).json({ message: "Source not found" });
     }

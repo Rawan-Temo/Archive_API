@@ -20,7 +20,7 @@ const getAllFields = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Field.find(), req.query)
+    const features = new APIFeatures(Field.find().lean(), req.query)
       .filter() // Apply filter based on query params
       .sort() // Apply sorting based on query params
       .limitFields() // Limit the fields based on query params
@@ -58,7 +58,7 @@ const createField = async (req, res) => {
 // Get a single field by ID
 const getFieldById = async (req, res) => {
   try {
-    const field = await Field.findById(req.params.id);
+    const field = await Field.findById(req.params.id).lean();
     if (!field) {
       return res.status(404).json({ message: "Field not found" });
     }

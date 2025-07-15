@@ -49,17 +49,19 @@ const getAllStreets = async (req, res) => {
 
     // Apply the parsed filter to count active documents
     const features = new APIFeatures(
-      Street.find().populate({
-        path: "city",
-        populate: {
-          path: "parentId",
-          select: "country name", // assuming `country` is a field in parentId
+      Street.find()
+        .populate({
+          path: "city",
           populate: {
-            path: "country",
-            select: "name", // select the fields you want from country
+            path: "parentId",
+            select: "country name", // assuming `country` is a field in parentId
+            populate: {
+              path: "country",
+              select: "name", // select the fields you want from country
+            },
           },
-        },
-      }),
+        })
+        .lean(),
       req.query
     )
       .filter()
@@ -86,7 +88,7 @@ const getAllStreets = async (req, res) => {
 // Get a street by ID
 const getStreetById = async (req, res) => {
   try {
-    const street = await Street.findById(req.params.id);
+    const street = await Street.findById(req.params.id).lean();
     if (!street) {
       return res.status(404).json({ message: "No street found with that ID" });
     }

@@ -5,7 +5,7 @@ const County = require("../../models/Address/county");
 const getAllCounties = async (req, res) => {
   if (req.query.search) {
     await search(County, ["name"], "country", req, res);
-    
+
     return;
   }
   try {
@@ -21,7 +21,7 @@ const getAllCounties = async (req, res) => {
 
     // Step 3: Use APIFeatures for advanced queries (filter, sort, limitFields, paginate)
     const features = new APIFeatures(
-      County.find().populate("country"),
+      County.find().populate("country").lean(),
       req.query
     )
       .filter()
@@ -61,7 +61,7 @@ const createCounty = async (req, res) => {
 
 const getCountyById = async (req, res) => {
   try {
-    const county = await County.findById(req.params.id);
+    const county = await County.findById(req.params.id).lean();
     if (!county) {
       return res.status(404).json({ message: "No county found with that ID" });
     }

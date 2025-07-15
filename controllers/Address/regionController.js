@@ -34,17 +34,19 @@ const getAllRegions = async (req, res) => {
 
     // Apply the parsed filter to count active documents
     const features = new APIFeatures(
-      Region.find().populate({
-        path: "city",
-        populate: {
-          path: "parentId",
-          select: "country name", // assuming `country` is a field in parentId
+      Region.find()
+        .populate({
+          path: "city",
           populate: {
-            path: "country",
-            select: "name", // select the fields you want from country
+            path: "parentId",
+            select: "country name", // assuming `country` is a field in parentId
+            populate: {
+              path: "country",
+              select: "name", // select the fields you want from country
+            },
           },
-        },
-      }),
+        })
+        .lean(),
       req.query
     )
       .filter()
@@ -84,7 +86,7 @@ const createRegion = async (req, res) => {
 // Get a region by ID
 const getRegionById = async (req, res) => {
   try {
-    const region = await Region.findById(req.params.id);
+    const region = await Region.findById(req.params.id).lean();
     if (!region) {
       return res.status(404).json({ message: "Region not found" });
     }

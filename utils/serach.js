@@ -33,7 +33,8 @@ const search = async (model, fields, populate, req, res) => {
         .find({
           $and: searchConditions, // Ensure all tokens are matched across any of the specified fields
         })
-        .populate(populateObject || ""),
+        .populate(populateObject || "")
+        .lean(),
       req.query
     )
       .filter()

@@ -34,17 +34,19 @@ const getAllVillages = async (req, res) => {
 
     // Apply the parsed filter to count active documents
     const features = new APIFeatures(
-      Village.find().populate({
-        path: "city",
-        populate: {
-          path: "parentId",
-          select: "country name", // assuming `country` is a field in parentId
+      Village.find()
+        .populate({
+          path: "city",
           populate: {
-            path: "country",
-            select: "name", // select the fields you want from country
+            path: "parentId",
+            select: "country name", // assuming `country` is a field in parentId
+            populate: {
+              path: "country",
+              select: "name", // select the fields you want from country
+            },
           },
-        },
-      }),
+        })
+        .lean(),
       req.query
     )
       .filter()
@@ -84,7 +86,7 @@ const createVillage = async (req, res) => {
 // Get a village by ID
 const getVillageById = async (req, res) => {
   try {
-    const village = await Village.findById(req.params.id);
+    const village = await Village.findById(req.params.id).lean();
     if (!village) {
       return res.status(404).json({ message: "Village not found" });
     }

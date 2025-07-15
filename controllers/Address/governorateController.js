@@ -20,7 +20,7 @@ const getAllGovernorates = async (req, res) => {
 
     // Step 3: Use APIFeatures for advanced queries (filter, sort, limitFields, paginate)
     const features = new APIFeatures(
-      Governorate.find().populate("country"),
+      Governorate.find().populate("country").lean(),
       req.query
     )
       .filter()
@@ -60,7 +60,7 @@ const createGovernorate = async (req, res) => {
 
 const getGovernorateById = async (req, res) => {
   try {
-    const governorate = await Governorate.findById(req.params.id);
+    const governorate = await Governorate.findById(req.params.id).lean();
     if (!governorate) {
       return res
         .status(404)

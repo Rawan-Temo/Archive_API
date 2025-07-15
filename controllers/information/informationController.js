@@ -39,21 +39,23 @@ const allInformation = async (req, res) => {
     let features;
     if (role === "user") {
       features = new APIFeatures(
-        Information.find({ sectionId }).populate([
-          { path: "sectionId", select: "name" }, // Only include `name` from Section
-          { path: "cityId", select: "name" },
-          { path: "countryId", select: "name" },
-          { path: "governorateId", select: "name" },
-          { path: "countyId", select: "name" },
-          { path: "regionId", select: "name" },
-          { path: "streetId", select: "name" },
-          { path: "villageId", select: "name" },
-          { path: "events", select: "name" }, // Only include specific fields
-          { path: "parties", select: "name" },
-          { path: "sources", select: "source_name" },
-          { path: "coordinates", select: "coordinates note" },
-          { path: "people", select: "firstName surName image" },
-        ]),
+        Information.find({ sectionId })
+          .populate([
+            { path: "sectionId", select: "name" }, // Only include `name` from Section
+            { path: "cityId", select: "name" },
+            { path: "countryId", select: "name" },
+            { path: "governorateId", select: "name" },
+            { path: "countyId", select: "name" },
+            { path: "regionId", select: "name" },
+            { path: "streetId", select: "name" },
+            { path: "villageId", select: "name" },
+            { path: "events", select: "name" }, // Only include specific fields
+            { path: "parties", select: "name" },
+            { path: "sources", select: "source_name" },
+            { path: "coordinates", select: "coordinates note" },
+            { path: "people", select: "firstName surName image" },
+          ])
+          .lean(),
         req.query
       )
         .filter()
@@ -62,21 +64,23 @@ const allInformation = async (req, res) => {
         .paginate();
     } else {
       features = new APIFeatures(
-        Information.find().populate([
-          { path: "sectionId", select: "name" }, // Only include `name` from Section
-          { path: "cityId", select: "name" },
-          { path: "countryId", select: "name" },
-          { path: "governorateId", select: "name" },
-          { path: "countyId", select: "name" },
-          { path: "regionId", select: "name" },
-          { path: "streetId", select: "name" },
-          { path: "villageId", select: "name" },
-          { path: "events", select: "name" }, // Only include specific fields
-          { path: "parties", select: "name" },
-          { path: "sources", select: "source_name" },
-          { path: "coordinates", select: "coordinates note" },
-          { path: "people", select: "firstName surName image" },
-        ]),
+        Information.find()
+          .populate([
+            { path: "sectionId", select: "name" }, // Only include `name` from Section
+            { path: "cityId", select: "name" },
+            { path: "countryId", select: "name" },
+            { path: "governorateId", select: "name" },
+            { path: "countyId", select: "name" },
+            { path: "regionId", select: "name" },
+            { path: "streetId", select: "name" },
+            { path: "villageId", select: "name" },
+            { path: "events", select: "name" }, // Only include specific fields
+            { path: "parties", select: "name" },
+            { path: "sources", select: "source_name" },
+            { path: "coordinates", select: "coordinates note" },
+            { path: "people", select: "firstName surName image" },
+          ])
+          .lean(),
         req.query
       )
         .filter()
@@ -146,42 +150,46 @@ const getInformationById = async (req, res) => {
         _id: req.params.id,
         sectionId: req.user.sectionId,
         active: true, // Ensure only active information is returned
-      }).populate([
-        { path: "sectionId", select: "name" },
-        { path: "cityId", select: "name" },
-        { path: "countryId", select: "name" },
-        { path: "governorateId", select: "name" },
-        { path: "countyId", select: "name" },
-        { path: "regionId", select: "name" },
-        { path: "streetId", select: "name" },
-        { path: "villageId", select: "name" },
-        { path: "events", select: "name" },
-        { path: "parties", select: "name" },
-        { path: "sources", select: "source_name" },
-        { path: "coordinates", select: "coordinates note" },
-        { path: "people", select: "firstName surName image fatherName" },
-      ]);
+      })
+        .populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "events", select: "name" },
+          { path: "parties", select: "name" },
+          { path: "sources", select: "source_name" },
+          { path: "coordinates", select: "coordinates note" },
+          { path: "people", select: "firstName surName image fatherName" },
+        ])
+        .lean();
       // Fetch the main information document by ID with populated fields
     } else {
       // Fetch the main information document by ID with populated fields
       information = await Information.findOne({
         _id: req.params.id,
         active: true, // Ensure only active information is returned
-      }).populate([
-        { path: "sectionId", select: "name" },
-        { path: "cityId", select: "name" },
-        { path: "countryId", select: "name" },
-        { path: "governorateId", select: "name" },
-        { path: "countyId", select: "name" },
-        { path: "regionId", select: "name" },
-        { path: "streetId", select: "name" },
-        { path: "villageId", select: "name" },
-        { path: "events", select: "name" },
-        { path: "parties", select: "name" },
-        { path: "sources", select: "source_name" },
-        { path: "coordinates", select: "coordinates note" },
-        { path: "people", select: "firstName surName image fatherName" },
-      ]);
+      })
+        .populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "events", select: "name" },
+          { path: "parties", select: "name" },
+          { path: "sources", select: "source_name" },
+          { path: "coordinates", select: "coordinates note" },
+          { path: "people", select: "firstName surName image fatherName" },
+        ])
+        .lean();
     }
 
     if (!information) {

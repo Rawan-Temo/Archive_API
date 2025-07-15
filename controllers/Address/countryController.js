@@ -36,7 +36,7 @@ const getAllCountries = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Country.find(), req.query)
+    const features = new APIFeatures(Country.find().lean(), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -60,7 +60,7 @@ const getAllCountries = async (req, res) => {
 const getCountryByName = async (req, res) => {
   try {
     const { id } = req.params;
-    const country = await Country.findById(id);
+    const country = await Country.findById(id).lean();
 
     if (!country) {
       return res.status(404).json({ message: "Country not found" });

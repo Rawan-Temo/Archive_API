@@ -17,7 +17,7 @@ const getAllParties = async (req, res) => {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const parsedQuery = JSON.parse(queryStr);
 
-    const features = new APIFeatures(Party.find(), req.query)
+    const features = new APIFeatures(Party.find().lean(), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -55,7 +55,7 @@ const createParty = async (req, res) => {
 // Get party by ID
 const getPartyById = async (req, res) => {
   try {
-    const party = await Party.findById(req.params.id);
+    const party = await Party.findById(req.params.id).lean();
     if (!party) {
       return res.status(404).json({ message: "Party not found" });
     }

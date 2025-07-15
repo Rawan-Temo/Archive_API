@@ -103,6 +103,8 @@ const routers = {
   "/api/Users": "./routes/login/userRouter.js",
   "/api/backup": "./routes/backUp/backupRouter.js",
   "/api/Statistics": "./routes/statistics/counterRouter.js",
+  "/api/Exports": "./routes/exports/exportRouter.js",
+  "/api/Questions": "./routes/exports/questionRouter.js",
 };
 
 for (const [route, routerPath] of Object.entries(routers)) {

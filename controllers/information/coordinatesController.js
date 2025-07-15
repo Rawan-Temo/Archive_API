@@ -50,17 +50,19 @@ const allCoordinates = async (req, res) => {
         .paginate();
     } else {
       features = new APIFeatures(
-        Coordinate.find().populate([
-          { path: "sectionId", select: "name" },
-          { path: "cityId", select: "name" },
-          { path: "countryId", select: "name" },
-          { path: "governorateId", select: "name" },
-          { path: "countyId", select: "name" },
-          { path: "regionId", select: "name" },
-          { path: "streetId", select: "name" },
-          { path: "villageId", select: "name" },
-          { path: "sources", select: "source_name" },
-        ]),
+        Coordinate.find()
+          .populate([
+            { path: "sectionId", select: "name" },
+            { path: "cityId", select: "name" },
+            { path: "countryId", select: "name" },
+            { path: "governorateId", select: "name" },
+            { path: "countyId", select: "name" },
+            { path: "regionId", select: "name" },
+            { path: "streetId", select: "name" },
+            { path: "villageId", select: "name" },
+            { path: "sources", select: "source_name" },
+          ])
+          .lean(),
         req.query
       )
         .filter()
@@ -132,33 +134,37 @@ const getCoordinatesById = async (req, res) => {
         _id: req.params.id,
         sectionId: req.user.sectionId,
         active: true, // Ensure only active coordinates are returned
-      }).populate([
-        { path: "sectionId", select: "name" },
-        { path: "cityId", select: "name" },
-        { path: "countryId", select: "name" },
-        { path: "governorateId", select: "name" },
-        { path: "countyId", select: "name" },
-        { path: "regionId", select: "name" },
-        { path: "streetId", select: "name" },
-        { path: "villageId", select: "name" },
-        { path: "sources", select: "source_name" },
-      ]);
+      })
+        .populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "sources", select: "source_name" },
+        ])
+        .lean();
       // Fetch the main information document by ID with populated fields
     } else {
       coordinate = await Coordinate.findOne({
         _id: req.params.id,
         active: true, // Ensure only active coordinates are returned
-      }).populate([
-        { path: "sectionId", select: "name" },
-        { path: "cityId", select: "name" },
-        { path: "countryId", select: "name" },
-        { path: "governorateId", select: "name" },
-        { path: "countyId", select: "name" },
-        { path: "regionId", select: "name" },
-        { path: "streetId", select: "name" },
-        { path: "villageId", select: "name" },
-        { path: "sources", select: "source_name" },
-      ]);
+      })
+        .populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "sources", select: "source_name" },
+        ])
+        .lean();
     }
 
     if (!coordinate) {

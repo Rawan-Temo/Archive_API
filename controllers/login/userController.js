@@ -10,7 +10,7 @@ const allUsers = async (req, res) => {
   }
   try {
     const features = new APIFeatures(
-      User.find().populate("sectionId"),
+      User.find().populate("sectionId").lean(),
       req.query
     )
       .filter()
@@ -49,7 +49,9 @@ const allUsers = async (req, res) => {
 };
 const userById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).populate("sectionId");
+    const user = await User.findById(req.params.id)
+      .populate("sectionId")
+      .lean();
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

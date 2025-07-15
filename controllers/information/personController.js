@@ -33,17 +33,19 @@ const allPeople = async (req, res) => {
     let features;
     if (role === "user") {
       features = new APIFeatures(
-        Person.find({ sectionId }).populate([
-          { path: "sectionId", select: "name" },
-          { path: "cityId", select: "name" },
-          { path: "countryId", select: "name" },
-          { path: "governorateId", select: "name" },
-          { path: "countyId", select: "name" },
-          { path: "regionId", select: "name" },
-          { path: "streetId", select: "name" },
-          { path: "villageId", select: "name" },
-          { path: "sources", select: "source_name" },
-        ]),
+        Person.find({ sectionId })
+          .populate([
+            { path: "sectionId", select: "name" },
+            { path: "cityId", select: "name" },
+            { path: "countryId", select: "name" },
+            { path: "governorateId", select: "name" },
+            { path: "countyId", select: "name" },
+            { path: "regionId", select: "name" },
+            { path: "streetId", select: "name" },
+            { path: "villageId", select: "name" },
+            { path: "sources", select: "source_name" },
+          ])
+          .lean(),
         req.query
       )
         .filter()
@@ -52,17 +54,19 @@ const allPeople = async (req, res) => {
         .paginate();
     } else {
       features = new APIFeatures(
-        Person.find().populate([
-          { path: "sectionId", select: "name" },
-          { path: "cityId", select: "name" },
-          { path: "countryId", select: "name" },
-          { path: "governorateId", select: "name" },
-          { path: "countyId", select: "name" },
-          { path: "regionId", select: "name" },
-          { path: "streetId", select: "name" },
-          { path: "villageId", select: "name" },
-          { path: "sources", select: "source_name" },
-        ]),
+        Person.find()
+          .populate([
+            { path: "sectionId", select: "name" },
+            { path: "cityId", select: "name" },
+            { path: "countryId", select: "name" },
+            { path: "governorateId", select: "name" },
+            { path: "countyId", select: "name" },
+            { path: "regionId", select: "name" },
+            { path: "streetId", select: "name" },
+            { path: "villageId", select: "name" },
+            { path: "sources", select: "source_name" },
+          ])
+          .lean(),
         req.query
       )
         .filter()
@@ -139,32 +143,36 @@ const getPersonById = async (req, res) => {
         _id: req.params.id,
         sectionId: req.user.sectionId, // Ensure sectionId matches the logged-in user
         active: true, // Ensure only active persons are returned
-      }).populate([
-        { path: "sectionId", select: "name" },
-        { path: "cityId", select: "name" },
-        { path: "countryId", select: "name" },
-        { path: "governorateId", select: "name" },
-        { path: "countyId", select: "name" },
-        { path: "regionId", select: "name" },
-        { path: "streetId", select: "name" },
-        { path: "villageId", select: "name" },
-        { path: "sources", select: "source_name" },
-      ]);
+      })
+        .populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "sources", select: "source_name" },
+        ])
+        .lean();
     } else {
       person = await Person.findOne({
         _id: req.params.id,
         active: true, // Ensure only active persons are returned
-      }).populate([
-        { path: "sectionId", select: "name" },
-        { path: "cityId", select: "name" },
-        { path: "countryId", select: "name" },
-        { path: "governorateId", select: "name" },
-        { path: "countyId", select: "name" },
-        { path: "regionId", select: "name" },
-        { path: "streetId", select: "name" },
-        { path: "villageId", select: "name" },
-        { path: "sources", select: "source_name" },
-      ]);
+      })
+        .populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "sources", select: "source_name" },
+        ])
+        .lean();
     }
 
     if (!person) {

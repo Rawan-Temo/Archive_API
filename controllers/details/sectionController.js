@@ -17,7 +17,7 @@ const getAllSections = async (req, res) => {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const parsedQuery = JSON.parse(queryStr);
 
-    const features = new APIFeatures(Section.find(), req.query)
+    const features = new APIFeatures(Section.find().lean(), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -55,7 +55,7 @@ const createSection = async (req, res) => {
 // Get Section by ID
 const getSectionById = async (req, res) => {
   try {
-    const section = await Section.findById(req.params.id);
+    const section = await Section.findById(req.params.id).lean();
     if (!section) {
       return res.status(404).json({ message: "Section not found" });
     }
