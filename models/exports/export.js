@@ -14,6 +14,16 @@ const exportSchema = new mongoose.Schema(
         ref: "Question",
       },
     ],
+    expirationDate: {
+      type: Date,
+      required: true,
+      validate: {
+        validator: function (v) {
+          return v > Date.now();
+        },
+        message: "Expiration date must be in the future.",
+      },
+    },
     active: {
       type: Boolean,
       default: true,
