@@ -19,7 +19,7 @@ const getAllExports = async (req, res) => {
     const features = new APIFeatures(
       Export.find()
         .populate([{ path: "questions", populate: { path: "informationId" } }])
-        .lean(),
+        ,
       req.query
     )
       .filter()
@@ -36,7 +36,7 @@ const getAllExports = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     const [exportsList, total] = await Promise.all([
-      features.query,
+      features.query.lean(),
       Export.countDocuments(parsedQuery),
     ]);
 

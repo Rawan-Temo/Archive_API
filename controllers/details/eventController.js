@@ -20,14 +20,14 @@ const getAllEvents = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Event.find().lean(), req.query)
+    const features = new APIFeatures(Event.find(), req.query)
       .filter() // Apply filter based on query params
       .sort() // Apply sorting based on query params
       .limitFields() // Limit the fields based on query params
       .paginate(); // Apply pagination based on query params
 
     const [events, numberOfActiveEvents] = await Promise.all([
-      features.query, // Get the events with applied query features
+      features.query.lean(), // Get the events with applied query features
       Event.countDocuments(parsedQuery), // Count all filtered events
     ]);
 

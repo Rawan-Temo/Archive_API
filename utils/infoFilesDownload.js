@@ -262,12 +262,12 @@ const downloadInforamtion = async (req, res) => {
   archive.finalize();
 };
 
-const getFilesByInformationId = async (informationId) => {
+const getFilesByInformationId = async (parentId) => {
   try {
-    const images = await Image.find({ informationId });
-    const audios = await Audio.find({ informationId });
-    const videos = await Video.find({ informationId });
-    const documents = await DocumentTable.find({ informationId });
+    const images = await Image.find({ parentId });
+    const audios = await Audio.find({ parentId });
+    const videos = await Video.find({ parentId });
+    const documents = await DocumentTable.find({ parentId });
 
     const files = [...images, ...audios, ...videos, ...documents].map(
       (file) => ({

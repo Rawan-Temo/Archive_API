@@ -18,17 +18,14 @@ const getAllSources = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(
-      Source.find().populate("field").lean(),
-      req.query
-    )
+    const features = new APIFeatures(Source.find().populate("field"), req.query)
       .filter()
       .sort()
       .limitFields()
       .paginate();
 
     const [sources, numberOfActiveSources] = await Promise.all([
-      features.query,
+      features.query.lean(),
       Source.countDocuments(parsedQuery), // Count all filtered sources
     ]);
 

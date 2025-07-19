@@ -21,7 +21,7 @@ const getAllCounties = async (req, res) => {
 
     // Step 3: Use APIFeatures for advanced queries (filter, sort, limitFields, paginate)
     const features = new APIFeatures(
-      County.find().populate("country").lean(),
+      County.find().populate("country"),
       req.query
     )
       .filter()
@@ -31,7 +31,7 @@ const getAllCounties = async (req, res) => {
 
     // Step 4: Execute both the paginated query and the total count of active records
     const [conties, numberOfActiveConties] = await Promise.all([
-      features.query, // Paginated, filtered, and sorted data
+      features.query.lean(), // Paginated, filtered, and sorted data
       County.countDocuments(parsedQuery), // Total count of filtered records
     ]);
 

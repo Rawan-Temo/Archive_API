@@ -10,30 +10,27 @@ const {
   isUser,
 } = require("../../middlewares/authMiddleware");
 
-
-
-
 // Deactivate many
 router
   .route("/deActivate-many")
-  .patch(authenticateToken, isUser, async (req, res) => {
+  .patch(authenticateToken, isAdmin, async (req, res) => {
     await deActivateMany(Export, req, res);
   });
 
 // Get all exports and create new export
 router
   .route("/")
-  .get(authenticateToken, isUser, exportController.getAllExports)
-  .post(authenticateToken, isUser, exportController.createExport);
+  .get(authenticateToken, isAdmin, exportController.getAllExports)
+  .post(authenticateToken, isAdmin, exportController.createExport);
 
 // Get, update, deactivate by ID
 router
   .route("/:id")
-  .get(authenticateToken, isUser, exportController.getExportById)
-  .patch(authenticateToken, isUser, exportController.updateExport);
+  .get(authenticateToken, isAdmin, exportController.getExportById)
+  .patch(authenticateToken, isAdmin, exportController.updateExport);
 
 router
   .route("/deActivate/:id")
-  .patch(authenticateToken, isUser, exportController.deactivateExport);
+  .patch(authenticateToken, isAdmin, exportController.deactivateExport);
 
 module.exports = router;

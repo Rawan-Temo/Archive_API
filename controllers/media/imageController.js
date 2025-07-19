@@ -23,7 +23,7 @@ const allImages = async (req, res) => {
 
     // Apply the parsed filter for querying and counting
     const features = new APIFeatures(
-      Image.find().populate("informationId"),
+      Image.find().populate("parentId"),
       req.query
     )
       .filter()
@@ -87,10 +87,10 @@ const uploadImages = imageUploads.array("images", 10); // Allow up to 10 images
 // Function to handle image uploads and save them to the database
 const handleImages = async (req, res) => {
   try {
-    const { informationId } = req.body; // Extract the informationId from the request body
+    const { parentId, parentModel } = req.body; // Extract the informationId from the request body
 
-    if (!informationId) {
-      return res.status(400).json({ error: "informationId is required" });
+    if (!parentId) {
+      return res.status(400).json({ error: "parentId is required" });
     }
 
     if (!req.files || req.files.length === 0) {
@@ -103,7 +103,8 @@ const handleImages = async (req, res) => {
     for (const file of req.files) {
       const imageSrc = `/images/other/${file.filename}`;
       const newImage = new Image({
-        informationId,
+        parentModel,
+        parentId,
         src: imageSrc,
       });
 

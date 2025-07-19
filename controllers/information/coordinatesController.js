@@ -50,19 +50,17 @@ const allCoordinates = async (req, res) => {
         .paginate();
     } else {
       features = new APIFeatures(
-        Coordinate.find()
-          .populate([
-            { path: "sectionId", select: "name" },
-            { path: "cityId", select: "name" },
-            { path: "countryId", select: "name" },
-            { path: "governorateId", select: "name" },
-            { path: "countyId", select: "name" },
-            { path: "regionId", select: "name" },
-            { path: "streetId", select: "name" },
-            { path: "villageId", select: "name" },
-            { path: "sources", select: "source_name" },
-          ])
-          .lean(),
+        Coordinate.find().populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "sources", select: "source_name" },
+        ]),
         req.query
       )
         .filter()
@@ -81,7 +79,7 @@ const allCoordinates = async (req, res) => {
       parsedQuery.sectionId = sectionId;
     }
     const [coordinates, numberOfActiveCoordinates] = await Promise.all([
-      features.query,
+      features.query.lean(),
       Coordinate.countDocuments(parsedQuery),
     ]);
 

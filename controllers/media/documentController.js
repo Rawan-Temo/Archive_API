@@ -24,7 +24,7 @@ const allDocuments = async (req, res) => {
 
     // Apply the parsed filter for querying and counting
     const features = new APIFeatures(
-      Document.find().populate("informationId"),
+      Document.find().populate("parentId"),
       req.query
     )
       .filter()
@@ -87,10 +87,10 @@ const uploadDocuments = documentUploads.array("documents", 10); // Allow up to 1
 // Function to handle document uploads and save them to the database
 const handleDocuments = async (req, res) => {
   try {
-    const { informationId } = req.body; // Extract the informationId from the request body
+    const { parentId, parentModel } = req.body; // Extract the informationId from the request body
 
-    if (!informationId) {
-      return res.status(400).json({ error: "informationId is required" });
+    if (!parentId) {
+      return res.status(400).json({ error: "parentId is required" });
     }
 
     if (!req.files || req.files.length === 0) {
@@ -103,7 +103,8 @@ const handleDocuments = async (req, res) => {
     for (const file of req.files) {
       const documentSrc = `/documents/${file.filename}`;
       const newDocument = new Document({
-        informationId,
+        parentId,
+        parentModel,
         src: documentSrc,
       });
 

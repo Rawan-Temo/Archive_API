@@ -33,19 +33,17 @@ const allPeople = async (req, res) => {
     let features;
     if (role === "user") {
       features = new APIFeatures(
-        Person.find({ sectionId })
-          .populate([
-            { path: "sectionId", select: "name" },
-            { path: "cityId", select: "name" },
-            { path: "countryId", select: "name" },
-            { path: "governorateId", select: "name" },
-            { path: "countyId", select: "name" },
-            { path: "regionId", select: "name" },
-            { path: "streetId", select: "name" },
-            { path: "villageId", select: "name" },
-            { path: "sources", select: "source_name" },
-          ])
-          .lean(),
+        Person.find({ sectionId }).populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "sources", select: "source_name" },
+        ]),
         req.query
       )
         .filter()
@@ -54,19 +52,17 @@ const allPeople = async (req, res) => {
         .paginate();
     } else {
       features = new APIFeatures(
-        Person.find()
-          .populate([
-            { path: "sectionId", select: "name" },
-            { path: "cityId", select: "name" },
-            { path: "countryId", select: "name" },
-            { path: "governorateId", select: "name" },
-            { path: "countyId", select: "name" },
-            { path: "regionId", select: "name" },
-            { path: "streetId", select: "name" },
-            { path: "villageId", select: "name" },
-            { path: "sources", select: "source_name" },
-          ])
-          .lean(),
+        Person.find().populate([
+          { path: "sectionId", select: "name" },
+          { path: "cityId", select: "name" },
+          { path: "countryId", select: "name" },
+          { path: "governorateId", select: "name" },
+          { path: "countyId", select: "name" },
+          { path: "regionId", select: "name" },
+          { path: "streetId", select: "name" },
+          { path: "villageId", select: "name" },
+          { path: "sources", select: "source_name" },
+        ]),
         req.query
       )
         .filter()
@@ -89,7 +85,7 @@ const allPeople = async (req, res) => {
     }
 
     const [people, numberOfActivePeople] = await Promise.all([
-      features.query,
+      features.query.lean(),
       Person.countDocuments(parsedQuery),
     ]);
     res.status(200).json({

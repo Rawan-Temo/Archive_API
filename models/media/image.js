@@ -2,20 +2,25 @@ const mongoose = require("mongoose");
 
 const imageSchema = new mongoose.Schema(
   {
-    informationId: {
-      type: mongoose.Schema.Types.ObjectId, // References the News model
-      ref: "SecurityInformation", // Name of the related collection (News)
+    parentModel: {
+      type: String,
       required: true,
+      enum: ["SecurityInformation", "Report", "Result"], // List all possible parent models
+    },
+    parentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      refPath: "parentModel", // Dynamic reference based on parentModel
     },
     src: {
-      type: String, // Path or URL to the image
+      type: String,
       required: true,
     },
   },
   { timestamps: true }
-); // Add createdAt and updatedAt timestamps automatically
+);
 
-// Export the model
-imageSchema.index({ informationId: 1, src: 1 });
+// Optional: indexing for performance
+
 const Image = mongoose.model("Image", imageSchema);
 module.exports = Image;

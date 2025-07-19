@@ -24,7 +24,7 @@ const allAudios = async (req, res) => {
 
     // Apply the parsed filter for querying and counting
     const features = new APIFeatures(
-      Audio.find().populate("informationId"),
+      Audio.find().populate("parentId"),
       req.query
     )
       .filter()
@@ -87,10 +87,10 @@ const uploadAudios = audioUploads.array("audios", 10); // Allow up to 10 audio f
 // Function to handle audio uploads and save them to the database
 const handleAudios = async (req, res) => {
   try {
-    const { informationId } = req.body; // Extract the informationId from the request body
+    const { parentId, parentModel } = req.body; // Extract the informationId from the request body
 
-    if (!informationId) {
-      return res.status(400).json({ error: "informationId is required" });
+    if (!parentId) {
+      return res.status(400).json({ error: "parentId is required" });
     }
 
     if (!req.files || req.files.length === 0) {
@@ -103,7 +103,8 @@ const handleAudios = async (req, res) => {
     for (const file of req.files) {
       const audioSrc = `/audios/${file.filename}`;
       const newAudio = new Audio({
-        informationId,
+        parentId,
+        parentModel,
         src: audioSrc,
       });
 

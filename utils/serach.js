@@ -33,8 +33,7 @@ const search = async (model, fields, populate, req, res) => {
         .find({
           $and: searchConditions, // Ensure all tokens are matched across any of the specified fields
         })
-        .populate(populateObject || "")
-        .lean(),
+        .populate(populateObject || ""),
       req.query
     )
       .filter()
@@ -52,7 +51,7 @@ const search = async (model, fields, populate, req, res) => {
 
     // Execute the query to fetch paginated results
     let [results, numberOfActiveResults] = await Promise.all([
-      features.query,
+      features.query.lean(),
       totalResults.query.countDocuments(),
     ]);
     // Return the response

@@ -17,14 +17,14 @@ const getAllSections = async (req, res) => {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const parsedQuery = JSON.parse(queryStr);
 
-    const features = new APIFeatures(Section.find().lean(), req.query)
+    const features = new APIFeatures(Section.find(), req.query)
       .filter()
       .sort()
       .limitFields()
       .paginate();
 
     const [sections, numberOfActiveSections] = await Promise.all([
-      features.query, // Get the filtered and paginated parties
+      features.query.lean(), // Get the filtered and paginated parties
       Section.countDocuments(parsedQuery), // Count the filtered active parties
     ]);
 

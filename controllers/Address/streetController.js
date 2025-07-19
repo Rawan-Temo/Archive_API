@@ -49,19 +49,17 @@ const getAllStreets = async (req, res) => {
 
     // Apply the parsed filter to count active documents
     const features = new APIFeatures(
-      Street.find()
-        .populate({
-          path: "city",
+      Street.find().populate({
+        path: "city",
+        populate: {
+          path: "parentId",
+          select: "country name", // assuming `country` is a field in parentId
           populate: {
-            path: "parentId",
-            select: "country name", // assuming `country` is a field in parentId
-            populate: {
-              path: "country",
-              select: "name", // select the fields you want from country
-            },
+            path: "country",
+            select: "name", // select the fields you want from country
           },
-        })
-        .lean(),
+        },
+      }),
       req.query
     )
       .filter()
@@ -70,7 +68,7 @@ const getAllStreets = async (req, res) => {
       .paginate();
 
     const [streets, numberOfActiveStreets] = await Promise.all([
-      features.query,
+      features.query.lean(),
       Street.countDocuments(parsedQuery), // Count all filtered documents
     ]);
 

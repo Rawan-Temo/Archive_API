@@ -156,13 +156,13 @@ const countInformation = async (req, res) => {
 
     // Get all items in the category
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Model.find().lean(), req.query)
+    const features = new APIFeatures(Model.find(), req.query)
       .filter()
       .sort()
       .limitFields()
       .paginate();
     // Get paginated students
-    const items = await features.query;
+    const items = await features.query.lean();
     // For each item, count Information documents
     const counts = await Promise.all(
       items.map(async (item) => {

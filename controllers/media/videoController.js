@@ -24,7 +24,7 @@ const allVideos = async (req, res) => {
 
     // Apply the parsed filter for querying and counting
     const features = new APIFeatures(
-      Video.find().populate("informationId"),
+      Video.find().populate("parentId"),
       req.query
     )
       .filter()
@@ -81,10 +81,10 @@ const uploadVideos = videoUploads.array("videos", 10); // Allow up to 10 videos
 // Function to handle video uploads and save them to the database
 const handleVideos = async (req, res) => {
   try {
-    const { informationId } = req.body; // Extract the informationId from the request body
+    const { parentId, parentModel } = req.body; // Extract the informationId from the request body
 
-    if (!informationId) {
-      return res.status(400).json({ error: "informationId is required" });
+    if (!parentId) {
+      return res.status(400).json({ error: "parentId is required" });
     }
 
     if (!req.files || req.files.length === 0) {
@@ -97,7 +97,8 @@ const handleVideos = async (req, res) => {
     for (const file of req.files) {
       const videoSrc = `/videos/${file.filename}`;
       const newVideo = new Video({
-        informationId,
+        parentId,
+        parentModel,
         src: videoSrc,
       });
 

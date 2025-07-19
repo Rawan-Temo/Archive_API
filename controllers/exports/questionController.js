@@ -10,7 +10,7 @@ const getAllQuestions = async (req, res) => {
   }
   try {
     const features = new APIFeatures(
-      Question.find().populate("informationId").lean(),
+      Question.find().populate("informationId"),
       req.query
     )
       .filter()
@@ -26,7 +26,7 @@ const getAllQuestions = async (req, res) => {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const parsedQuery = JSON.parse(queryStr);
     const [questions, total] = await Promise.all([
-      features.query,
+      features.query.lean(),
       Question.countDocuments(parsedQuery),
     ]);
 

@@ -17,14 +17,14 @@ const getAllParties = async (req, res) => {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const parsedQuery = JSON.parse(queryStr);
 
-    const features = new APIFeatures(Party.find().lean(), req.query)
+    const features = new APIFeatures(Party.find(), req.query)
       .filter()
       .sort()
       .limitFields()
       .paginate();
 
     const [parties, numberOfActiveParties] = await Promise.all([
-      features.query, // Get the filtered and paginated parties
+      features.query.lean(), // Get the filtered and paginated parties
       Party.countDocuments(parsedQuery), // Count the filtered active parties
     ]);
 

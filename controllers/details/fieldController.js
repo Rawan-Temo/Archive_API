@@ -20,14 +20,14 @@ const getAllFields = async (req, res) => {
     const parsedQuery = JSON.parse(queryStr);
 
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Field.find().lean(), req.query)
+    const features = new APIFeatures(Field.find(), req.query)
       .filter() // Apply filter based on query params
       .sort() // Apply sorting based on query params
       .limitFields() // Limit the fields based on query params
       .paginate(); // Apply pagination based on query params
 
     const [fields, numberOfActiveFields] = await Promise.all([
-      features.query, // Get the fields with applied query features
+      features.query.lean(), // Get the fields with applied query features
       Field.countDocuments(parsedQuery), // Count all filtered fields
     ]);
 
