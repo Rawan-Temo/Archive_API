@@ -86,6 +86,8 @@ const countDocuments = async (req, res) => {
 const countInformation = async (req, res) => {
   try {
     const queryObj = { ...req.query };
+    const userRole = req.user.role;
+    console.log("User role:", userRole);
     const excludedFields = [
       "page",
       "sort",
@@ -102,6 +104,9 @@ const countInformation = async (req, res) => {
     let Model;
     let infoField; // The field to match inside Information
 
+    if (userRole === "user" && category === "section") {
+      return res.status(403).json({ message: "Access denied." });
+    }
     switch (category) {
       case "section":
         Model = Section;
@@ -169,18 +174,35 @@ const countInformation = async (req, res) => {
         let count;
         if (["events", "parties", "sources"].includes(infoField)) {
           // If array field, use $in
-          count = await Information.countDocuments({
-            [infoField]: item._id,
-            active: true,
-            ...parsedQuery,
-          });
+          if (userRole === "user") {
+            count = await Information.countDocuments({
+              [infoField]: item._id,
+              sectionId: req.user.sectionId,
+              active: true,
+              ...parsedQuery,
+            });
+          } else {
+            count = await Information.countDocuments({
+              [infoField]: item._id,
+              active: true,
+              ...parsedQuery,
+            });
+          }
         } else {
-          console.log(infoField, item._id);
-          count = await Information.countDocuments({
-            [infoField]: item._id,
-            active: true,
-            ...parsedQuery,
-          });
+          if (userRole === "user") {
+            count = await Information.countDocuments({
+              [infoField]: item._id,
+              sectionId: req.user.sectionId,
+              active: true,
+              ...parsedQuery,
+            });
+          } else {
+            count = await Information.countDocuments({
+              [infoField]: item._id,
+              active: true,
+              ...parsedQuery,
+            });
+          }
         }
 
         return {

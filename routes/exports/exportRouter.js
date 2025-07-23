@@ -22,7 +22,9 @@ router
   .route("/")
   .get(authenticateToken, isAdmin, exportController.getAllExports)
   .post(authenticateToken, isAdmin, exportController.createExport);
-
+router
+  .route("/expiredExports")
+  .get(authenticateToken, isAdmin, exportController.expiredExports);
 // Get, update, deactivate by ID
 router
   .route("/:id")

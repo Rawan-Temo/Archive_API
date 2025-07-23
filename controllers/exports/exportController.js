@@ -17,9 +17,9 @@ const getAllExports = async (req, res) => {
 
   try {
     const features = new APIFeatures(
-      Export.find()
-        .populate([{ path: "questions", populate: { path: "informationId" } }])
-        ,
+      Export.find().populate([
+        { path: "questions", populate: { path: "informationId" } },
+      ]),
       req.query
     )
       .filter()
@@ -148,6 +148,24 @@ const deactivateExport = async (req, res) => {
     });
   }
 };
+//  afunction that checks if any of the current exports are expired and returns their id
+const expiredExports = async (req, res) => {
+  try {
+    const expiredExportsList = await Export.countDocuments({
+      active: true,
+      expirationDate: { $lte: new Date() },
+    });
+    res.status(200).json({
+      status: "success",
+      results: expiredExportsList,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   getAllExports,
@@ -155,4 +173,5 @@ module.exports = {
   getExportById,
   updateExport,
   deactivateExport,
+  expiredExports,
 };

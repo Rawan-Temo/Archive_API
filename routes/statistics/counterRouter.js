@@ -8,8 +8,8 @@ const counterController = require("../../controllers/statistics/counterControlle
 const router = express.Router();
 router
   .route("/CountDocuments")
-  .get(authenticateToken, isAdmin, counterController.countDocuments);
+  .get(authenticateToken, isUser, counterController.countDocuments);
 router
   .route("/countInformation")
-  .get(authenticateToken, isAdmin, counterController.countInformation);
+  .get(authenticateToken, isUser, counterController.countInformation);
 module.exports = router;
