@@ -87,7 +87,6 @@ const countInformation = async (req, res) => {
   try {
     const queryObj = { ...req.query };
     const userRole = req.user.role;
-    console.log("User role:", userRole);
     const excludedFields = [
       "page",
       "sort",
