@@ -25,6 +25,9 @@ router
 router
   .route("/expiredExports")
   .get(authenticateToken, isAdmin, exportController.expiredExports);
+router
+  .route("/countExpiredExports")
+  .get(authenticateToken, isAdmin, exportController.countExpiredUnansweredExports);
 // Get, update, deactivate by ID
 router
   .route("/:id")

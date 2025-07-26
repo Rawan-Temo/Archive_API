@@ -151,13 +151,60 @@ const deactivateExport = async (req, res) => {
 //  afunction that checks if any of the current exports are expired and returns their id
 const expiredExports = async (req, res) => {
   try {
-    const expiredExportsList = await Export.countDocuments({
-      active: true,
-      expirationDate: { $lte: new Date() },
-    });
+    const results = await Export.aggregate([
+      {
+        $match: {
+          active: true,
+          expirationDate: { $lte: new Date() },
+        },
+      },
+      {
+        $lookup: {
+          from: "questions",
+          localField: "questions",
+          foreignField: "_id",
+          as: "questionsDetails",
+        },
+      },
+      {
+        $addFields: {
+          answeredCount: {
+            $size: {
+              $filter: {
+                input: "$questionsDetails",
+                as: "q",
+                cond: {
+                  $gt: [{ $strLenCP: { $ifNull: ["$$q.answer", ""] } }, 0],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          $expr: {
+            $or: [
+              { $eq: [{ $size: "$questionsDetails" }, 0] },
+              { $eq: ["$answeredCount", 0] },
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          code: 1,
+           expirationDate: 1,
+          active: 1,
+          questionsDetails: 1,
+        },
+      },
+    ]);
+
     res.status(200).json({
       status: "success",
-      results: expiredExportsList,
+      results: results.length,
+      data: results,
     });
   } catch (error) {
     res.status(500).json({
@@ -166,7 +213,66 @@ const expiredExports = async (req, res) => {
     });
   }
 };
+const countExpiredUnansweredExports = async (req, res) => {
+  try {
+    const result = await Export.aggregate([
+      {
+        $match: {
+          active: true,
+          expirationDate: { $lte: new Date() },
+        },
+      },
+      {
+        $lookup: {
+          from: "questions",
+          localField: "questions",
+          foreignField: "_id",
+          as: "questionsDetails",
+        },
+      },
+      {
+        $addFields: {
+          answeredCount: {
+            $size: {
+              $filter: {
+                input: "$questionsDetails",
+                as: "q",
+                cond: {
+                  $gt: [{ $strLenCP: { $ifNull: ["$$q.answer", ""] } }, 0],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          $expr: {
+            $or: [
+              { $eq: [{ $size: "$questionsDetails" }, 0] },
+              { $eq: ["$answeredCount", 0] },
+            ],
+          },
+        },
+      },
+      {
+        $count: "expiredUnansweredCount",
+      },
+    ]);
 
+    const count = result.length > 0 ? result[0].expiredUnansweredCount : 0;
+
+    res.status(200).json({
+      status: "success",
+      count,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   getAllExports,
   createExport,
@@ -174,4 +280,5 @@ module.exports = {
   updateExport,
   deactivateExport,
   expiredExports,
+  countExpiredUnansweredExports,
 };
