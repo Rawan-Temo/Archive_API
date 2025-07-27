@@ -202,7 +202,10 @@ const expiredExports = async (req, res) => {
           code: 1,
           expirationDate: 1,
           active: 1,
-          questionsDetails: 1,
+          questions: 1,
+          created_at: 1,
+          updated_at: 1,
+          details: 1,
         },
       },
     ]);
