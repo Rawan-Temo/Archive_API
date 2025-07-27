@@ -151,6 +151,7 @@ const deactivateExport = async (req, res) => {
 //  afunction that checks if any of the current exports are expired and returns their id
 const expiredExports = async (req, res) => {
   try {
+    const { page = 1, limit = 10 } = req.query;
     const results = await Export.aggregate([
       {
         $match: {
@@ -192,9 +193,14 @@ const expiredExports = async (req, res) => {
         },
       },
       {
+        $sort: { expirationDate: -1 },
+      },
+      { $skip: (page - 1) * parseInt(limit) },
+      { $limit: parseInt(limit) },
+      {
         $project: {
           code: 1,
-           expirationDate: 1,
+          expirationDate: 1,
           active: 1,
           questionsDetails: 1,
         },
