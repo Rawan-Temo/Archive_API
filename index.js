@@ -67,13 +67,13 @@ const apiLimiter = rateLimit({
   max: 200, // Limit each IP to 100 requests per window
   message: "Too many requests, please try again later.",
 });
-// app.use("/api", apiLimiter);
+app.use("/api", apiLimiter);
 const authLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 20,
   message: "Too many login attempts, please try again later.",
 });
-// app.use("/api/Users/login", authLimiter);
+app.use("/api/Users/login", authLimiter);
 
 // Serve static files with authentication
 
