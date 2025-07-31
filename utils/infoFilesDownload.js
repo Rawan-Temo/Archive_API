@@ -17,6 +17,7 @@ const translations = {
     cityId: "City",
     countryId: "Country",
     governorateId: "Governorate",
+    countyId: "County",
     regionId: "Region",
     streetId: "Street",
     villageId: "Village",
@@ -36,6 +37,7 @@ const translations = {
     cityId: "المدينة",
     countryId: "الدولة",
     governorateId: "المحافظة",
+    countyId: "المقاطعة",
     regionId: "المنطقة",
     streetId: "الشارع",
     villageId: "القرية",
@@ -54,7 +56,8 @@ const translations = {
     sectionId: "Beş",
     cityId: "Bajar",
     countryId: "Welat",
-    governorateId: "Hikûmet",
+    governorateId: "Parêzgeha",
+    countyId: "Kant",
     regionId: "Herêm",
     streetId: "Rê",
     villageId: "Gund",
@@ -88,6 +91,7 @@ const downloadInforamtion = async (req, res) => {
       { path: "cityId", select: "name" },
       { path: "countryId", select: "name" },
       { path: "governorateId", select: "name" },
+      { path: "countyId", select: "name" },
       { path: "regionId", select: "name" },
       { path: "streetId", select: "name" },
       { path: "villageId", select: "name" },
@@ -155,6 +159,7 @@ const downloadInforamtion = async (req, res) => {
               case "cityId":
               case "countryId":
               case "governorateId":
+              case "countyId":
               case "regionId":
               case "streetId":
               case "villageId":
