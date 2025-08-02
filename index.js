@@ -64,13 +64,13 @@ if (process.env.NODE_ENV === "development") {
 // Rate limiting to prevent abuse
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 100 requests per window
+  max: 1000, // Limit each IP to 100 requests per window
   message: "Too many requests, please try again later.",
 });
 app.use("/api", apiLimiter);
 const authLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  max: 20,
+  max: 200,
   message: "Too many login attempts, please try again later.",
 });
 app.use("/api/Users/login", authLimiter);
