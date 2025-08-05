@@ -22,7 +22,7 @@ const searchImages = async (req, res) => {
 
     // Call your Python API for image search
     const response = await axios.post(
-      "http://127.0.0.1:5000/search-image/",
+      "http://localhost:5000/search-image/",
       formData,
       {
         headers: {
