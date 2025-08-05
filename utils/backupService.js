@@ -13,7 +13,7 @@ const execAsync = util.promisify(exec);
 const dbName = process.env.DB_NAME; // Replace with your database name
 const DB_USER = process.env.DB_USER;
 const DB_PASS = process.env.DB_PASS;
-const mongoUri = process.env.DB;
+const mongoUri = process.env.MONGO_URI;
 // Paths
 const publicFolderPath = path.join(__dirname, "../public");
 const unzipFolderPath = path.join(__dirname, "../public");
@@ -55,7 +55,7 @@ const BackupService = {
         if (res) res.write(`Exporting collection '${collection}'...\n`);
         else console.log(`Exporting collection '${collection}'...`);
         await execAsync(
-          `mongoexport --uri="${mongoUri}" --db=${dbName} --collection=${collection} --out="${jsonFilePath}" --jsonArray   `
+          `mongoexport --uri="${mongoUri}" --db=${dbName} --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin" --collection=${collection} --out="${jsonFilePath}" --jsonArray   `
         );
         if (res)
           res.write(`Exported collection '${collection}' to ${jsonFilePath}\n`);
@@ -133,10 +133,10 @@ const BackupService = {
         //  --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin" this for db authentication
         replace
           ? await execAsync(
-              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --drop `
+              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin"  --jsonArray --drop `
             )
           : await execAsync(
-              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --jsonArray --mode=upsert`
+              `mongoimport --uri="${mongoUri}" --db=${dbName} --collection=${collectionName} --file="${jsonFilePath}" --username="${DB_USER}" --password="${DB_PASS}"   --authenticationDatabase="admin"  --jsonArray --mode=upsert`
             );
         if (res)
           res.write(
