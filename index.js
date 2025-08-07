@@ -19,36 +19,38 @@ connection();
 require("./utils/taskScheduler");
 
 // Middleware
+app.use(cors());
 
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "trusted-cdn.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "trusted-cdn.com"],
-        imgSrc: [
-          "'self'",
-          "data:",
-          "blob:", // ✅ Explicitly allow blob URLs
-          "http://localhost:8000", // ✅ API server
-          "http://localhost:8080", // ✅ TileServer-GL
-          "trusted-cdn.com",
-        ],
-        mediaSrc: ["'self'", "blob:"], // Allow media from self and blob URLs
-        frameSrc: ["'self'", "blob:"], // ✅ Allow blob: URLs in iframes
-        connectSrc: ["'self'", "blob:"], // (Optional) Allow connections to blob: (WebSockets, Fetch, etc.)
-      },
-    },
-  })
-);
+// app.use(
+//   helmet({
+//     crossOriginEmbedderPolicy: false,
+//     crossOriginOpenerPolicy: false,
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'", "http://0.0.0.0.com", "trusted-cdn.com"],
+//         scriptSrc: ["'self'", "'unsafe-inline'", "trusted-cdn.com"],
+//         styleSrc: ["'self'", "'unsafe-inline'", "trusted-cdn.com"],
+//         imgSrc: [
+//           "'self'",
+//           "data:",
+//           "blob:", // ✅ Explicitly allow blob URLs
+//           "http://localhost:8000", // ✅ API server
+//           "http://localhost:8080", // ✅ TileServer-GL
+//           "trusted-cdn.com",
+//         ],
+//         mediaSrc: ["'self'", "blob:"], // Allow media from self and blob URLs
+//         frameSrc: ["'self'", "blob:"], // ✅ Allow blob: URLs in iframes
+//         connectSrc: ["'self'", "blob:"], // (Optional) Allow connections to blob: (WebSockets, Fetch, etc.)
+//       },
+//     },
+//   })
+// );
 
 // Data sanitization against NoSQL injection
 app.use(mongoSanitize());
 // Data sanitization against XSS attacks
 app.use(xss());
 
-app.use(cors());
 app.use(express.json()); // Built-in JSON parser
 app.use(express.urlencoded({ extended: true }));
 app.use(

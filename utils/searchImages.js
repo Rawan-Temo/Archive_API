@@ -19,6 +19,7 @@ const searchImages = async (req, res) => {
       filename: req.file.originalname,
       contentType: req.file.mimetype,
     });
+    console.log("Form data prepared for image search");
 
     // Call your Python API for image search
     const response = await axios.post(
@@ -66,7 +67,7 @@ const searchImages = async (req, res) => {
       "Error calling Python API:",
       error.response?.data || error.message
     );
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(404).json({ error: "Internal Server Error" });
   }
 };
 
