@@ -8,7 +8,10 @@ const getAllExports = async (req, res) => {
     await search(
       Export,
       ["code"],
-      [{ path: "questions", populate: { path: "informationId" } }],
+      [
+        { path: "questions", populate: { path: "informationId" } },
+        "recipientId",
+      ],
       req,
       res
     );
@@ -19,6 +22,7 @@ const getAllExports = async (req, res) => {
     const features = new APIFeatures(
       Export.find().populate([
         { path: "questions", populate: { path: "informationId" } },
+        "recipientId",
       ]),
       req.query
     )
@@ -74,7 +78,10 @@ const createExport = async (req, res) => {
 const getExportById = async (req, res) => {
   try {
     const exportDoc = await Export.findById(req.params.id)
-      .populate([{ path: "questions", populate: { path: "informationId" } }])
+      .populate([
+        { path: "questions", populate: { path: "informationId" } },
+        "recipientId",
+      ])
       .lean();
     if (!exportDoc) {
       return res

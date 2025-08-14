@@ -19,6 +19,11 @@ const SecurityInformationSchema = new mongoose.Schema(
       ref: "Section",
       required: true,
     },
+    departmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+      required: true,
+    },
     cityId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "City",
@@ -88,6 +93,10 @@ const SecurityInformationSchema = new mongoose.Schema(
     active: {
       type: Boolean,
       default: true,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
     },
   },
   {

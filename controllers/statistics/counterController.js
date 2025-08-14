@@ -14,6 +14,9 @@ const Person = require("../../models/information/person");
 const Information = require("../../models/information/information");
 const Coordinate = require("../../models/information/coordinate");
 const APIFeatures = require("../../utils/apiFeatures");
+const Department = require("../../models/details/department");
+const Recipient = require("../../models/exports/recipient");
+const Export = require("../../models/exports/export");
 
 const countDocuments = async (req, res) => {
   try {
@@ -111,6 +114,10 @@ const countInformation = async (req, res) => {
         Model = Section;
         infoField = "sectionId";
         break;
+      case "department":
+        Model = Department;
+        infoField = "sectionId";
+        break;
       case "city":
         Model = City;
         infoField = "cityId";
@@ -160,7 +167,7 @@ const countInformation = async (req, res) => {
 
     // Get all items in the category
     // Apply the parsed filter to count active documents
-    const features = new APIFeatures(Model.find(), req.query)
+    const features = new APIFeatures(Model.find({ active: true }), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -223,4 +230,56 @@ const countInformation = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-module.exports = { countDocuments, countInformation };
+// Count exports for each recipient
+const countExportsPerRecipient = async (req, res) => {
+  try {
+    const queryObj = { ...req.query };
+    const userRole = req.user.role;
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const parsedQuery = JSON.parse(queryStr);
+
+    if (userRole === "user") {
+      parsedQuery.sectionId = req.user.sectionId;
+    }
+
+    // Get all active recipients
+    const recipients = await Recipient.find({ active: true }).lean();
+
+    // For each recipient, count exports
+    const counts = await Promise.all(
+      recipients.map(async (recipient) => {
+        const exportCount = await Export.countDocuments({
+          recipientId: recipient._id,
+          active: true,
+          ...parsedQuery,
+        });
+        return {
+          _id: recipient._id,
+          name: recipient.name,
+          exportCount,
+        };
+      })
+    );
+
+    res.status(200).json({
+      status: "success",
+      numberOfRecipients: recipients.length,
+      data: counts,
+    });
+  } catch (error) {
+    console.error("Error counting exports per recipient:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+//count exports for each recipient
+
+module.exports = {
+  countDocuments,
+  countInformation,
+  countExportsPerRecipient,
+};

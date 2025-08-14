@@ -9,6 +9,11 @@ const router = express.Router();
 router
   .route("/CountDocuments")
   .get(authenticateToken, isUser, counterController.countDocuments);
+
+// exports for each recipient
+router
+  .route("/CountExports")
+  .get(authenticateToken, isUser, counterController.countExportsPerRecipient);
 router
   .route("/countInformation")
   .get(authenticateToken, isUser, counterController.countInformation);

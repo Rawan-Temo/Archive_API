@@ -14,6 +14,12 @@ const exportSchema = new mongoose.Schema(
         ref: "Question",
       },
     ],
+    recipientId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Recipient",
+      required: true,
+    },
+
     expirationDate: {
       type: Date,
       required: true,

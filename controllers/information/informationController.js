@@ -17,6 +17,7 @@ const allInformation = async (req, res) => {
         { path: "sectionId", select: "name" }, // Only include `name` from Section
         { path: "cityId", select: "name" },
         { path: "countryId", select: "name" },
+        { path: "departmentId", select: "name" },
         { path: "governorateId", select: "name" },
         { path: "countyId", select: "name" },
         { path: "regionId", select: "name" },
@@ -42,6 +43,7 @@ const allInformation = async (req, res) => {
         Information.find({ sectionId }).populate([
           { path: "sectionId", select: "name" }, // Only include `name` from Section
           { path: "cityId", select: "name" },
+          { path: "departmentId", select: "name" },
           { path: "countryId", select: "name" },
           { path: "governorateId", select: "name" },
           { path: "countyId", select: "name" },
@@ -65,6 +67,7 @@ const allInformation = async (req, res) => {
         Information.find().populate([
           { path: "sectionId", select: "name" }, // Only include `name` from Section
           { path: "cityId", select: "name" },
+          { path: "departmentId", select: "name" },
           { path: "countryId", select: "name" },
           { path: "governorateId", select: "name" },
           { path: "countyId", select: "name" },
@@ -148,6 +151,7 @@ const getInformationById = async (req, res) => {
         active: true, // Ensure only active information is returned
       }).populate([
         { path: "sectionId", select: "name" },
+        { path: "departmentId", select: "name" },
         { path: "cityId", select: "name" },
         { path: "countryId", select: "name" },
         { path: "governorateId", select: "name" },
@@ -170,6 +174,7 @@ const getInformationById = async (req, res) => {
         active: true, // Ensure only active information is returned
       }).populate([
         { path: "sectionId", select: "name" },
+        { path: "departmentId", select: "name" },
         { path: "cityId", select: "name" },
         { path: "countryId", select: "name" },
         { path: "governorateId", select: "name" },
