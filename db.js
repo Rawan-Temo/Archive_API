@@ -5,10 +5,8 @@ const DB = `${process.env.DB}/${process.env.DB_NAME}?authSource=admin`;
 
 module.exports = async function connection() {
   try {
-    await mongoose.connect(
-      "mongodb+srv://rawantemmo:ZluRtu5Rf2aPLQ7z@cluster0.ovxkm.mongodb.net/"
-    );
-    console.log("DB CONECTION");
+    await mongoose.connect("mongodb+srv://rawantemmo:ZluRtu5Rf2aPLQ7z@cluster0.ovxkm.mongodb.net/");
+    console.log("DB CONNECTION");
     await createDefaultAdmin();
 
     console.log("DB CONNECTION SUCCESSFUL");

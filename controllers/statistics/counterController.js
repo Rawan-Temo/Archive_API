@@ -17,7 +17,8 @@ const APIFeatures = require("../../utils/apiFeatures");
 const Department = require("../../models/details/department");
 const Recipient = require("../../models/exports/recipient");
 const Export = require("../../models/exports/export");
-
+const Result = require("../../models/exports/result");
+const Report = require("../../models/exports/report");
 const countDocuments = async (req, res) => {
   try {
     const queryObj = { ...req.query };
@@ -43,6 +44,11 @@ const countDocuments = async (req, res) => {
       personCount,
       informationCount,
       coordinateCount,
+      reportCount,
+      exportCount,
+      resultCount,
+      departmentCount,
+      recipientCount,
     ] = await Promise.all([
       City.countDocuments({ active: true, ...parsedQuery }),
       Country.countDocuments({ active: true, ...parsedQuery }),
@@ -59,6 +65,11 @@ const countDocuments = async (req, res) => {
       Person.countDocuments({ active: true, ...parsedQuery }),
       Information.countDocuments({ active: true, ...parsedQuery }),
       Coordinate.countDocuments({ active: true, ...parsedQuery }),
+      Report.countDocuments({ active: true, ...parsedQuery }),
+      Export.countDocuments({ active: true, ...parsedQuery }),
+      Result.countDocuments({ active: true, ...parsedQuery }),
+      Department.countDocuments({ active: true, ...parsedQuery }),
+      Recipient.countDocuments({ active: true, ...parsedQuery }),
     ]);
 
     res.status(200).json({
@@ -79,6 +90,11 @@ const countDocuments = async (req, res) => {
         personCount,
         informationCount,
         coordinateCount,
+        reportCount,
+        exportCount,
+        resultCount,
+        departmentCount,
+        recipientCount,
       },
     });
   } catch (error) {
