@@ -273,7 +273,6 @@ const countExportsPerRecipient = async (req, res) => {
       .limitFields()
       .paginate();
     const recipients = await features.query;
-    console.log("Recipients:", recipients);
     // For each recipient, count exports
     const counts = await Promise.all(
       recipients.map(async (recipient) => {
