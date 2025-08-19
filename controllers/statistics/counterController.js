@@ -296,32 +296,39 @@ const countExportsPerRecipient = async (req, res) => {
   }
 };
 
-const countAnsweredExports = async (req, res) => {
+const countAnsweredExportsPerRecipient = async (req, res) => {
   try {
-    const recipients = await Recipient.find({ active: true }).lean();
-    const result = await Export.aggregate([
-      {
-        $match: {
-          active: true,
-          expirationDate: { $lte: new Date() },
-        },
-      },
+    // Get all active recipients (with filtering/sorting/pagination)
+    const features = new APIFeatures(
+      Recipient.find({ active: true }).lean(),
+      req.query
+    )
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    const recipients = await features.query;
+
+    // Aggregation: count only exports with at least one answered question
+    const counts = await Export.aggregate([
+      { $match: { active: true, recipientId: { $ne: null } } }, // exclude bad docs
       {
         $lookup: {
           from: "questions",
           localField: "questions",
           foreignField: "_id",
-          as: "questionsDetails",
+          as: "questions",
         },
       },
       {
         $addFields: {
-          answeredCount: {
-            $size: {
-              $filter: {
-                input: "$questionsDetails",
+          hasAnswer: {
+            $anyElementTrue: {
+              $map: {
+                input: "$questions",
                 as: "q",
-                cond: {
+                in: {
                   $gt: [{ $strLenCP: { $ifNull: ["$$q.answer", ""] } }, 0],
                 },
               },
@@ -329,37 +336,40 @@ const countAnsweredExports = async (req, res) => {
           },
         },
       },
+      { $match: { hasAnswer: true } },
       {
-        $match: {
-          $expr: {
-            $or: [
-              { $eq: [{ $size: "$questionsDetails" }, 0] },
-              { $eq: ["$answeredCount", 0] },
-            ],
-          },
+        $group: {
+          _id: "$recipientId",
+          exportWithAnswersCount: { $sum: 1 },
         },
-      },
-      {
-        $count: "expiredUnansweredCount",
       },
     ]);
 
-    const count = result.length > 0 ? result[0].expiredUnansweredCount : 0;
+    // Build a map for quick lookup
+    const countsMap = new Map(
+      counts.map((c) => [String(c._id), c.exportWithAnswersCount])
+    );
+
+    // Merge counts into full recipient list
+    const result = recipients.map((r) => ({
+      _id: r._id,
+      name: r.name,
+      exportWithAnswersCount: countsMap.get(String(r._id)) || 0,
+    }));
 
     res.status(200).json({
       status: "success",
-      count,
+      numberOfRecipients: recipients.length,
+      data: result,
     });
   } catch (error) {
-    res.status(500).json({
-      status: "fail",
-      message: error.message,
-    });
+    console.error("Error counting exports per recipient:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
-
 const departmentForSections = async (req, res) => {
   try {
+    // Departments (filtered + paginated)
     const features = new APIFeatures(
       Department.find({ active: true }),
       req.query
@@ -371,29 +381,46 @@ const departmentForSections = async (req, res) => {
 
     const departments = await features.query;
     const sections = await Section.find({ active: true });
-    const counts = await Promise.all(
-      departments.map(async (department) => {
-        const countsForSections = sections.map(async (section) => {
-          const count = await Information.countDocuments({
-            departmentId: department._id,
-            sectionId: section._id,
-            active: true,
-          });
-          return {
-            _id: section._id,
-            name: section.name,
-            departmentId: section.departmentId,
-            departmentName: department.name,
-            count,
-          };
-        });
-        return {
-          department,
-          countsForSections,
-        };
-      })
+
+    // Aggregate existing counts
+    const counts = await Information.aggregate([
+      {
+        $match: {
+          active: true,
+          departmentId: { $in: departments.map((d) => d._id) },
+        },
+      },
+      {
+        $group: {
+          _id: { departmentId: "$departmentId", sectionId: "$sectionId" },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Build map for quick lookup
+    const countMap = new Map(
+      counts.map((c) => [`${c._id.departmentId}_${c._id.sectionId}`, c.count])
     );
-    console.log(counts);
+
+    // Build full result (all combinations)
+    const result = departments.map((dept) => {
+      const countsForSections = sections.map((sec) => ({
+        sectionId: sec._id,
+        sectionName: sec.name,
+        count: countMap.get(`${dept._id}_${sec._id}`) || 0,
+      }));
+
+      return {
+        department: dept,
+        countsForSections,
+      };
+    });
+
+    res.status(200).json({
+      status: "success",
+      data: result,
+    });
   } catch (error) {
     res.status(500).json({
       status: "fail",
@@ -406,4 +433,5 @@ module.exports = {
   countInformation,
   countExportsPerRecipient,
   departmentForSections,
+  countAnsweredExportsPerRecipient,
 };

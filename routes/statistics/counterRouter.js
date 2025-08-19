@@ -20,4 +20,11 @@ router
 router
   .route("/departmentInformation")
   .get(authenticateToken, isUser, counterController.departmentForSections);
+router
+  .route("/countAnsweredExports")
+  .get(
+    authenticateToken,
+    isUser,
+    counterController.countAnsweredExportsPerRecipient
+  );
 module.exports = router;

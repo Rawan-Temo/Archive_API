@@ -110,7 +110,7 @@ const downloadInforamtion = async (req, res) => {
   res.setHeader("Content-Type", "application/zip");
   res.setHeader(
     "Content-Disposition",
-    `attachment; filename=${informationId}_files.zip`
+    'attachment; filename="Mijara_Agahaiye.zip"'
   );
 
   const archive = archiver("zip", { zlib: { level: 9 } });
@@ -266,7 +266,7 @@ const downloadInforamtion = async (req, res) => {
   });
   const docBuffer = await Packer.toBuffer(doc);
 
-  archive.append(docBuffer, { name: "information.docx" });
+  archive.append(docBuffer, { name: "Mijara_Agahaiye.docx" });
   archive.finalize();
 };
 
