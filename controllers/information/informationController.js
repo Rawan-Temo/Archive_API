@@ -203,7 +203,6 @@ const getInformationById = async (req, res) => {
       mediaPromises
     );
 
-    console.log(information);
     // Add media to the information object
     const informationWithMedia = {
       ...information.toObject(),
