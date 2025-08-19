@@ -242,10 +242,6 @@ const countExportsPerRecipient = async (req, res) => {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const parsedQuery = JSON.parse(queryStr);
 
-    if (userRole === "user") {
-      parsedQuery.sectionId = req.user.sectionId;
-    }
-
     // Get all active recipients
 
     const features = new APIFeatures(
@@ -285,10 +281,114 @@ const countExportsPerRecipient = async (req, res) => {
   }
 };
 
-//count exports for each recipient
+const countAnsweredExports = async (req, res) => {
+  try {
+    const recipients = await Recipient.find({ active: true }).lean();
+    const result = await Export.aggregate([
+      {
+        $match: {
+          active: true,
+          expirationDate: { $lte: new Date() },
+        },
+      },
+      {
+        $lookup: {
+          from: "questions",
+          localField: "questions",
+          foreignField: "_id",
+          as: "questionsDetails",
+        },
+      },
+      {
+        $addFields: {
+          answeredCount: {
+            $size: {
+              $filter: {
+                input: "$questionsDetails",
+                as: "q",
+                cond: {
+                  $gt: [{ $strLenCP: { $ifNull: ["$$q.answer", ""] } }, 0],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          $expr: {
+            $or: [
+              { $eq: [{ $size: "$questionsDetails" }, 0] },
+              { $eq: ["$answeredCount", 0] },
+            ],
+          },
+        },
+      },
+      {
+        $count: "expiredUnansweredCount",
+      },
+    ]);
 
+    const count = result.length > 0 ? result[0].expiredUnansweredCount : 0;
+
+    res.status(200).json({
+      status: "success",
+      count,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
+
+const departmentForSections = async (req, res) => {
+  try {
+    const features = new APIFeatures(
+      Department.find({ active: true }),
+      req.query
+    )
+      .filter()
+      .sort()
+      .paginate()
+      .limitFields();
+
+    const departments = await features.query;
+    const sections = await Section.find({ active: true });
+    const counts = await Promise.all(
+      departments.map(async (department) => {
+        const countsForSections = sections.map(async (section) => {
+          const count = await Information.countDocuments({
+            departmentId: department._id,
+            sectionId: section._id,
+            active: true,
+          });
+          return {
+            _id: section._id,
+            name: section.name,
+            departmentId: section.departmentId,
+            departmentName: department.name,
+            count,
+          };
+        });
+        return {
+          department,
+          countsForSections,
+        };
+      })
+    );
+    console.log(counts);
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   countDocuments,
   countInformation,
   countExportsPerRecipient,
+  departmentForSections,
 };

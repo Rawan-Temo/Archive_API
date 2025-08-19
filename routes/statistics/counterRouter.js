@@ -17,4 +17,7 @@ router
 router
   .route("/countInformation")
   .get(authenticateToken, isUser, counterController.countInformation);
+router
+  .route("/departmentInformation")
+  .get(authenticateToken, isUser, counterController.departmentForSections);
 module.exports = router;
