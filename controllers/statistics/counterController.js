@@ -184,7 +184,6 @@ const countInformation = async (req, res) => {
     // Get all items in the category
     // Apply the parsed filter to count active documents
     const features = new APIFeatures(Model.find({ active: true }), req.query)
-      .filter()
       .sort()
       .limitFields()
       .paginate();
@@ -264,7 +263,6 @@ const countExportsPerRecipient = async (req, res) => {
       Recipient.find({ active: true }).lean(),
       req.query
     )
-      .filter()
       .sort()
       .limitFields()
       .paginate();
