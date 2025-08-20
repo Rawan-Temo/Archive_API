@@ -55,24 +55,21 @@ const SecurityInformationSchema = new mongoose.Schema(
     addressDetails: {
       type: String, // Optional field for additional address details
     },
-    events: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Event",
-      },
-    ],
-    parties: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Party",
-      },
-    ],
-    sources: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Source",
-      },
-    ],
+    events: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Event",
+    },
+
+    parties: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Party",
+    },
+
+    sources: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Source",
+    },
+
     people: [
       {
         type: mongoose.Schema.Types.ObjectId,

@@ -7,13 +7,15 @@ const Video = require("../models/media/video");
 const DocumentTable = require("../models/media/document");
 const Information = require("../models/information/information");
 const path = require("path");
-const { Document, Packer, Paragraph, TextRun } = require("docx");
+const { Document, Packer, Paragraph, TextRun, AlignmentType } = require("docx");
 
 // Language translations for field labels
 const translations = {
   EN: {
-    subject: "Subject",
     sectionId: "Section",
+    subject: "Subject",
+    date: "Date",
+    information_place: "Information Place",
     cityId: "City",
     countryId: "Country",
     governorateId: "Governorate",
@@ -21,39 +23,25 @@ const translations = {
     regionId: "Region",
     streetId: "Street",
     villageId: "Village",
-    events: "Events",
-    parties: "Parties",
-    sources: "Sources",
-    people: "People",
     addressDetails: "Address Details",
-    coordinates: "Coordinates",
     credibility: "Credibility",
+    infoStatus: "Information Status",
+    sourceName: "Source Name",
+    source_credibility: "Source Credibility",
+    observation: "Observation",
     note: "Note",
     details: "Details",
-  },
-  AR: {
-    subject: "الموضوع",
-    sectionId: "القسم",
-    cityId: "المدينة",
-    countryId: "الدولة",
-    governorateId: "المحافظة",
-    countyId: "المقاطعة",
-    regionId: "المنطقة",
-    streetId: "الشارع",
-    villageId: "القرية",
-    events: "الأحداث",
-    parties: "الأطراف",
-    sources: "المصادر",
-    people: "الأشخاص",
-    addressDetails: "تفاصيل العنوان",
-    coordinates: "الإحداثيات",
-    credibility: "المصداقية",
-    note: "ملاحظة",
-    details: "تفاصيل",
+    evaluation: "Evaluation",
+    suggestion: "Suggestion",
+    people: "People",
+    coordinates: "Coordinates",
+    closing: "Revolutionary Greetings",
   },
   KU: {
-    subject: "Mijar",
     sectionId: "Beş",
+    subject: "Mijar",
+    date: "Dîrok",
+    information_place: "Cihê Agahiyê",
     cityId: "Bajar",
     countryId: "Welat",
     governorateId: "Parêzgeha",
@@ -61,21 +49,51 @@ const translations = {
     regionId: "Herêm",
     streetId: "Rê",
     villageId: "Gund",
-    events: "Bûyer",
-    parties: "Alih",
-    sources: "Çavkanî",
-    people: "Kes",
     addressDetails: "Hûrîyên navnîşanê",
-    coordinates: "Koordîn",
-    credibility: "Baweriya",
-    note: "Têxe",
+    credibility: "Çavkanî",
+    infoStatus: "Agahî",
+    sourceName: "Navê Çavkanî",
+    source_credibility: " Çavkanî",
+    observation: "Nerîn",
+    note: "Têbînî",
     details: "Hûr",
+    evaluation: "Nirxandina",
+    suggestion: "Pêşniyarî",
+    people: "Kes",
+    coordinates: "Koordîn",
+    closing: "Silav û Rêzên Şoreşgerî",
+  },
+  AR: {
+    sectionId: "القسم",
+    subject: "الموضوع",
+    date: "التاريخ",
+    information_place: "مكان المعلومات",
+    cityId: "المدينة",
+    countryId: "الدولة",
+    governorateId: "المحافظة",
+    countyId: "المقاطعة",
+    regionId: "المنطقة",
+    streetId: "الشارع",
+    villageId: "القرية",
+    addressDetails: "تفاصيل العنوان",
+    credibility: "المصداقية",
+    infoStatus: "حالة المعلومة",
+    sourceName: "اسم المصدر",
+    source_credibility: "مصداقية المصدر",
+    observation: "ملاحظة",
+    note: "ملاحظة",
+    details: "تفاصيل",
+    evaluation: "تقييم",
+    suggestion: "اقتراح",
+    people: "الأشخاص",
+    coordinates: "الإحداثيات",
+    closing: "مع التحية الثورية",
   },
 };
 
 const downloadInforamtion = async (req, res) => {
   const { informationId } = req.body;
-  const lang = req.body.lang || "EN"; // Default to English if no lang is provided
+  const lang = req.body.lang || "EN"; // Default to English
   if (!translations[lang]) {
     return res.status(400).json({ error: "Unsupported language" });
   }
@@ -88,6 +106,7 @@ const downloadInforamtion = async (req, res) => {
   const securityInfo = await Information.findById(informationId)
     .populate([
       { path: "sectionId", select: "name" },
+      { path: "departmentId", select: "name" },
       { path: "cityId", select: "name" },
       { path: "countryId", select: "name" },
       { path: "governorateId", select: "name" },
@@ -98,8 +117,8 @@ const downloadInforamtion = async (req, res) => {
       { path: "events", select: "name" },
       { path: "parties", select: "name" },
       { path: "sources", select: "source_name source_credibility" },
-      { path: "people", select: "firstName fatherName surName" },
       { path: "coordinates", select: "coordinates note" },
+      { path: "people", select: "firstName surName image fatherName" },
     ])
     .lean();
 
@@ -116,6 +135,7 @@ const downloadInforamtion = async (req, res) => {
   const archive = archiver("zip", { zlib: { level: 9 } });
   archive.pipe(res);
 
+  // Add files to zip if they exist
   if (filesResult.files && filesResult.files.length > 0) {
     filesResult.files.forEach((file) => {
       const fullPath = path.join(__dirname, "..", file.url);
@@ -125,142 +145,288 @@ const downloadInforamtion = async (req, res) => {
     });
   }
 
+  // Build Word content
   const paragraphs = [];
 
-  paragraphs.push(
-    new Paragraph({
-      children: [
-        new TextRun({
-          text:
-            lang === "AR"
-              ? "تفاصيل المعلومات الأمنية"
-              : lang === "KU"
-              ? "Agahdariya Ewlehî"
-              : "Security Information Details",
-          bold: true,
-          size: 32,
-        }),
-      ],
-      spacing: { after: 300 },
-      rightToLeft: lang === "AR", // Set right-to-left for Arabic
-    })
-  );
-
-  Object.keys(translations[lang]).forEach((key) => {
-    const value = securityInfo[key];
-    if (value) {
-      let displayValue = "";
-
-      if (Array.isArray(value)) {
-        displayValue = value
-          .map((item) => {
-            switch (key) {
-              case "sectionId":
-              case "cityId":
-              case "countryId":
-              case "governorateId":
-              case "countyId":
-              case "regionId":
-              case "streetId":
-              case "villageId":
-              case "events":
-              case "parties":
-                return item.name || "";
-              case "sources":
-                return `${item.source_name || ""} (${
-                  item.source_credibility || ""
-                })`;
-              case "people":
-                return `${item.firstName || ""} ${item.fatherName || ""} ${
-                  item.surName || ""
-                }`.trim();
-              case "coordinates":
-                return `(${item.coordinates || ""}) - ${item.note || ""}`;
-              default:
-                return "";
-            }
-          })
-          .filter((str) => str)
-          .join(", ");
-      } else {
-        switch (key) {
-          case "sectionId":
-          case "cityId":
-          case "countryId":
-          case "governorateId":
-          case "regionId":
-          case "streetId":
-          case "villageId":
-          case "events":
-          case "parties":
-            displayValue = value.name || "";
-            break;
-          case "sources":
-            displayValue = `${value.source_name || ""} (${
-              value.source_credibility || ""
-            })`;
-            break;
-          case "people":
-            displayValue = `${value.firstName || ""} ${
-              value.fatherName || ""
-            } ${value.surName || ""}`.trim();
-            break;
-          case "coordinates":
-            displayValue = `(${value.coordinates || ""}) - ${value.note || ""}`;
-            break;
-          case "note":
-            break;
-          case "details":
-            break;
-          default:
-            displayValue = value.toString();
-        }
-      }
-
-      if (displayValue) {
-        paragraphs.push(
-          new Paragraph({
-            children: [
-              new TextRun({ text: `${translations[lang][key]}: `, bold: true }),
-              new TextRun({ text: displayValue }),
-            ],
-            spacing: { after: 200 },
-            rightToLeft: lang === "AR", // Set right-to-left for Arabic
-          })
-        );
-      }
-    }
-  });
-
-  if (securityInfo.note) {
-    paragraphs.push(
-      new Paragraph({
-        children: [
-          new TextRun({ text: `${translations[lang]["note"]}: `, bold: true }),
-          new TextRun({ text: securityInfo.note }),
-        ],
-        spacing: { after: 200 },
-        rightToLeft: lang === "AR", // Set right-to-left for Arabic
-      })
-    );
-  }
-
-  if (securityInfo.details) {
+  // Section
+  if (securityInfo.sectionId) {
     paragraphs.push(
       new Paragraph({
         children: [
           new TextRun({
-            text: `${translations[lang]["details"]}: `,
+            text: `${translations[lang]["sectionId"]}: ${
+              securityInfo.sectionId.name || ""
+            }`,
             bold: true,
+            size: 30,
           }),
-          new TextRun({ text: securityInfo.detiles }),
         ],
-        spacing: { after: 200 },
-        rightToLeft: lang === "AR", // Set right-to-left for Arabic
+        spacing: { after: 300 },
+        rightToLeft: lang === "AR",
       })
     );
   }
 
+  // Subject
+  if (securityInfo.subject) {
+    paragraphs.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${translations[lang]["subject"]}: `,
+            bold: true,
+            size: 30,
+          }),
+          new TextRun({ text: securityInfo.subject, size: 30 }),
+        ],
+        spacing: { after: 200 },
+        rightToLeft: lang === "AR",
+      })
+    );
+  }
+
+  // Date
+  if (securityInfo.date) {
+    paragraphs.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${translations[lang]["date"]}: `,
+            bold: true,
+            size: 30,
+          }),
+          new TextRun({
+            text: new Date(securityInfo.date).toLocaleDateString("en-GB"),
+            size: 30,
+          }),
+        ],
+        spacing: { after: 200 },
+        rightToLeft: lang === "AR",
+      })
+    );
+  }
+
+  // Location fields (city, country, governorate, etc.)
+  let informationPlace = "";
+  [
+    "countryId",
+    "governorateId",
+    "countyId",
+    "cityId",
+    "regionId",
+    "streetId",
+    "villageId",
+  ].forEach((field) => {
+    if (securityInfo[field]) {
+      informationPlace += `${securityInfo[field].name}` || "";
+    }
+  });
+  informationPlace -= ", ";
+  paragraphs.push(
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: `${translations[lang]["information_place"]}: `,
+          bold: true,
+          size: 30,
+        }),
+        new TextRun({ text: informationPlace, size: 30 }),
+      ],
+      spacing: { after: 200 },
+      rightToLeft: lang === "AR",
+    })
+  );
+
+  // Address details
+  if (securityInfo.addressDetails) {
+    paragraphs.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${translations[lang]["addressDetails"]}: `,
+            bold: true,
+            size: 30,
+          }),
+          new TextRun({ text: securityInfo.addressDetails, size: 30 }),
+        ],
+        spacing: { after: 200 },
+        rightToLeft: lang === "AR",
+      })
+    );
+  }
+  // add the sources.source_name single
+  if (securityInfo.sources) {
+    const sourcesStr = securityInfo.sources.source_name || "";
+    paragraphs.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${translations[lang]["sourceName"]}: `,
+            bold: true,
+            size: 30,
+          }),
+          new TextRun({ text: sourcesStr, size: 30 }),
+        ],
+        spacing: { after: 200 },
+        rightToLeft: lang === "AR",
+      })
+    );
+    paragraphs.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${translations[lang]["source_credibility"]}: `,
+            bold: true,
+            size: 30,
+          }),
+          new TextRun({
+            text: securityInfo.sources.source_credibility || "",
+            size: 30,
+          }),
+        ],
+        spacing: { after: 200 },
+        rightToLeft: lang === "AR",
+      })
+    );
+  }
+
+  // Credibility styled as blue hyperlink
+  if (securityInfo.credibility) {
+    paragraphs.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${translations[lang]["credibility"]}: `,
+            bold: true,
+            size: 30,
+          }),
+          new TextRun({
+            text: securityInfo.credibility,
+            color: "0563C1",
+            underline: { type: "single" },
+            size: 30,
+          }),
+        ],
+        spacing: { after: 200 },
+        rightToLeft: lang === "AR",
+      })
+    );
+  }
+
+  // Note + Details in green
+  paragraphs.push(
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: securityInfo["details"],
+          bold: true,
+          color: "000000",
+          font: "Arial",
+          size: 33,
+        }),
+      ],
+      spacing: { after: 200 },
+      rightToLeft: lang === "AR",
+    })
+  );
+
+  // People
+  if (securityInfo.people && securityInfo.people.length > 0) {
+    const peopleStr = securityInfo.people
+      .map((p) =>
+        `${p.firstName || ""} ${p.fatherName || ""} ${p.surName || ""}`.trim()
+      )
+      .join(", ");
+    paragraphs.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${translations[lang]["people"]}: `,
+            bold: true,
+            size: 30,
+          }),
+          new TextRun({ text: peopleStr, size: 30 }),
+        ],
+        spacing: { after: 200 },
+        rightToLeft: lang === "AR",
+      })
+    );
+  }
+
+  // Coordinates
+  if (securityInfo.coordinates && securityInfo.coordinates.length > 0) {
+    const coordsStr = securityInfo.coordinates
+      .map((c) => `(${c.coordinates || ""}) `)
+      .join(",");
+    paragraphs.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${translations[lang]["coordinates"]}: `,
+            bold: true,
+            size: 30,
+          }),
+          new TextRun({ text: coordsStr, size: 30 }),
+        ],
+        spacing: { after: 200 },
+        rightToLeft: lang === "AR",
+      })
+    );
+  }
+  ["note"].forEach((field) => {
+    if (securityInfo[field]) {
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `${translations[lang][field]}: `,
+              bold: true,
+              color: "008000",
+              size: 30,
+            }),
+            new TextRun({ text: securityInfo[field], size: 30 }),
+          ],
+          spacing: { after: 200 },
+          rightToLeft: lang === "AR",
+        })
+      );
+    }
+  });
+  // Closing (bottom right)
+  paragraphs.push(
+    new Paragraph({
+      alignment: AlignmentType.RIGHT,
+      children: [
+        new TextRun({
+          text: translations[lang]["closing"],
+          bold: true,
+          size: 30,
+        }),
+      ],
+      spacing: { before: 400 },
+      rightToLeft: lang === "AR",
+    })
+  );
+
+  // Signature name + dynamic date (createdAt)
+  paragraphs.push(
+    new Paragraph({
+      alignment: AlignmentType.RIGHT,
+      children: [
+        new TextRun({
+          text: req.user?.username || "System",
+          break: 1,
+          size: 30,
+        }),
+        new TextRun({
+          text: new Date(securityInfo.createdAt).toLocaleDateString("en-GB"),
+          size: 30,
+        }),
+      ],
+      rightToLeft: lang === "AR",
+    })
+  );
+  // Create doc
   const doc = new Document({
     sections: [{ properties: {}, children: paragraphs }],
   });
