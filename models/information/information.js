@@ -68,6 +68,7 @@ const SecurityInformationSchema = new mongoose.Schema(
     sources: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Source",
+      required: true,
     },
 
     people: [
