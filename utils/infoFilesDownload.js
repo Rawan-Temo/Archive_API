@@ -28,6 +28,12 @@ const translations = {
     infoStatus: "Information Status",
     sourceName: "Source Name",
     source_credibility: "Source Credibility",
+    source_high: "high",
+    source_low: "low",
+    source_medium: "medium",
+    high: "high",
+    medium: "low",
+    low: "medium",
     observation: "Observation",
     note: "Note",
     details: "Details",
@@ -53,7 +59,13 @@ const translations = {
     credibility: "Çavkanî",
     infoStatus: "Agahî",
     sourceName: "Navê Çavkanî",
-    source_credibility: " Çavkanî",
+    source_credibility: " Agahî",
+    source_high: "",
+    source_low: "",
+    source_medium: "",
+    high: "",
+    medium: "",
+    low: "",
     observation: "Nerîn",
     note: "Têbînî",
     details: "Hûr",
@@ -79,6 +91,12 @@ const translations = {
     credibility: "المصداقية",
     infoStatus: "حالة المعلومة",
     sourceName: "اسم المصدر",
+    source_high: "",
+    source_low: "",
+    source_medium: "",
+    high: "",
+    medium: "",
+    low: "",
     source_credibility: "مصداقية المصدر",
     observation: "ملاحظة",
     note: "ملاحظة",
@@ -116,7 +134,12 @@ const downloadInforamtion = async (req, res) => {
       { path: "villageId", select: "name" },
       { path: "events", select: "name" },
       { path: "parties", select: "name" },
-      { path: "sources", select: "source_name source_credibility" },
+      {
+        path: "sources",
+        populate: {
+          path: "field",
+        },
+      },
       { path: "coordinates", select: "coordinates note" },
       { path: "people", select: "firstName surName image fatherName" },
     ])
@@ -129,7 +152,7 @@ const downloadInforamtion = async (req, res) => {
   res.setHeader("Content-Type", "application/zip");
   res.setHeader(
     "Content-Disposition",
-    'attachment; filename="Mijara_Agahaiye.zip"'
+    'attachment; filename="Aram Serêkaniyê..Derbarê Civîna Istixbaratê Tirka Û Istixbarata Çete Li Serêkaniyê.zip"'
   );
 
   const archive = archiver("zip", { zlib: { level: 9 } });
@@ -218,10 +241,10 @@ const downloadInforamtion = async (req, res) => {
     "villageId",
   ].forEach((field) => {
     if (securityInfo[field]) {
-      informationPlace += `${securityInfo[field].name}` || "";
+      informationPlace += `${securityInfo[field].name} , ` || "";
     }
   });
-  informationPlace -= ", ";
+
   paragraphs.push(
     new Paragraph({
       children: [
@@ -280,7 +303,14 @@ const downloadInforamtion = async (req, res) => {
             size: 30,
           }),
           new TextRun({
-            text: securityInfo.sources.source_credibility || "",
+            text:
+              securityInfo.sources.source_credibility === "High"
+                ? `${translations[lang]["source_high"]}`
+                : securityInfo.sources.source_credibility === "Medium"
+                ? `${translations[lang]["source_medium"]}`
+                : securityInfo.sources.source_credibility === "Low"
+                ? `${translations[lang]["source_low"]}`
+                : "",
             size: 30,
           }),
         ],
@@ -409,14 +439,31 @@ const downloadInforamtion = async (req, res) => {
   );
 
   // Signature name + dynamic date (createdAt)
+  if (securityInfo.sources && securityInfo.sources.field?.name) {
+    paragraphs.push(
+      new Paragraph({
+        alignment: AlignmentType.RIGHT,
+        children: [
+          new TextRun({
+            text: securityInfo.sources.field?.name,
+            break: 1,
+            size: 30,
+          }),
+        ],
+        rightToLeft: lang === "AR",
+      })
+    );
+  }
+
   paragraphs.push(
     new Paragraph({
       alignment: AlignmentType.RIGHT,
       children: [
         new TextRun({
-          text: req.user?.username || "System",
+          text: `${req.user?.username} || ` || "System",
           break: 1,
-          size: 30,
+          size: 32,
+          bold: true,
         }),
         new TextRun({
           text: new Date(securityInfo.createdAt).toLocaleDateString("en-GB"),
@@ -432,7 +479,9 @@ const downloadInforamtion = async (req, res) => {
   });
   const docBuffer = await Packer.toBuffer(doc);
 
-  archive.append(docBuffer, { name: "Mijara_Agahaiye.docx" });
+  archive.append(docBuffer, {
+    name: "Aram Serêkaniyê..Derbarê Civîna Istixbaratê Tirka Û Istixbarata Çete Li Serêkaniyê.docx",
+  });
   archive.finalize();
 };
 
