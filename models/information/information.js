@@ -8,15 +8,12 @@ const SecurityInformationSchema = new mongoose.Schema(
     },
     note: {
       type: String,
-      required: true,
     },
     opinion: {
       type: String,
-      required: true,
     },
     suggestion: {
       type: String,
-      required: true,
     },
     details: {
       type: String,
