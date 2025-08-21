@@ -37,6 +37,8 @@ const translations = {
     observation: "Observation",
     note: "Note",
     details: "Details",
+    opinion: "Opinion",
+    suggestion: "Suggestion",
     evaluation: "Evaluation",
     suggestion: "Suggestion",
     people: "People",
@@ -69,6 +71,8 @@ const translations = {
     observation: "Nerîn",
     note: "Têbînî",
     details: "Hûr",
+    opinion: "",
+    suggestion: "",
     evaluation: "Nirxandina",
     suggestion: "Pêşniyarî",
     people: "Kes",
@@ -101,6 +105,8 @@ const translations = {
     observation: "ملاحظة",
     note: "ملاحظة",
     details: "تفاصيل",
+    opinion: "",
+    suggestion: "",
     evaluation: "تقييم",
     suggestion: "اقتراح",
     people: "الأشخاص",
@@ -403,7 +409,7 @@ const downloadInforamtion = async (req, res) => {
       })
     );
   }
-  ["note"].forEach((field) => {
+  ["note", "opinion", "suggestion"].forEach((field) => {
     if (securityInfo[field]) {
       paragraphs.push(
         new Paragraph({
