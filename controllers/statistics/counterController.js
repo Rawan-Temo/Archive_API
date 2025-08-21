@@ -301,16 +301,30 @@ const countAnsweredExportsPerRecipient = async (req, res) => {
       Recipient.find({ active: true }).lean(),
       req.query
     )
-      .filter()
       .sort()
       .limitFields()
       .paginate();
 
     const recipients = await features.query;
 
+    // Build createdAt filter manually
+    const createdAtFilter = {};
+    if (req.query["createdAt"]?.gte) {
+      createdAtFilter.$gte = new Date(req.query["createdAt"].gte);
+    }
+    if (req.query["createdAt"]?.lte) {
+      createdAtFilter.$lte = new Date(req.query["createdAt"].lte);
+    }
+
+    // Only add if at least one bound exists
+    const matchFilter = { active: true };
+    if (Object.keys(createdAtFilter).length) {
+      matchFilter.createdAt = createdAtFilter;
+    }
+
     // Aggregation: count only exports with at least one answered question
     const counts = await Export.aggregate([
-      { $match: { active: true, recipientId: { $ne: null } } }, // exclude bad docs
+      { $match: { ...matchFilter, recipientId: { $ne: null } } }, // exclude bad docs
       {
         $lookup: {
           from: "questions",
@@ -372,18 +386,31 @@ const departmentForSections = async (req, res) => {
       Department.find({ active: true }),
       req.query
     )
-      .filter()
       .sort()
       .paginate()
       .limitFields();
 
     const departments = await features.query;
     const sections = await Section.find({ active: true });
+    // Build createdAt filter manually
+    const createdAtFilter = {};
+    if (req.query["createdAt"]?.gte) {
+      createdAtFilter.$gte = new Date(req.query["createdAt"].gte);
+    }
+    if (req.query["createdAt"]?.lte) {
+      createdAtFilter.$lte = new Date(req.query["createdAt"].lte);
+    }
 
+    // Only add if at least one bound exists
+    const matchFilter = { active: true };
+    if (Object.keys(createdAtFilter).length) {
+      matchFilter.createdAt = createdAtFilter;
+    }
     // Aggregate existing counts
     const counts = await Information.aggregate([
       {
         $match: {
+          ...matchFilter,
           active: true,
           departmentId: { $in: departments.map((d) => d._id) },
         },
